@@ -70,7 +70,7 @@ class OpenIdLogin(Endpoint):
     @dataclass
     class Request:
         return_url: str
-        fe_url: Optional[str] = field(default=None)
+        fe_url: str
 
     @dataclass
     class Response:

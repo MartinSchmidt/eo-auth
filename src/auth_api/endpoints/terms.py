@@ -1,5 +1,6 @@
 # from typing import Optional, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Optional
 
 import markdown2
 
@@ -67,6 +68,8 @@ class AcceptTerms(Endpoint):
         except state_encoder.DecodeError:
             # TODO Handle...
             raise BadRequest()
+
+        # TODO Verify accepted version is valid?
 
         state.terms_accepted = request.accept
         state.terms_version = request.version

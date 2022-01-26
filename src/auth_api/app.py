@@ -6,7 +6,7 @@ from .config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_PATH,
     TERMS_ACCEPT_PATH,
-    CREATE_USER_URL,
+    CREATE_USER_PATH,
 )
 
 from .endpoints import (
@@ -113,7 +113,7 @@ def create_app() -> Application:
 
     app.add_endpoint(
         method='GET',
-        path=CREATE_USER_URL,
+        path=CREATE_USER_PATH,
         endpoint=CreateUser(),
     )
 
