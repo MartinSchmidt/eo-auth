@@ -4,10 +4,9 @@ from .config import (
     INTERNAL_TOKEN_SECRET,
     OIDC_LOGIN_CALLBACK_PATH,
     OIDC_LOGIN_CALLBACK_URL,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_URL,
     TERMS_PATH,
-    TERMS_ACCEPT_PATH
+    TERMS_ACCEPT_PATH,
+    CREATE_USER_URL,
 )
 
 from .endpoints import (
@@ -24,8 +23,9 @@ from .endpoints import (
     # Terms:
     GetTerms,
     AcceptTerms,
+    # Users:
+    CreateUser,
 )
-from .endpoints.test import TestLogging, TestLoggingException
 
 
 def create_app() -> Application:
@@ -37,20 +37,6 @@ def create_app() -> Application:
         name='Auth API',
         secret=INTERNAL_TOKEN_SECRET,
         health_check_path='/health',
-    )
-
-    # -- OpenID Connect Login ------------------------------------------------
-
-    app.add_endpoint(
-        method='GET',
-        path='/log/test',
-        endpoint=TestLogging(),
-    )
-
-    app.add_endpoint(
-        method='GET',
-        path='/log/test/exception',
-        endpoint=TestLoggingException(),
     )
 
     # -- OpenID Connect Login ------------------------------------------------
@@ -121,6 +107,14 @@ def create_app() -> Application:
         method='POST',
         path=TERMS_ACCEPT_PATH,
         endpoint=AcceptTerms(),
+    )
+
+    # -- Users ---------------------------------------------------------------
+
+    app.add_endpoint(
+        method='GET',
+        path=CREATE_USER_URL,
+        endpoint=CreateUser(),
     )
 
     return app

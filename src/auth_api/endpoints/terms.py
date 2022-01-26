@@ -44,7 +44,7 @@ class AcceptTerms(Endpoint):
     @dataclass
     class Request:
         state: str
-        accept: bool
+        accept: bool  # TODO Add to sequence diagram
         version: str
 
     @dataclass

@@ -159,6 +159,7 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         state.issued = oidc_token.issued
         state.expires = oidc_token.expires
+        state.tin = oidc_token.tin
         state.id_token = oidc_token.id_token
 
         # User is unknown when logging in for the first time and may be None

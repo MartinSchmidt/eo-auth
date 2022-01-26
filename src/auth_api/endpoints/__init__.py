@@ -11,6 +11,7 @@ from .oidc import (
     OpenIdLogin,
     OpenIDLoginCallback,
     OpenIdLogout,
+    CreateUser,
 )
 
 from .terms import (
