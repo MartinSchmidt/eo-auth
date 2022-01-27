@@ -45,7 +45,7 @@ class AcceptTerms(Endpoint):
     @dataclass
     class Request:
         state: str
-        accept: bool  # TODO Add to sequence diagram
+        accepted: bool  # TODO Add to sequence diagram
         version: str
 
     @dataclass
@@ -71,10 +71,10 @@ class AcceptTerms(Endpoint):
 
         # TODO Verify accepted version is valid?
 
-        state.terms_accepted = request.accept
+        state.terms_accepted = request.accepted
         state.terms_version = request.version
 
-        if request.accept:
+        if request.accepted:
             next_url = url_append(
                 url=CREATE_USER_URL,
                 query_extra={'state': state_encoder.encode(state)}

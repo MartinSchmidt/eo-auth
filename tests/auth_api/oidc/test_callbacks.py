@@ -28,7 +28,6 @@ from auth_api.config import (
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_SAMESITE,
     OIDC_LOGIN_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
 )
 
 from .bases import OidcCallbackEndpointsSubjectKnownBase
@@ -76,7 +75,6 @@ def assert_token(
 
 @pytest.fixture(params=[
     OIDC_LOGIN_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
 ])
 def callback_endpoint_path(request) -> str:
     """
@@ -129,7 +127,7 @@ class TestOidcCallbackEndpoints(object):
         ('internal_server_error', 'E0'),
         ('mitid_user_aborted', 'E1'),
     ))
-    def test__provide_oidc_errors__should_redirect_to_return_url_with_internal_error_code(
+    def test__provide_oidc_errors__should_redirect_to_return_url_with_internal_error_code(  # noqa: E501
             self,
             client: FlaskClient,
             state_encoder: TokenEncoder[AuthState],
@@ -153,7 +151,8 @@ class TestOidcCallbackEndpoints(object):
 
         state = AuthState(
             fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar')
+            return_url='http://redirect-here.com/foobar',
+        )
         state_encoded = state_encoder.encode(state)
 
         # -- Act -------------------------------------------------------------
@@ -208,7 +207,8 @@ class TestOidcCallbackEndpoints(object):
 
         state = AuthState(
             fe_url=fe_url,
-            return_url=return_url)
+            return_url=return_url,
+        )
         state_encoded = state_encoder.encode(state)
 
         mock_fetch_token.side_effect = Exception('Test')
