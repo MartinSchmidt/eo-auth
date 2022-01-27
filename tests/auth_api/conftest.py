@@ -114,11 +114,19 @@ def token_ssn() -> str:
 
 
 @pytest.fixture(scope='function')
+def token_tin() -> str:
+    """
+    Identity Provider's social security number (used in mocked tokens).
+    """
+    return '39315041'
+
+
+@pytest.fixture(scope='function')
 def token_issued() -> datetime:
     """
     Time of issue Identity Provider's token.
     """
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=timezone.utc).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
@@ -126,7 +134,7 @@ def token_expires(token_issued: datetime) -> datetime:
     """
     Time of expire Identity Provider's token.
     """
-    return token_issued + timedelta(days=1)
+    return (token_issued + timedelta(days=1)).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
@@ -143,12 +151,11 @@ def ip_token(
         'access_token': '',
         'expires_in': 3600,
         'token_type': 'Bearer',
-        'scope': 'openid mitid nemid ssn userinfo_token',
+        'scope': 'openid mitid nemid userinfo_token',
         'userinfo_token': userinfo_token_encoded,
         'expires_at': int(token_expires.timestamp()),
     }
 
-#TODO Get token from signaturgruppen
 @pytest.fixture(scope='function')
 def id_token(
         token_subject: str,
@@ -160,22 +167,25 @@ def id_token(
     Mocked ID-token from Identity Provider (unencoded).
     """
     return {
-        'iss': 'https://pp.netseidbroker.dk/op',
-        'nbf': 1632389546,
-        'iat': int(token_issued.timestamp()),
-        'exp': int(token_expires.timestamp()),
-        'auth_time': int(token_issued.timestamp()),
-        'aud': str(uuid4()),
-        'amr': ['code_app'],
-        'at_hash': '-Y-YJBoneGN5sEk6vawM9A',
-        'sub': token_subject,
-        'idp': token_idp,
-        'acr': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'neb_sid': str(uuid4()),
-        'loa': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'identity_type': 'private',
-        'transaction_id': str(uuid4()),
-        'session_expiry': '1632403505',
+        "iss": "https://pp.netseidbroker.dk/op",
+        "nbf": 1643290895,
+        "iat": int(token_issued.timestamp()),
+        "exp": int(token_expires.timestamp()),
+        "aud": "e57095e6-fca0-4915-a86a-8a199f87dce6",
+        "amr": [
+            "nemid.otp"
+        ],
+        "at_hash": "MeVzZfa1Xl_eZZWPK7szfg",
+        "sub": "c3775e21-4172-4ee9-8994-774b11616fe7",
+        "auth_time": 1643290895,
+        "idp": "nemid",
+        "neb_sid": "66c8b6cc-9d66-42a2-9337-0880777791cf",
+        "identity_type": "professional",
+        "transaction_id": "a7dfbf4a-8b73-4f4c-abfa-95bd087c6939",
+        "idp_environment": "test",
+        "session_expiry": "1643305295",
+        "nemid.cvr": "39315041",
+        "nemid.company_name": "Energinet DataHub A/S "
     }
 
 
@@ -206,24 +216,25 @@ def userinfo_token(
     Mocked userinfo-token from Identity Provider (unencoded).
     """
     return {
-        'iss': 'https://pp.netseidbroker.dk/op',
-        'nbf': 1632389572,
-        'iat': 1632389572,
-        'exp': 1632389872,
-        'amr': ['code_app'],
-        'mitid.uuid': '7ddb51e7-5a04-41f8-9f3c-eec1d9444979',
-        'mitid.age': '55',
-        'mitid.identity_name': 'Anker Andersen',
-        'mitid.date_of_birth': '1966-02-03',
-        'loa': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'acr': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'identity_type': 'private',
-        'idp': token_idp,
-        'dk.cpr': token_ssn,
-        'auth_time': '1632387312',
-        'sub': token_subject,
-        'aud': '0a775a87-878c-4b83-abe3-ee29c720c3e7',
-        'transaction_id': 'a805f253-e8ea-4457-9996-c67bf704ab4a',
+        "iss": "https://pp.netseidbroker.dk/op",
+        "nbf": 1643290895,
+        "iat": 1643290895,
+        "exp": 1643291195,
+        "amr": [
+            "nemid.otp"
+        ],
+        "idp": "nemid",
+        "nemid.ssn": "CVR:39315041-RID:35613330",
+        "nemid.common_name": "TEST - Jakob Kristensen",
+        "nemid.dn": "CN=TEST - Jakob Kristensen+SERIALNUMBER=CVR:39315041-RID:35613330,O=Energinet DataHub A/S // CVR:39315041,C=DK",
+        "nemid.rid": "35613330",
+        "nemid.company_name": "Energinet DataHub A/S ",
+        "nemid.cvr": "39315041",
+        "identity_type": "professional",
+        "auth_time": "1643290895",
+        "sub": "c3775e21-4172-4ee9-8994-774b11616fe7",
+        "transaction_id": "a7dfbf4a-8b73-4f4c-abfa-95bd087c6939",
+        "aud": "e57095e6-fca0-4915-a86a-8a199f87dce6"
     }
 
 
