@@ -1,5 +1,5 @@
 from typing import Optional, Any, Union
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 
 from origin.auth import TOKEN_COOKIE_NAME
@@ -23,6 +23,7 @@ from auth_api.config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_URL,
     TERMS_ACCEPT_URL,
+    TOKEN_EXPIRY_DELTA,
 )
 
 from auth_api.oidc import (
@@ -156,8 +157,12 @@ class OpenIDCallbackEndpoint(Endpoint):
                 error_code='E505',
             )
 
-        state.issued = oidc_token.issued
-        state.expires = oidc_token.expires
+        if oidc_token.expires < datetime.now(tz=timezone.utc):
+            return redirect_to_failure(
+                state=state,
+                error_code='E505',
+            )
+
         state.tin = oidc_token.tin
         state.id_token = oidc_token.id_token
 
@@ -202,12 +207,14 @@ class OpenIDCallbackEndpoint(Endpoint):
         if user is None:
             raise RuntimeError('Can not succeed flow without a user')
 
+        issued = datetime.now(tz=timezone.utc)
+
         return redirect_to_success(
             state=state,
             session=session,
             user=user,
-            issued=token.issued,
-            expires=token.expires,
+            issued=issued,
+            expires=issued + timedelta(hours=TOKEN_EXPIRY_DELTA),
             id_token=token.id_token,
         )
 

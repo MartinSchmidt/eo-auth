@@ -23,6 +23,8 @@ SOURCE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(SOURCE_DIR, '..')
 TERMS_MARKDOWN_PATH = os.path.join(ROOT_DIR, 'terms', 'terms.md')
 
+# No. of hours used for the timedelta for internal token expiry
+TOKEN_EXPIRY_DELTA = 1
 
 # -- Tokens ------------------------------------------------------------------
 

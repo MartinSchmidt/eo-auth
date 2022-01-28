@@ -156,6 +156,7 @@ def ip_token(
         'expires_at': int(token_expires.timestamp()),
     }
 
+
 @pytest.fixture(scope='function')
 def id_token(
         token_subject: str,
@@ -226,7 +227,7 @@ def userinfo_token(
         "idp": "nemid",
         "nemid.ssn": "CVR:39315041-RID:35613330",
         "nemid.common_name": "TEST - Jakob Kristensen",
-        "nemid.dn": "CN=TEST - Jakob Kristensen+SERIALNUMBER=CVR:39315041-RID:35613330,O=Energinet DataHub A/S // CVR:39315041,C=DK",
+        "nemid.dn": "CN=TEST - Jakob Kristensen+SERIALNUMBER=CVR:39315041-RID:35613330,O=Energinet DataHub A/S // CVR:39315041,C=DK",  # noqa: E501
         "nemid.rid": "35613330",
         "nemid.company_name": "Energinet DataHub A/S ",
         "nemid.cvr": "39315041",
