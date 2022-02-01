@@ -91,7 +91,7 @@ It’s important to notice that after changing the `PATH` environment variable, 
 Third, type the following command to check if the `pipenv` installed correctly:
 
 ```
-pipenv -h
+pipenv --version
 ```
 
 If it shows the following output, then you’ve successfully installed the `pipenv` tool successfully.
