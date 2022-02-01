@@ -178,7 +178,7 @@ While the tests are running in PyCharm, docker desktop might not be found due to
 
 To fix this go to: 
 External liberaties 
-\.virtualenvs\eo-auth-<pipenv\>\Lib\site-packages\docker\api\client.py
+\.virtualenvs\eo-auth-<pipenv>\Lib\site-packages\docker\api\client.py
 
 At line 168 change
 
