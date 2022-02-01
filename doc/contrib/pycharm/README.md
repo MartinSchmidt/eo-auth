@@ -56,9 +56,7 @@ Link to Tools for Visual Studio 2022
 
 https://visualstudio.microsoft.com/downloads/
 
-or
-
-Direct link;
+or direct link;
 
 https://aka.ms/vs/17/release/vs_BuildTools.exe
 
