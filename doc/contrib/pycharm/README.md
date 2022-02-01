@@ -22,17 +22,19 @@ Remember to mark the "Add Python to enviroment variables"
 ---
 ## Install  Microsoft C++ Build Tools
 
-```
 Microsoft C++ Build Tools is required to run the serpyco package in PyCharm
-```
 
-#### Build Tools for Visual Studio 2022
+Link to Tools for Visual Studio 2022
+
 https://visualstudio.microsoft.com/downloads/
 
+or
+
 Direct link;
+
 https://aka.ms/vs/17/release/vs_BuildTools.exe
 
-Windows 10 SDK is required, however, problems can occur if the others default not are choosen.  
+In the installation, Windows 10 SDK is required, however, problems can occur if the others default are not choosen.  
 
 ---
 ## Install pipenv for Windows
@@ -41,7 +43,7 @@ https://www.pythontutorial.net/python-basics/install-pipenv-windows/
 
 ### Prerequisites
 
-Before installing the `pipenv` tool, you need to have Python and `pip` installed on your computer.
+Before installing the `pipenv` tool, you need to make sure that Python and `pip` are installed on your computer.
 
 First, open the Command Prompt or Windows Powershell and type the following command.
 
@@ -109,18 +111,19 @@ Then you should check step 2 to see if you have already added the paths to the `
 ---
 
 ## Configure a Pipenv environment
-Afterwards the environment must be configured in PyCharm like done here:
+Afterwards the environment must be configured in PyCharm which are explained how to do here:
 
 https://www.jetbrains.com/help/pycharm/pipenv.html#pipenv-existing-project
 
 ---
 ### Install the pipenv from the pipfile
+Then the pipenv needs to install the packages from the pipfile:
 
 ```
 pipenv install
 ```
 
-sync the versions:
+and sync the versions(may not be needed):
 
 ```
 pipenv sync --dev
@@ -129,20 +132,20 @@ pipenv sync --dev
 ---
 # Setup Configuration in PyCharm
 
-First Mark directory src and test as root by right-clicking on the folder and select "Mark directory as"  
+Mark directory "src" and "test" as root for the source and test folder by right-clicking on the folder and select "Mark directory as"  
 
-To run the API in PyCharm the " "Run/Debug Configuration" must be set as the images:
+To run the API and the tests in PyCharm. The " "Run/Debug Configuration" must be set as the following :
 
 #### auth API 
 In Run/Debug Configuration 
 
 -> add new configuration and select Python
 
--> change "Script path" to Module name and set "auth_api" as the name
+-> change "Script path" to "Module name" and set "auth_api" as the name
 
 -> make sure that the "Python interpreter" is the Python 3.8(eo-auth-<pipenv>) 
 
--> set "Working directory" to the "<path>\eo-auth\src" folder 
+-> set the "Working directory" to the "<folderpath>\eo-auth\src" folder 
 
 
 #### Pytest 
@@ -150,11 +153,11 @@ In Run/Debug Configuration
 
 -> add new configuration and select pytest
 
--> set "Script path" to "<path>/eo-auth/tests"
+-> set "Script path" to "<folderpath>/eo-auth/tests"
 
 -> make sure that the "Python interpreter" is the Python 3.8(eo-auth-<pipenv>) 
 
--> set "Working directory" to the "<path>\eo-auth\src" folder 
+-> set "Working directory" to the "<folderpath>\eo-auth\src" folder 
 
 
 ---
