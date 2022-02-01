@@ -38,7 +38,7 @@ In the installation, Windows 10 SDK is required, however, problems can occur if 
 
 ---
 ## Install pipenv for Windows
-Link to the metode;
+Link to the tool;
 https://www.pythontutorial.net/python-basics/install-pipenv-windows/
 
 ### Prerequisites
