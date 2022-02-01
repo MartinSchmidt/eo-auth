@@ -13,7 +13,7 @@ To install pipenv local to use in PyCharm, the following has to be done:
  
 ---
 ## Install python for Windows
-The Fenris project uses 3.8.10
+The Fenris project uses python 3.8.10
 
 Link:  https://www.python.org/downloads/release/python-3810/
 
