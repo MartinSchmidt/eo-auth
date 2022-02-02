@@ -258,7 +258,7 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
     or interrupting an OpenID Connect authorization flow.
 
     The user may not be known to the system in case its the first time
-    they login. In this.
+    they login. In that case, we redirect them to the terms and conditions.
     """
 
     def on_oidc_flow_succeeded(
