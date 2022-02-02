@@ -11,6 +11,7 @@ from auth_api.db import db as _db
 
 # # -- SQL --------------------------------------------------------------------
 
+
 class TestQueryBase:
     @pytest.fixture(scope='function')
     def psql_uri(self):
@@ -31,7 +32,11 @@ class TestQueryBase:
             yield _db
 
     @pytest.fixture(scope='function')
+<<<<<<< HEAD:tests/auth_api/queries/conftest.py
     def seeded_session(self, db: SqlEngine) -> SqlEngine.Session:
+=======
+    def mock_session(self, db: SqlEngine) -> SqlEngine.Session:
+>>>>>>> test/logout:tests/auth_api/queries/query_base.py
         """
         TODO
         """
