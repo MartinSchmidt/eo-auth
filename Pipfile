@@ -8,6 +8,7 @@ pytest = "*"
 pytest-cov = "*"
 testcontainers = "*"
 flake8 = "*"
+pylint = "*"
 
 [packages]
 pyjwt = "*"
