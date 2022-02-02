@@ -9,6 +9,7 @@ pytest-cov = "*"
 testcontainers = "*"
 flake8 = "*"
 pylint = "*"
+requests-mock = "*"
 
 [packages]
 pyjwt = "*"

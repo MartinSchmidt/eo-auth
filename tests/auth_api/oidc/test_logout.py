@@ -1,15 +1,17 @@
 """
 Tests specifically for OIDC login endpoint.
 """
+from uuid import uuid4
 import pytest
 from typing import Any, Dict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+import requests_mock
 
 from flask.testing import FlaskClient
 from urllib.parse import parse_qs, urlsplit
 
 from origin.tokens import TokenEncoder
-
+from origin.models.auth import InternalToken
 
 from auth_api.db import db
 from auth_api.endpoints import AuthState
@@ -21,12 +23,14 @@ from origin.api.testing import (
 )
 
 from auth_api.config import (
+    OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_SAMESITE,
     OIDC_LOGIN_CALLBACK_PATH,
     OIDC_SSN_VALIDATE_CALLBACK_PATH,
 )
+from auth_api.models import DbToken
 from auth_api.queries import LoginRecordQuery
 from .bases import OidcCallbackEndpointsSubjectKnownBase
 
@@ -94,47 +98,59 @@ class TestOidcLogout(OidcCallbackEndpointsSubjectKnownBase):
             self,
             client: FlaskClient,
             mock_session: db.Session,
-            callback_endpoint_path: str,
-            internal_subject: str,
-            return_url: str,
-            state_encoded: str,
+            internal_token_encoder: TokenEncoder[InternalToken],
     ):
+        subject = 'subject'
+        actor = 'actor'
+        issued = datetime.now(tz=timezone.utc)
+        expires = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
-        # -- Act -------------------------------------------------------------
+        id_token = 'id-token'
 
-        # Login
-        r1 = client.get(
-            path=callback_endpoint_path,
-            query_string={'state': state_encoded},
+        internal_token = InternalToken(
+            issued=issued,
+            expires=expires,
+            actor=actor,
+            subject=subject,
+            scope=['scope1', 'scope2'],
         )
 
-        # 
-        cookie_name = 'Authorization'
+        internal_token_encoded = internal_token_encoder \
+            .encode(internal_token)
 
-        cookies = CookieTester(r1.headers)
+        opaque_token = str(uuid4())
 
-        cookie_value = cookies.get_value(TOKEN_COOKIE_NAME)
+        mock_session.add(DbToken(
+            subject=subject,
+            opaque_token=opaque_token,
+            internal_token=internal_token_encoded,
+            issued=issued,
+            expires=expires,
+            id_token=id_token,
+        ))
+
+        mock_session.commit()
 
         client.set_cookie(
-            server_name='domain.com',
-            key=cookie_name,
-            value=cookie_value
-        )
+                server_name='domain.com',
+                key=TOKEN_COOKIE_NAME,
+                value=opaque_token,
+            )
 
-        r2 = client.get(
-            path='/token/forward-auth',
-        )
+        with requests_mock.Mocker() as m:
+            adapter = m.post(OIDC_API_LOGOUT_URL, text='', status_code=200)
 
-        r3 = client.get(
-            path='/logout',
-            headers={
-                'Authorization': r2.headers['Authorization']
-            }
-        )
+            
 
-        # -- Assert ----------------------------------------------------------
+            r = client.get(
+                path='/logout',
+                headers={
+                    'Authorization': 'Bearer: ' + internal_token_encoded
+                }
+            )
 
+            assert adapter.call_count == 1
+            assert adapter.called
+            assert adapter.last_request.json() == {'id_token': id_token}
 
-        # Check that cookie has been deleted
-
-        # Check that oidc logout endpoint has been touched
+        assert 1 == 1
