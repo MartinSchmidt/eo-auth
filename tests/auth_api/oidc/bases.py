@@ -12,10 +12,29 @@ from auth_api.models import DbUser, DbExternalUser
 
 class OidcCallbackEndpointsSubjectKnownBase:
     """
-    Base class for all OIDC callback endpoints that tests behavior, where
-    the Identity Provider's subject is known to the system. A setup-method
-    creates the user before each test.
+    TODO
     """
+
+    @pytest.fixture(scope='function')
+    def seeded_session(session: db.Session):
+        """
+        TODO
+        """
+        session.begin()
+
+        try:
+            # session.add(DbTestModel(string_field='s1', integer_field=1))
+            # session.add(DbTestModel(string_field='s1', integer_field=2))
+            # session.add(DbTestModel(string_field='s2', integer_field=1))
+            # session.add(DbTestModel(string_field='s2', integer_field=2))
+            pass
+        except:  # noqa: E722
+            session.rollback()
+        else:
+            session.commit()
+
+        yield session
+
 
     @pytest.fixture(scope='function')
     def internal_subject(self) -> str:
