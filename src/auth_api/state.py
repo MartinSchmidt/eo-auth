@@ -120,7 +120,7 @@ def redirect_to_success(
     opaque_token = db_controller.create_token(
         session=session,
         issued=issued,
-        expires=issued + timedelta(hours=TOKEN_EXPIRY_DELTA),
+        expires=issued + TOKEN_EXPIRY_DELTA,
         subject=user.subject,
         scope=TOKEN_DEFAULT_SCOPES,
         id_token=id_token,

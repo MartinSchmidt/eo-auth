@@ -16,7 +16,7 @@ from origin.sql import SqlEngine, POSTGRES_VERSION
 
 from auth_api.app import create_app
 from auth_api.endpoints import AuthState
-from auth_api.config import INTERNAL_TOKEN_SECRET
+from auth_api.config import INTERNAL_TOKEN_SECRET, TOKEN_EXPIRY_DELTA
 from auth_api.db import db as _db
 
 from .keys import PRIVATE_KEY, PUBLIC_KEY
@@ -150,7 +150,7 @@ def token_expires(token_issued: datetime) -> datetime:
     """
     Time of expire Identity Provider's token.
     """
-    return (token_issued + timedelta(hours=1)).replace(microsecond=0)
+    return (token_issued + TOKEN_EXPIRY_DELTA).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
