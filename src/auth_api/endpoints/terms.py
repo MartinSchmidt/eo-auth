@@ -1,6 +1,6 @@
-from dataclasses import dataclass
-
 import markdown2
+
+from dataclasses import dataclass
 
 from origin.api import Endpoint, Context, BadRequest
 from origin.tools import url_append
@@ -26,11 +26,11 @@ class GetTerms(Endpoint):
         Handle HTTP request.
         """
         with open(TERMS_MARKDOWN_PATH) as f:
-            markdown_to_html = markdown2.markdown(f.read())
+            html = markdown2.markdown(f.read())
 
         return self.Response(
             headline='Terms and Conditions',
-            terms=markdown_to_html,
+            terms=html,
             version='0.1',
         )
 
