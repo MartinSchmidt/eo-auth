@@ -29,14 +29,14 @@ class OidcCallbackEndpointsSubjectKnownBase:
         """
         Client's return_url
         """
-        return 'http://redirect-here.com/foobar?foo=bar'
+        return 'https://redirect-here.com/foobar?foo=bar'
 
     @pytest.fixture(scope='function')
     def fe_url(self) -> str:
         """
         Client's fe_url
         """
-        return 'http://foobar.com/'
+        return 'https://foobar.com/'
 
     @pytest.fixture(scope='function')
     def state_encoded(

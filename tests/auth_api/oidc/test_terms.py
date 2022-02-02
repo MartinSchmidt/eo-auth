@@ -36,8 +36,8 @@ class TestTermsAccept:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=True,
@@ -100,8 +100,8 @@ class TestTermsDecline:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=False,
@@ -131,7 +131,7 @@ class TestTermsDecline:
         # taking query parameters into consideration)
         assert_base_url(
             url=r.json['next_url'],
-            expected_base_url='http://redirect-here.com/foobar',
+            expected_base_url='https://redirect-here.com/foobar',
             check_path=True,
         )
 

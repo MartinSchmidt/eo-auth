@@ -34,14 +34,14 @@ class TestCreateUser:
         """
         Client's return_url
         """
-        return 'http://redirect-here.com/foobar?foo=bar'
+        return 'https://redirect-here.com/foobar?foo=bar'
 
     @pytest.fixture(scope='function')
     def fe_url(self) -> str:
         """
         Client's fe_url
         """
-        return 'http://foobar.com/'
+        return 'https://foobar.com/'
 
     @pytest.fixture(scope='function')
     def seeded_session(
@@ -101,8 +101,8 @@ class TestCreateUser:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=True,
@@ -145,8 +145,8 @@ class TestCreateUser:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=True,
@@ -220,8 +220,8 @@ class TestCreateUser:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=False,

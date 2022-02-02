@@ -57,8 +57,8 @@ class TestOidcLogin:
         r = client.get(
             path='/oidc/login',
             query_string={
-                'fe_url': 'http://spam.com/',
-                'return_url': 'http://foobar.com/',
+                'fe_url': 'https://spam.com/',
+                'return_url': 'https://foobar.com/',
             },
         )
 
@@ -70,8 +70,8 @@ class TestOidcLogin:
         )
 
         assert r.status_code == 200
-        assert actual_state.return_url == 'http://foobar.com/'
-        assert actual_state.fe_url == 'http://spam.com/'
+        assert actual_state.return_url == 'https://foobar.com/'
+        assert actual_state.fe_url == 'https://spam.com/'
 
     @pytest.mark.unittest
     def test__omit_parameter_return_url__should_return_status_400(
@@ -89,7 +89,7 @@ class TestOidcLogin:
             path='/oidc/login',
             query_string={
                 # Missing parameter "return_url"
-                'fe_url': 'http://spam.com/'
+                'fe_url': 'https://spam.com/'
             },
         )
 
@@ -113,7 +113,7 @@ class TestOidcLogin:
             path='/oidc/login',
             query_string={
                 # Missing parameter "fe_url"
-                'return_url': 'http://foobar.com/',
+                'return_url': 'https://foobar.com/',
             },
         )
 

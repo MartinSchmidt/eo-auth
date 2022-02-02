@@ -49,8 +49,8 @@ class TestOidcLoginCallbackSubjectUnknown:
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar',
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             identity_provider=token_idp,
@@ -78,7 +78,7 @@ class TestOidcLoginCallbackSubjectUnknown:
         # taking query parameters into consideration)
         assert_base_url(
             url=redirect_location,
-            expected_base_url='http://foobar.com/terms',
+            expected_base_url='https://foobar.com/terms',
             check_path=True,
         )
 
