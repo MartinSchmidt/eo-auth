@@ -13,7 +13,7 @@ from auth_api.db import db as _db
 
 class TestQueryBase:
     @pytest.fixture(scope='function')
-    def psql_uri():
+    def psql_uri(self):
         """
         TODO
         """
@@ -22,18 +22,16 @@ class TestQueryBase:
         with PostgresContainer(image) as psql:
             yield psql.get_connection_url()
 
-
     @pytest.fixture(scope='function')
-    def db(psql_uri: str) -> SqlEngine:
+    def db(self, psql_uri: str) -> SqlEngine:
         """
         TODO
         """
         with patch('auth_api.db.db.uri', new=psql_uri):
             yield _db
 
-
     @pytest.fixture(scope='function')
-    def mock_session(db: SqlEngine) -> SqlEngine.Session:
+    def seeded_session(self, db: SqlEngine) -> SqlEngine.Session:
         """
         TODO
         """
