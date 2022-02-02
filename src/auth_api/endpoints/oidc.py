@@ -383,6 +383,7 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         )
 
 
+
 class OpenIDSsnCallback(OpenIDCallbackEndpoint):
     """
     Client is redirected to this callback endpoint after completing
