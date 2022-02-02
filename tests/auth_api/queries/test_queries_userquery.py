@@ -8,10 +8,32 @@ from auth_api.queries import UserQuery
 from tests.auth_api.queries.query_base import TestQueryBase
 
 # -- Fixtures ----------------------------------------------------------------
-user = DbUser(
-    subject=str(uuid4()),
-    ssn="asdasdasdasd",
-)
+
+
+USER_1 = {
+    "subject": 'SUBJECT_1',
+    "ssn": "SSN_1",
+    "cvr": 'CVR_1'
+}
+
+USER_2 = {
+    "subject": 'SUBJECT_2',
+    "ssn": "SSN_2",
+    "cvr": 'CVR_2'
+}
+
+USER_3 = {
+    "subject": 'SUBJECT_3',
+    "ssn": "SSN_3",
+    "cvr": 'CVR_3'
+}
+
+
+USER_LIST = [
+    USER_1,
+    USER_2,
+    USER_3,
+]
 
 
 class TestUserQueries(TestQueryBase):
@@ -24,13 +46,13 @@ class TestUserQueries(TestQueryBase):
         mock_session.begin()
 
         try:
-            mock_session.add(user)
-            # mock_session.add(DbTestModel(string_field='s1', integer_field=1))
-            # mock_session.add(DbTestModel(string_field='s1', integer_field=2))
-            # mock_session.add(DbTestModel(string_field='s2', integer_field=1))
-            # mock_session.add(DbTestModel(string_field='s2', integer_field=2))
+            for user in USER_LIST:
+                mock_session.add(DbUser(
+                    subject=user['subject'],
+                    ssn=user['ssn'],
+                    cvr=user['cvr'],
+                ))
 
-            pass
         except:  # noqa: E722
             mock_session.rollback()
         else:
@@ -38,17 +60,17 @@ class TestUserQueries(TestQueryBase):
 
         yield mock_session
 
-    def test__should_register_user_login(
+    @pytest.mark.parametrize('user', USER_LIST)
+    def test__has_ssn__ssn_exists__return_correct_user(
         self,
         seeded_session: db.Session,
+        user,
     ):
 
         query = UserQuery(seeded_session)
 
-        res = query.has_ssn(user.ssn).one_or_none()
+        fetched_user = query.has_ssn(user['ssn']).one_or_none()
 
-        assert res is not None
-        # a = 2
+        assert fetched_user is not None
 
-        # b = 3
-        assert 1 == 1
+        assert fetched_user.ssn == user['ssn']
