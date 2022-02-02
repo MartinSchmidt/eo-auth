@@ -369,6 +369,7 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
                         state=state_encoder.encode(state),
                         callback_uri=OIDC_SSN_VALIDATE_CALLBACK_URL,
                         validate_ssn=True,
+                        language=OIDC_LANGUAGE,
                     ),
                 )
             elif token.is_company:
