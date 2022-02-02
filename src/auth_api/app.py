@@ -112,7 +112,7 @@ def create_app() -> Application:
     # -- Users ---------------------------------------------------------------
 
     app.add_endpoint(
-        method='GET',
+        method='POST',
         path=CREATE_USER_PATH,
         endpoint=CreateUser(),
     )

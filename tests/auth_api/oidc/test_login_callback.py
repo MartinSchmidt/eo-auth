@@ -36,9 +36,9 @@ class TestOidcLoginCallbackSubjectUnknown:
         state_encoder: TokenEncoder[AuthState],
         jwk_public: str,
         ip_token: Dict[str, Any],
-        token_issued: datetime,
-        token_expires: datetime,
         token_tin: str,
+        token_idp: str,
+        token_subject: str,
     ):
         """
         When logging in, if the user doesn't exist the user needs
@@ -51,10 +51,10 @@ class TestOidcLoginCallbackSubjectUnknown:
         state = AuthState(
             fe_url='http://foobar.com',
             return_url='http://redirect-here.com/foobar',
-            issued=token_issued,
-            expires=token_expires,
             tin=token_tin,
             id_token=ip_token['id_token'],
+            identity_provider=token_idp,
+            external_subject=token_subject
         )
 
         state_encoded = state_encoder.encode(state)

@@ -1,6 +1,4 @@
-# from typing import Optional, List
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 import markdown2
 
@@ -45,7 +43,7 @@ class AcceptTerms(Endpoint):
     @dataclass
     class Request:
         state: str
-        accepted: bool  # TODO Add to sequence diagram
+        accepted: bool
         version: str
 
     @dataclass

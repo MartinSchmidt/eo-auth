@@ -31,8 +31,6 @@ class TestTermsAccept:
         state_encoder: TokenEncoder[AuthState],
         jwk_public: str,
         ip_token: Dict[str, Any],
-        token_issued: datetime,
-        token_expires: datetime,
         token_tin: str,
     ):
         # -- Arrange ----------------------------------------------------------
@@ -40,8 +38,6 @@ class TestTermsAccept:
         state = AuthState(
             fe_url='http://foobar.com',
             return_url='http://redirect-here.com/foobar',
-            issued=token_issued,
-            expires=token_expires,
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=True,
@@ -99,8 +95,6 @@ class TestTermsDecline:
         state_encoder: TokenEncoder[AuthState],
         jwk_public: str,
         ip_token: Dict[str, Any],
-        token_issued: datetime,
-        token_expires: datetime,
         token_tin: str,
     ):
         # -- Arrange ----------------------------------------------------------
@@ -108,8 +102,6 @@ class TestTermsDecline:
         state = AuthState(
             fe_url='http://foobar.com',
             return_url='http://redirect-here.com/foobar',
-            issued=token_issued,
-            expires=token_expires,
             tin=token_tin,
             id_token=ip_token['id_token'],
             terms_accepted=False,

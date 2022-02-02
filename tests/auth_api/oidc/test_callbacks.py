@@ -65,9 +65,18 @@ def assert_token(
         path='/token/inspect',
         headers={TOKEN_HEADER_NAME: r_forwardauth.headers[TOKEN_HEADER_NAME]}
     )
+    token = r_inspect.json['token']
+    token['issued'] = \
+        datetime.fromisoformat(token['issued']) \
+        .replace(microsecond=0) \
+        .isoformat()
 
-    assert r_inspect.status_code == 200
-    assert r_inspect.json == {'token': expected_token}
+    token['expires'] = \
+        datetime.fromisoformat(token['expires']) \
+        .replace(microsecond=0) \
+        .isoformat()
+
+    assert token == expected_token
 
 
 # -- Fixtures ----------------------------------------------------------------

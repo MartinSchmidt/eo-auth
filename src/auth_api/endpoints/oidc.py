@@ -30,6 +30,7 @@ from auth_api.oidc import (
     oidc_backend,
     OpenIDConnectToken,
 )
+from auth_api.queries import UserQuery
 
 from auth_api.state import (
     AuthState, 
@@ -165,6 +166,8 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         state.tin = oidc_token.tin
         state.id_token = oidc_token.id_token
+        state.identity_provider = oidc_token.provider
+        state.external_subject = oidc_token.subject
 
         # User is unknown when logging in for the first time and may be None
         user = db_controller.get_user_by_external_subject(
@@ -207,14 +210,10 @@ class OpenIDCallbackEndpoint(Endpoint):
         if user is None:
             raise RuntimeError('Can not succeed flow without a user')
 
-        issued = datetime.now(tz=timezone.utc)
-
         return redirect_to_success(
             state=state,
             session=session,
             user=user,
-            issued=issued,
-            expires=issued + timedelta(hours=TOKEN_EXPIRY_DELTA),
             id_token=token.id_token,
         )
 
@@ -304,7 +303,8 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
 
 class CreateUser(Endpoint):
     """
-    TODO
+    Attempts to create a user if it doesn't exist and the terms and conditions
+    have been accepted, then redirects to return_url.
     """
 
     @dataclass
@@ -338,12 +338,17 @@ class CreateUser(Endpoint):
             tin=state.tin,
         )
 
+        db_controller.attach_external_user(
+            session=session,
+            user=user,
+            external_subject=state.external_subject,
+            identity_provider=state.identity_provider,
+        )
+
         return redirect_to_success(
             state=state,
             session=session,
             user=user,
-            issued=state.issued,
-            expires=state.expires,
             id_token=state.id_token,
         )
 

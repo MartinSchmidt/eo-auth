@@ -122,6 +122,22 @@ def token_tin() -> str:
 
 
 @pytest.fixture(scope='function')
+def token_aud() -> str:
+    """
+    Identity Provider's aud (used in mocked tokens).
+    """
+    return str(uuid4())
+
+
+@pytest.fixture(scope='function')
+def token_transaction_id() -> str:
+    """
+    Identity Provider's transaction id (used in mocked tokens).
+    """
+    return str(uuid4())
+
+
+@pytest.fixture(scope='function')
 def token_issued() -> datetime:
     """
     Time of issue Identity Provider's token.
@@ -134,7 +150,7 @@ def token_expires(token_issued: datetime) -> datetime:
     """
     Time of expire Identity Provider's token.
     """
-    return (token_issued + timedelta(days=1)).replace(microsecond=0)
+    return (token_issued + timedelta(hours=1)).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
@@ -163,6 +179,9 @@ def id_token(
         token_idp: str,
         token_issued: datetime,
         token_expires: datetime,
+        token_tin: str,
+        token_aud: str,
+        token_transaction_id: str,
 ) -> Dict[str, Any]:
     """
     Mocked ID-token from Identity Provider (unencoded).
@@ -172,21 +191,21 @@ def id_token(
         "nbf": 1643290895,
         "iat": int(token_issued.timestamp()),
         "exp": int(token_expires.timestamp()),
-        "aud": "e57095e6-fca0-4915-a86a-8a199f87dce6",
+        "aud": token_aud,
         "amr": [
             "nemid.otp"
         ],
         "at_hash": "MeVzZfa1Xl_eZZWPK7szfg",
-        "sub": "c3775e21-4172-4ee9-8994-774b11616fe7",
-        "auth_time": 1643290895,
-        "idp": "nemid",
-        "neb_sid": "66c8b6cc-9d66-42a2-9337-0880777791cf",
+        "sub": token_subject,
+        "auth_time": int(token_issued.timestamp()),
+        "idp": token_idp,
+        "neb_sid": str(uuid4()),
         "identity_type": "professional",
-        "transaction_id": "a7dfbf4a-8b73-4f4c-abfa-95bd087c6939",
+        "transaction_id": token_transaction_id,
         "idp_environment": "test",
         "session_expiry": "1643305295",
-        "nemid.cvr": "39315041",
-        "nemid.company_name": "Energinet DataHub A/S "
+        "nemid.cvr": token_tin,
+        "nemid.company_name": "Energinet DataHub A/S ",
     }
 
 
@@ -211,7 +230,11 @@ def id_token_encoded(
 def userinfo_token(
         token_subject: str,
         token_idp: str,
-        token_ssn: str,
+        token_issued: datetime,
+        token_expires: datetime,
+        token_tin: str,
+        token_aud: str,
+        token_transaction_id: str,
 ) -> Dict[str, Any]:
     """
     Mocked userinfo-token from Identity Provider (unencoded).
@@ -224,18 +247,18 @@ def userinfo_token(
         "amr": [
             "nemid.otp"
         ],
-        "idp": "nemid",
+        "idp": token_idp,
         "nemid.ssn": "CVR:39315041-RID:35613330",
         "nemid.common_name": "TEST - Jakob Kristensen",
         "nemid.dn": "CN=TEST - Jakob Kristensen+SERIALNUMBER=CVR:39315041-RID:35613330,O=Energinet DataHub A/S // CVR:39315041,C=DK",  # noqa: E501
         "nemid.rid": "35613330",
         "nemid.company_name": "Energinet DataHub A/S ",
-        "nemid.cvr": "39315041",
+        "nemid.cvr": token_tin,
         "identity_type": "professional",
-        "auth_time": "1643290895",
-        "sub": "c3775e21-4172-4ee9-8994-774b11616fe7",
-        "transaction_id": "a7dfbf4a-8b73-4f4c-abfa-95bd087c6939",
-        "aud": "e57095e6-fca0-4915-a86a-8a199f87dce6"
+        "auth_time": int(token_issued.timestamp()),
+        "sub": token_subject,
+        "transaction_id": token_transaction_id,
+        "aud": token_aud,
     }
 
 

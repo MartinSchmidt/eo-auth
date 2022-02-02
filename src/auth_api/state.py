@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, field
 
 from origin.tokens import TokenEncoder
@@ -17,6 +17,7 @@ from auth_api.config import (
     TOKEN_COOKIE_SAMESITE,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_DEFAULT_SCOPES,
+    TOKEN_EXPIRY_DELTA,
 )
 
 
@@ -36,10 +37,10 @@ class AuthState:
     return_url: str
     terms_accepted: Optional[bool] = field(default=False)
     terms_version: Optional[str] = field(default=None)
-    issued: Optional[datetime] = field(default=None)
-    expires: Optional[datetime] = field(default=None)
     id_token: Optional[str] = field(default=None)
     tin: Optional[str] = field(default=None)
+    identity_provider: Optional[str] = field(default=None)
+    external_subject: Optional[str] = field(default=None)
     created: datetime = field(
         default_factory=lambda: datetime.now(tz=timezone.utc))
 
@@ -101,12 +102,11 @@ def redirect_to_success(
     state: AuthState,
     session: db.session,
     user: Optional[DbUser],
-    issued: datetime,
-    expires: datetime,
     id_token: str
 ) -> TemporaryRedirect:
     """
-    TODO
+    After a successful action, redirect to return url with an opaque token
+    and success = 1
     """
     db_controller.register_user_login(
         session=session,
@@ -115,10 +115,12 @@ def redirect_to_success(
 
     # -- Token -----------------------------------------------------------
 
+    issued = datetime.now(tz=timezone.utc)
+
     opaque_token = db_controller.create_token(
         session=session,
         issued=issued,
-        expires=expires,
+        expires=issued + timedelta(hours=TOKEN_EXPIRY_DELTA),
         subject=user.subject,
         scope=TOKEN_DEFAULT_SCOPES,
         id_token=id_token,
