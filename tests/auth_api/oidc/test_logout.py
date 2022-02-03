@@ -18,8 +18,6 @@ from origin.auth import TOKEN_COOKIE_NAME, TOKEN_HEADER_NAME
 from origin.api.testing import CookieTester
 
 
-
-
 from auth_api.config import (
     OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
@@ -27,7 +25,6 @@ from auth_api.config import (
     TOKEN_COOKIE_SAMESITE,
 )
 from auth_api.models import DbToken
-
 
 
 # -- Fixtures ----------------------------------------------------------------
@@ -195,7 +192,7 @@ class TestOidcLogout:
 
         # -- Act -------------------------------------------------------------
 
-        client.get(
+        client.post(
             path='/logout',
             headers={
                 'Authorization': 'Bearer: ' + internal_token_encoded
@@ -210,8 +207,6 @@ class TestOidcLogout:
         # sent to the OIDC logout url is correct
         assert adapter.last_request.json() == {'id_token': id_token}
 
-    
-    @pytest.mark.integrationtest
     def test__logout_success__returned_cookie_is_expired(
             self,
             client: FlaskClient,
@@ -244,7 +239,7 @@ class TestOidcLogout:
 
         # Alter the the OIDC api logout response
         # to give back a logout success response.
-        adapter = request_mocker.post(
+        request_mocker.post(
             OIDC_API_LOGOUT_URL,
             text='',
             status_code=200
@@ -252,25 +247,32 @@ class TestOidcLogout:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        response = client.post(
             path='/logout',
             headers={
                 'Authorization': 'Bearer: ' + internal_token_encoded
             }
         )
 
-        cookies = CookieTester(r.headers) \
-            .assert_has_cookies(TOKEN_COOKIE_NAME) \
-            .assert_cookie(
-                name=TOKEN_COOKIE_NAME,
-                domain=TOKEN_COOKIE_DOMAIN,
-                path='/',
-                http_only=TOKEN_COOKIE_HTTP_ONLY,
-                same_site=TOKEN_COOKIE_SAMESITE,
-                secure=True,
-            )
-
-        opaque_token = cookies.get_value(TOKEN_COOKIE_NAME)
-
         # -- Assert ----------------------------------------------------------
-        
+
+        cookies = CookieTester(response.headers) \
+            .assert_has_cookies(TOKEN_COOKIE_NAME)
+
+        # Get auth cookie
+        auth_cookie = cookies.cookies[TOKEN_COOKIE_NAME]
+
+        assert auth_cookie.value == ''
+        assert auth_cookie['path'] == '/'
+        assert auth_cookie['domain'] == TOKEN_COOKIE_DOMAIN
+        assert auth_cookie['httponly'] == TOKEN_COOKIE_HTTP_ONLY
+        assert auth_cookie['samesite'] == 'Strict'
+        assert auth_cookie['secure'] is True
+
+        # Get time when cookie expires
+        expires_datatime = datetime.strptime(
+            auth_cookie['expires'],
+            "%a, %d %b %Y %H:%M:%S GMT",
+        )
+
+        assert expires_datatime < datetime.now()
