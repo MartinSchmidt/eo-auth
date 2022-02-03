@@ -102,5 +102,5 @@ class TestOidcLoginCallbackSubjectUnknown:
         assert_query_parameter(
             url=redirect_location,
             name='state',
-            value=state_encoder.encode(expected_state),,
+            value=state_encoder.encode(expected_state),
         )
