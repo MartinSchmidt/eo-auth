@@ -79,8 +79,8 @@ class Testlogout(OidcCallbackEndpointsSubjectKnownBase):
         token_subject: str,
         token_idp: str,
         token_ssn: str,
-        #id_token_encoded: str,
-        #internal_subject: str,
+        id_token_encoded: str,
+        internal_subject: str,
     ) -> db.Session:
 
         # -- OAuth2Session object methods ------------------------------------
@@ -90,7 +90,7 @@ class Testlogout(OidcCallbackEndpointsSubjectKnownBase):
 
         # -- Insert user into database ---------------------------------------
 
-        """
+
         print(id_token_encoded)
         mock_session.add(DbUser(
             subject=internal_subject,
@@ -109,8 +109,8 @@ class Testlogout(OidcCallbackEndpointsSubjectKnownBase):
                 'id_token': ip_token['id_token']
             }
         )
-
+        """
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 400
+       # assert r.status_code == 400

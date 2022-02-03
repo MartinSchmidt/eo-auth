@@ -3,44 +3,94 @@ conftest.py according to pytest docs:
 https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
 import pytest
-from unittest.mock import patch
-from testcontainers.postgres import PostgresContainer
 
-from origin.sql import POSTGRES_VERSION, SqlEngine
-from auth_api.db import db as _db
+from auth_api.db import db
+from auth_api.models import DbUser, DbExternalUser
 
-# # -- SQL --------------------------------------------------------------------
+# -- Fixtures ----------------------------------------------------------------
 
+USER_1 = {
+    "subject": 'SUBJECT_1',
+    "ssn": "SSN_1",
+    "cvr": 'CVR_1'
+}
+
+USER_2 = {
+    "subject": 'SUBJECT_2',
+    "ssn": "SSN_2",
+    "cvr": 'CVR_2'
+}
+
+USER_3 = {
+    "subject": 'SUBJECT_3',
+    "ssn": "SSN_3",
+    "cvr": 'CVR_3'
+}
+
+USER_4 = {
+    "subject": 'SUBJECT_1',
+    "identity_provider": "mitid",
+    "external_subject": 'SUBJECT_4'
+}
+
+USER_5 = {
+    "subject": 'SUBJECT_1',
+    "identity_provider": "nemid",
+    "external_subject": 'SUBJECT_5'
+}
+
+USER_6 = {
+    "subject": 'SUBJECT_3',
+    "identity_provider": "nemid",
+    "external_subject": 'SUBJECT_6'
+}
+
+USER_LIST = [
+    USER_1,
+    USER_2,
+    USER_3,
+]
+
+USER_EXTERNAL_LIST = [
+    USER_4,
+    USER_5,
+    USER_6,
+]
 
 class TestQueryBase:
-    @pytest.fixture(scope='function')
-    def psql_uri(self):
-        """
-        TODO
-        """
-        image = f'postgres:{POSTGRES_VERSION}'
-
-        with PostgresContainer(image) as psql:
-            yield psql.get_connection_url()
+    """
+    TODO
+    """
 
     @pytest.fixture(scope='function')
-    def db(self, psql_uri: str) -> SqlEngine:
+    def seeded_session(
+        self,
+        mock_session: db.Session,
+    ) -> db.Session:
         """
-        TODO
+        Inserts a list of mock-users and mock-external-users into the database.
         """
-        with patch('auth_api.db.db.uri', new=psql_uri):
-            yield _db
 
-    @pytest.fixture(scope='function')
-<<<<<<< HEAD:tests/auth_api/queries/conftest.py
-    def seeded_session(self, db: SqlEngine) -> SqlEngine.Session:
-=======
-    def mock_session(self, db: SqlEngine) -> SqlEngine.Session:
->>>>>>> test/logout:tests/auth_api/queries/query_base.py
-        """
-        TODO
-        """
-        db.apply_schema()
+        # -- Insert user into database ---------------------------------------
 
-        with db.make_session() as session:
-            yield session
+        mock_session.begin()
+
+        for user in USER_LIST:
+            mock_session.add(DbUser(
+                subject=user['subject'],
+                ssn=user['ssn'],
+                cvr=user['cvr'],
+            ))
+
+        for user in USER_EXTERNAL_LIST:
+            mock_session.add(DbExternalUser(
+                subject=user['subject'],
+                identity_provider=user['identity_provider'],
+                external_subject=user['external_subject'],
+            ))
+
+        mock_session.commit()
+
+        yield mock_session
+
+

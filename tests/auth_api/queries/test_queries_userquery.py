@@ -1,68 +1,91 @@
-from uuid import uuid4
 import pytest
-from sqlalchemy import orm, exc
 
 from auth_api.db import db
-from auth_api.models import DbUser
 from auth_api.queries import UserQuery
-from tests.auth_api.queries.query_base import TestQueryBase
-
-# -- Fixtures ----------------------------------------------------------------
-user = DbUser(
-    subject=str(uuid4()),
-    ssn="asdasdasdasd",
-)
+from tests.auth_api.queries.query_base import TestQueryBase, USER_LIST
 
 
 class TestUserQueries(TestQueryBase):
-<<<<<<< HEAD
     """
-    Tests for the queries
-    Tests for the queries
+    Test
     """
-    @pytest.mark.integrationtest
-    def test__my_test(
-=======
-
-    @pytest.fixture(scope='function')
-    def seeded_session(self, mock_session: db.Session):
+    @pytest.mark.parametrize('user', USER_LIST)
+    def test__has_ssn__ssn_exists__return_correct_user(
+        self,
+        seeded_session: db.Session,
+        user,
+    ):
         """
         TODO
+
+        :param seeded_session: Mocked database session
+        :param user: list of users
         """
-        mock_session.begin()
 
-        try:
-            mock_session.add(user)
-            # mock_session.add(DbTestModel(string_field='s1', integer_field=1))
-            # mock_session.add(DbTestModel(string_field='s1', integer_field=2))
-            # mock_session.add(DbTestModel(string_field='s2', integer_field=1))
-            # mock_session.add(DbTestModel(string_field='s2', integer_field=2))
+        # -- Act -------------------------------------------------------------
 
-            pass
-        except:  # noqa: E722
-            mock_session.rollback()
-        else:
-            mock_session.commit()
+        query = UserQuery(seeded_session)
+        fetched_user_ssn = query.has_ssn(user['ssn']).one_or_none()
 
-        yield mock_session
+        # -- Assert ----------------------------------------------------------
 
-    def test__should_register_user_login(
->>>>>>> test/logout
+        assert fetched_user_ssn is not None
+        assert fetched_user_ssn.ssn == user['ssn']
+
+
+    def test__has_snn__ssn_does_not_exists__return_none(
         self,
         seeded_session: db.Session,
     ):
-        print(seeded_session)
-        assert 1 == 1
+        """
+        TODO
 
-<<<<<<< HEAD
-=======
+        :param seeded_session: Mocked database session
+        """
+        # -- Act -------------------------------------------------------------
+
         query = UserQuery(seeded_session)
+        fetched_user = query.has_ssn('invalid_ssn').one_or_none()
 
-        res = query.has_ssn(user.ssn).one_or_none()
+        # -- Assert ----------------------------------------------------------
 
-        assert res is not None
-        # a = 2
+        assert fetched_user is None
 
-        # b = 3
-        assert 1 == 1
->>>>>>> test/logout
+    @pytest.mark.parametrize('user', USER_LIST)
+    def test__has_tin__tin_exists__return_correct_user(
+        self,
+        seeded_session: db.Session,
+        user,
+    ):
+        """
+        TODO
+
+        :param seeded_session: Mocked database session
+        :param user: list of users
+        """
+        # -- Act -------------------------------------------------------------
+
+        query = UserQuery(seeded_session)
+        fetched_user_tin = query.has_tin(user['cvr']).one_or_none()
+
+        # -- Assert ----------------------------------------------------------
+        assert fetched_user_tin is not None
+        assert fetched_user_tin.cvr == user['cvr']
+
+    def test__has_tin__tin_does_not_exists__return_none(
+        self,
+        seeded_session: db.Session,
+    ):
+        """
+        TODO
+
+        :param seeded_session: Mocked database session
+        """
+        # -- Act -------------------------------------------------------------
+
+        query = UserQuery(seeded_session)
+        fetched_user = query.has_tin('invalid_tin').one_or_none()
+
+        # -- Assert ----------------------------------------------------------
+
+        assert fetched_user is None
