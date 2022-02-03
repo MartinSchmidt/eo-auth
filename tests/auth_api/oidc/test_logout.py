@@ -176,16 +176,9 @@ class TestOIDCEndpoint:
             opaque_token: str,
             id_token: str,
     ):
-        """When logging out, this is tests that the HTTP request payload
+        """
+        When logging out, this is tests that the HTTP request payload
         sent to the OIDC logout endpoint, is actually correct.
-
-        Args:
-            client (FlaskClient): API client
-            seeded_session (db.Session): Seeded database session
-            request_mocker (requests_mock): Used for mocking OIDC logout response
-            internal_token_encoded (str): Encoded external token saved in database
-            opaque_token (str): Token used in the frontend
-            id_token (str): Token used by the OIDC identity provider
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -222,18 +215,10 @@ class TestOIDCEndpoint:
             oidc_adapter: requests_mock.Adapter,
             internal_token_encoded: str,
             opaque_token: str,
-            id_token: str,
     ):
-        """When logging out with invalid header, this is tests that no HTTP request
+        """
+        When logging out with invalid header, this is tests that no HTTP request
         is sent to the oidc endpoint.
-
-        Args:
-            client (FlaskClient): API client
-            seeded_session (db.Session): Seeded database session
-            request_mocker (requests_mock): Used for mocking OIDC logout response
-            internal_token_encoded (str): Encoded external token saved in database
-            opaque_token (str): Token used in the frontend
-            id_token (str): Token used by the OIDC identity provider
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -271,18 +256,10 @@ class TestDatabaseTokens:
             seeded_session: db.Session,
             internal_token_encoded: str,
             opaque_token: str,
-            id_token: str,
     ):
-        """When logging out with invalid header, this is tests that no HTTP request
+        """
+        When logging out with invalid header, this is tests that no HTTP request
         is sent to the oidc endpoint.
-
-        Args:
-            client (FlaskClient): API client
-            seeded_session (db.Session): Seeded database session
-            request_mocker (requests_mock): Used for mocking OIDC logout response
-            internal_token_encoded (str): Encoded external token saved in database
-            opaque_token (str): Token used in the frontend
-            id_token (str): Token used by the OIDC identity provider
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -323,18 +300,10 @@ class TestHTTPResponse:
             oidc_adapter: requests_mock.Adapter,
             internal_token_encoded: str,
             opaque_token: str,
-            id_token: str,
     ):
-        """When logging out, this is tests that the new returned cookie
+        """
+        When logging out, this is tests that the new returned cookie
         has expired.
-
-        Args:
-            client (FlaskClient): API client
-            seeded_session (db.Session): Seeded database session
-            request_mocker (requests_mock): Used for mocking OIDC logout response
-            internal_token_encoded (str): Encoded external token saved in database
-            opaque_token (str): Token used in the frontend
-            id_token (str): Token used by the OIDC identity provider
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -386,17 +355,9 @@ class TestHTTPResponse:
             oidc_adapter: requests_mock.Adapter,
             internal_token_encoded: str,
             opaque_token: str,
-            id_token: str,
     ):
-        """When logging out, test that the reponse body is correct 
-
-        Args:
-            client (FlaskClient): API client
-            seeded_session (db.Session): Seeded database session
-            request_mocker (requests_mock): Used for mocking OIDC logout response
-            internal_token_encoded (str): Encoded external token saved in database
-            opaque_token (str): Token used in the frontend
-            id_token (str): Token used by the OIDC identity provider
+        """
+        When logging out, test that the reponse body is correct
         """
 
         # -- Arrange ---------------------------------------------------------
