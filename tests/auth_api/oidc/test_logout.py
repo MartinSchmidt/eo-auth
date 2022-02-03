@@ -15,49 +15,19 @@ from origin.models.auth import InternalToken
 from auth_api.db import db
 from origin.auth import TOKEN_COOKIE_NAME, TOKEN_HEADER_NAME
 
+from origin.api.testing import CookieTester
+
+
+
+
 from auth_api.config import (
     OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
+    TOKEN_COOKIE_SAMESITE,
 )
 from auth_api.models import DbToken
 
-
-# -- Helpers -----------------------------------------------------------------
-
-
-def assert_token(
-        client: FlaskClient,
-        opaque_token: str,
-        expected_token: Dict[str, Any],
-):
-    """
-    Provided an opaque token, this function translates it to an
-    internal token and asserts on it's content.
-
-    :param client:
-    :param opaque_token:
-    :param expected_token:
-    :return:
-    """
-    client.set_cookie(
-        server_name=TOKEN_COOKIE_DOMAIN,
-        key=TOKEN_COOKIE_NAME,
-        value=opaque_token,
-        secure=True,
-        httponly=TOKEN_COOKIE_HTTP_ONLY,
-        samesite='Strict',
-    )
-
-    r_forwardauth = client.get('/token/forward-auth')
-
-    r_inspect = client.get(
-        path='/token/inspect',
-        headers={TOKEN_HEADER_NAME: r_forwardauth.headers[TOKEN_HEADER_NAME]}
-    )
-
-    assert r_inspect.status_code == 200
-    assert r_inspect.json == {'token': expected_token}
 
 
 # -- Fixtures ----------------------------------------------------------------
@@ -239,3 +209,68 @@ class TestOidcLogout:
         # Make sure that the request payload
         # sent to the OIDC logout url is correct
         assert adapter.last_request.json() == {'id_token': id_token}
+
+    
+    @pytest.mark.integrationtest
+    def test__logout_success__returned_cookie_is_expired(
+            self,
+            client: FlaskClient,
+            seeded_session: db.Session,
+            request_mocker: requests_mock,
+            internal_token_encoded: str,
+            opaque_token: str,
+            id_token: str,
+    ):
+        """When logging out, this is tests that the new returned cookie
+        has expired.
+
+        Args:
+            client (FlaskClient): API client
+            seeded_session (db.Session): Seeded database session
+            request_mocker (requests_mock): Used for mocking OIDC logout response
+            internal_token_encoded (str): Encoded external token saved in database
+            opaque_token (str): Token used in the frontend
+            id_token (str): Token used by the OIDC identity provider
+        """
+
+        # -- Arrange ---------------------------------------------------------
+
+        # Create a cookie required for authentication
+        client.set_cookie(
+            server_name='domain.com',
+            key=TOKEN_COOKIE_NAME,
+            value=opaque_token,
+        )
+
+        # Alter the the OIDC api logout response
+        # to give back a logout success response.
+        adapter = request_mocker.post(
+            OIDC_API_LOGOUT_URL,
+            text='',
+            status_code=200
+        )
+
+        # -- Act -------------------------------------------------------------
+
+        r = client.get(
+            path='/logout',
+            headers={
+                'Authorization': 'Bearer: ' + internal_token_encoded
+            }
+        )
+
+        cookies = CookieTester(r.headers) \
+            .assert_has_cookies(TOKEN_COOKIE_NAME) \
+            .assert_cookie(
+                name=TOKEN_COOKIE_NAME,
+                domain=TOKEN_COOKIE_DOMAIN,
+                path='/',
+                http_only=TOKEN_COOKIE_HTTP_ONLY,
+                same_site=TOKEN_COOKIE_SAMESITE,
+                secure=True,
+            )
+
+        opaque_token = cookies.get_value(TOKEN_COOKIE_NAME)
+
+        # -- Assert ----------------------------------------------------------
+        
