@@ -158,12 +158,7 @@ class OpenIDCallbackEndpoint(Endpoint):
                 error_code='E505',
             )
 
-        if oidc_token.expires < datetime.now(tz=timezone.utc):
-            return redirect_to_failure(
-                state=state,
-                error_code='E505',
-            )
-
+        # Set values for later use
         state.tin = oidc_token.tin
         state.id_token = oidc_token.id_token
         state.identity_provider = oidc_token.provider

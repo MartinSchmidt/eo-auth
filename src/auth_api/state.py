@@ -41,8 +41,6 @@ class AuthState:
     tin: Optional[str] = field(default=None)
     identity_provider: Optional[str] = field(default=None)
     external_subject: Optional[str] = field(default=None)
-    created: datetime = field(
-        default_factory=lambda: datetime.now(tz=timezone.utc))
 
 
 # -- Encoders ----------------------------------------------------------------

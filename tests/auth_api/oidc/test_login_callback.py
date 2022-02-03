@@ -1,4 +1,3 @@
-from datetime import datetime
 import pytest
 
 from typing import Dict, Any
@@ -51,13 +50,17 @@ class TestOidcLoginCallbackSubjectUnknown:
         state = AuthState(
             fe_url='https://foobar.com',
             return_url='https://redirect-here.com/foobar',
+        )
+
+        expected_state = AuthState(
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
             tin=token_tin,
             id_token=ip_token['id_token'],
             identity_provider=token_idp,
             external_subject=token_subject
         )
 
-        state_encoded = state_encoder.encode(state)
         mock_get_jwk.return_value = jwk_public
         mock_fetch_token.return_value = ip_token
 
@@ -65,7 +68,7 @@ class TestOidcLoginCallbackSubjectUnknown:
 
         r = client.get(
             path=OIDC_LOGIN_CALLBACK_PATH,
-            query_string={'state': state_encoded},
+            query_string={'state': state_encoder.encode(state)},
         )
 
         # -- Assert -----------------------------------------------------------
@@ -99,5 +102,5 @@ class TestOidcLoginCallbackSubjectUnknown:
         assert_query_parameter(
             url=redirect_location,
             name='state',
-            value=state_encoded,
+            value=state_encoder.encode(expected_state),,
         )
