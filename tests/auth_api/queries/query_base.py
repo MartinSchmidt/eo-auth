@@ -83,14 +83,12 @@ class TestQueryBase:
         """
         return 'id-token'
 
-
     @pytest.fixture(scope='function')
     def subject(self) -> str:
         """
         Returns the subject.
         """
         return 'subject'
-
 
     @pytest.fixture(scope='function')
     def actor(self) -> str:
@@ -110,14 +108,14 @@ class TestQueryBase:
     @pytest.fixture(scope='function')
     def issued_datetime(self) -> datetime:
         """
-        A datetime that indicates when an token has been issued
+        A datetime that indicates when a token has been issued
         """
         return datetime.now(tz=timezone.utc)
 
     @pytest.fixture(scope='function')
     def expires_datetime(self) -> datetime:
         """
-        A datetime that indicates when an token will expire
+        A datetime that indicates when a token will expire
         """
         return datetime.now(tz=timezone.utc) + timedelta(days=1)
 
