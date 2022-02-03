@@ -53,12 +53,11 @@ class TestTokenQueries(TestQueryBase):
         issued,
         expires,
     ):
-        """
-        #TODO
+    """
 
         #:param seeded_session: Mocked database session
         #:param opaque_token:
-        """
+    """
 
         # -- Act -------------------------------------------------------------
 
@@ -73,11 +72,11 @@ class TestTokenQueries(TestQueryBase):
         self,
         seeded_session: db.Session,
     ):
-        """
-        #TODO
+    """
+        # TODO
 
         #:param seeded_session: Mocked database session
-        """
+    """
         # -- Act -------------------------------------------------------------
 
         query = TokenQuery(seeded_session)
