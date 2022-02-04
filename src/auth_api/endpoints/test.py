@@ -163,7 +163,7 @@ class TestLoggingException(Endpoint):
 
         try:
             0/0
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "Something happened",
                 extra={"extra": extra},

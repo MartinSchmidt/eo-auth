@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from ..backend import OpenIDConnectBackend
 
@@ -28,6 +29,7 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             state: str,
             callback_uri: str,
             validate_ssn: bool,
+            language: Optional[str],
     ) -> str:
         """
         Creates and returns an absolute URL to initiate an OpenID Connect
@@ -58,6 +60,7 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             redirect_uri=callback_uri,
             state=state,
             scope=scope,
+            language=language,
             idp_params=json.dumps(amr_values),
         )
 
