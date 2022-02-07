@@ -74,7 +74,9 @@ USER_LOGIN_RECORD = [
 
 class TestQueryBase:
     """
-    TODO
+    Base class for all queries that tests behavior, where
+    the the user's token in known by the system.
+    This setup's all the required users before each test.
     """
     @pytest.fixture(scope='function')
     def id_token(self) -> str:
@@ -205,5 +207,3 @@ class TestQueryBase:
         mock_session.commit()
 
         yield mock_session
-
-

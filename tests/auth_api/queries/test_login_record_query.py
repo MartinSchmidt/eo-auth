@@ -30,8 +30,6 @@ class TestLoginRecordQuery(TestQueryBase):
             .has_subject(user['subject']) \
             .exists()
 
-
-
     def test__has_subject__subject_does_not_exists__return_none(
         self,
         seeded_session: db.Session,
@@ -48,5 +46,3 @@ class TestLoginRecordQuery(TestQueryBase):
         assert not LoginRecordQuery(seeded_session) \
             .has_subject('INVALID_SUBJECT_LOGIN_RECORD') \
             .exists()
-
-
