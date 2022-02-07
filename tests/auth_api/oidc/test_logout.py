@@ -10,7 +10,6 @@ from flask.testing import FlaskClient
 
 from origin.tokens import TokenEncoder
 from origin.models.auth import InternalToken
-from sqlalchemy import column
 
 from auth_api.db import db
 from origin.auth import TOKEN_COOKIE_NAME
@@ -22,7 +21,6 @@ from auth_api.config import (
     OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
-    TOKEN_COOKIE_SAMESITE,
 )
 from auth_api.models import DbToken
 from auth_api.queries import TokenQuery
@@ -32,7 +30,8 @@ from auth_api.queries import TokenQuery
 @pytest.fixture(scope='function')
 def request_mocker() -> requests_mock:
     """
-    A request mock which can be used to mock requests responses made to eg. OpenID Connect api endpoints.
+    A request mock which can be used to mock requests responses
+    made to eg. OpenID Connect api endpoints.
     """
 
     with requests_mock.Mocker() as m:
@@ -126,7 +125,7 @@ def internal_token_encoded(
     internal_token_encoder: TokenEncoder[InternalToken],
 ) -> str:
     """
-    Returns the internal token in encoded string format. 
+    Returns the internal token in encoded string format.
     """
     return internal_token_encoder \
         .encode(internal_token)
@@ -143,7 +142,8 @@ def seeded_session(
         opaque_token: str,
 ) -> db.Session:
     """
-    Seeds the database with a token, which make it seem like a user has been logged in.
+    Seeds the database with a token, which make it seem like
+    a user has been logged in.
     """
 
     mock_session.add(DbToken(
@@ -218,8 +218,8 @@ class TestOIDCEndpoint:
             opaque_token: str,
     ):
         """
-        When logging out with invalid header, this is tests that no HTTP request
-        is sent to the oidc endpoint.
+        When logging out with invalid header, this is tests that no HTTP
+        request is sent to the oidc endpoint.
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -259,8 +259,8 @@ class TestDatabaseTokens:
             opaque_token: str,
     ):
         """
-        When logging out with invalid header, this is tests that no HTTP request
-        is sent to the oidc endpoint.
+        When logging out with invalid header, this is tests that no HTTP
+        request is sent to the oidc endpoint.
         """
 
         # -- Arrange ---------------------------------------------------------

@@ -64,8 +64,8 @@ class TestUserQueries(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if a user with an invalid ssn exits in the database and returns None if
-        it does not exist.
+        Test if a user with an invalid ssn exits in the database and returns
+        None if it does not exist.
 
         :param seeded_session: Mocked database session
         """
@@ -79,7 +79,7 @@ class TestUserQueries(TestQueryBase):
 
         assert query is None
 
-    @pytest.mark.parametrize('user',USER_LIST)
+    @pytest.mark.parametrize('user', USER_LIST)
     def test__has_tin__tin_exists__return_correct_user(
         self,
         seeded_session: db.Session,
@@ -108,8 +108,8 @@ class TestUserQueries(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if a user with an invalid tin exits in the database and returns None if
-        it does not exist.
+        Test if a user with an invalid tin exits in the database and
+        returns None if it does not exist.
 
         :param seeded_session: Mocked database session
         """

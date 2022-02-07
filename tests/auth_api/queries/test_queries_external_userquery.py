@@ -10,8 +10,9 @@ class TestExternalUserQueries(TestQueryBase):
     Tests cases where an external subject in written into the database
     and can be returned if correct subject is called.
     """
+
     @pytest.mark.parametrize('user', USER_EXTERNAL_LIST)
-    def test__has_external_subject__external_subject__exists__return_correct_external_user(
+    def test__has_external_subject__external_subject__exists__return_correct_external_user(  # noqa: E501
             self,
             seeded_session: db.Session,
             user: dict,
@@ -30,7 +31,7 @@ class TestExternalUserQueries(TestQueryBase):
             .has_external_subject(user['external_subject']) \
             .exists()
 
-    def test__has_external_subject__external_subject_does_not_exists__return_none(
+    def test__has_external_subject__external_subject_does_not_exists__return_none(   # noqa: E501
             self,
             seeded_session: db.Session,
     ):
@@ -51,7 +52,7 @@ class TestExternalUserQueries(TestQueryBase):
         'identity_provider',
         ['midid', 'nemid', 'invalid_nemid']
     )
-    def testy__has_identity_provider__identity_provider__exists__return_correct_external_user(
+    def testy__has_identity_provider__identity_provider__exists__return_correct_external_user(   # noqa: E501
             self,
             seeded_session: db.Session,
             identity_provider: str,
@@ -61,7 +62,7 @@ class TestExternalUserQueries(TestQueryBase):
         matches with the database
 
         :param seeded_session: Mocked database session
-        :param identity_provider: Current identity provider inserted into the test
+        :param identity_provider: Current identity provider inserted into the test   # noqa: E501
         """
         # -- Arrange ---------------------------------------------------------
 

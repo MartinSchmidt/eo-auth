@@ -7,9 +7,9 @@ from origin.api import Endpoint
 class JsonFormatter(logging.Formatter):
     """
     Formatter that outputs JSON strings after parsing the LogRecord.
-    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.
-    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"
-    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"
+    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.    # noqa: E501
+    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"    # noqa: E501
+    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"    # noqa: E501
     """
 
     def __init__(self, fmt_dict: dict = None,
@@ -23,22 +23,26 @@ class JsonFormatter(logging.Formatter):
 
     def usesTime(self) -> bool:
         """
-        Overwritten to look for the attribute in the format dict values instead of the fmt string.
+        Overwritten to look for the attribute in the
+        format dict values instead of the fmt string.
         """
         return "asctime" in self.fmt_dict.values()
 
     def formatMessage(self, record) -> dict:
         """
-        Overwritten to return a dictionary of the relevant LogRecord attributes instead of a string.
-        KeyError is raised if an unknown attribute is provided in the fmt_dict.
+        Overwritten to return a dictionary of the
+        relevant LogRecord attributes instead of a string.
+        KeyError is raised if an unknown attribute
+        is provided in the fmt_dict.
         """
         return {fmt_key: record.__dict__[fmt_val] for fmt_key, fmt_val in
                 self.fmt_dict.items()}
 
     def format(self, record) -> str:
         """
-        Mostly the same as the parent's class method, the difference being that a dict is manipulated and dumped as JSON
-        instead of a string.
+        Mostly the same as the parent's class method,
+        the difference being that a dict is manipulated
+        and dumped as JSON instead of a string.
         """
         record.message = record.getMessage()
 
@@ -65,9 +69,9 @@ class JsonFormatter(logging.Formatter):
 class JakobsJsonFormatter(logging.Formatter):
     """
     Formatter that outputs JSON strings after parsing the LogRecord.
-    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.
-    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"
-    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"
+    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.  # noqa: E501
+    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"   # noqa: E501
+    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"    # noqa: E501
     """
 
     def __init__(self, fmt_dict: dict = None,
@@ -82,22 +86,26 @@ class JakobsJsonFormatter(logging.Formatter):
 
     def usesTime(self) -> bool:
         """
-        Overwritten to look for the attribute in the format dict values instead of the fmt string.
+        Overwritten to look for the attribute in the format
+        dict values instead of the fmt string.
         """
         return 'asctime' in self.fmt_dict.values()
 
     def formatMessage(self, record) -> dict:
         """
-        Overwritten to return a dictionary of the relevant LogRecord attributes instead of a string.
-        KeyError is raised if an unknown attribute is provided in the fmt_dict.
+        Overwritten to return a dictionary of the relevant LogRecord
+        attributes instead of a string.
+        KeyError is raised if an unknown attribute is provided
+        in the fmt_dict.
         """
         return {fmt_key: record.__dict__[fmt_val] for fmt_key, fmt_val in
                 self.fmt_dict.items()}
 
     def format(self, record) -> str:
         """
-        Mostly the same as the parent's class method, the difference being that a dict is manipulated and dumped as JSON
-        instead of a string.
+        Mostly the same as the parent's class method, the difference
+        being that a dict is manipulated and dumped as
+        JSON instead of a string.
         """
         record.message = record.getMessage()
 
@@ -128,6 +136,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(handler)
 
 j = 2
+
 
 class TestLogging(Endpoint):
     def handle_request(self):
@@ -163,7 +172,7 @@ class TestLoggingException(Endpoint):
 
         try:
             0/0
-        except Exception as e:
+        except Exception as e:   # noqa: F841
             logger.exception(
                 "Something happened",
                 extra={"extra": extra},

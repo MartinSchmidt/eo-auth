@@ -7,8 +7,8 @@ from auth_api.config import (
     OIDC_API_LOGOUT_URL,
 )
 
-from .models import OpenIDConnectToken
-from .errors import OIDC_ERROR_CODES
+from .models import OpenIDConnectToken  # noqa: F401
+from .errors import OIDC_ERROR_CODES    # noqa: F401
 from .session import OAuth2Session
 from .signaturgruppen import SignaturgruppenBackend
 

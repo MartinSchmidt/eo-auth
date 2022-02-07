@@ -8,7 +8,7 @@ from typing import Dict, Any
 from unittest.mock import patch
 from authlib.jose import jwt, jwk
 from flask.testing import FlaskClient
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from testcontainers.postgres import PostgresContainer
 
 from origin.tokens import TokenEncoder
