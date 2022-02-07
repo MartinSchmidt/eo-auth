@@ -5,7 +5,6 @@ Revises:
 Create Date: 2021-11-12 11:45:29.153816
 
 """
-# flake8: noqa
 from alembic import op
 import sqlalchemy as sa
 
@@ -63,10 +62,10 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('identity_provider', 'external_subject')
     )
-    op.create_index(op.f('ix_user_external_external_subject'), 'user_external', ['external_subject'], unique=False)   # noqa: E501
-    op.create_index(op.f('ix_user_external_id'), 'user_external', ['id'], unique=False)  # noqa: E501
-    op.create_index(op.f('ix_user_external_identity_provider'), 'user_external', ['identity_provider'], unique=False)  # noqa: E501
-    op.create_index(op.f('ix_user_external_subject'), 'user_external', ['subject'], unique=False)  # noqa: E501
+    op.create_index(op.f('ix_user_external_external_subject'), 'user_external', ['external_subject'], unique=False)
+    op.create_index(op.f('ix_user_external_id'), 'user_external', ['id'], unique=False)
+    op.create_index(op.f('ix_user_external_identity_provider'), 'user_external', ['identity_provider'], unique=False)
+    op.create_index(op.f('ix_user_external_subject'), 'user_external', ['subject'], unique=False)
     # ### end Alembic commands ###
 
 
