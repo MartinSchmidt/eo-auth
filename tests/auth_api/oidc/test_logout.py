@@ -10,6 +10,7 @@ from flask.testing import FlaskClient
 
 from origin.tokens import TokenEncoder
 from origin.models.auth import InternalToken
+from sqlalchemy import column
 
 from auth_api.db import db
 from origin.auth import TOKEN_COOKIE_NAME
@@ -87,7 +88,7 @@ def opaque_token() -> str:
 @pytest.fixture(scope='function')
 def issued_datetime() -> datetime:
     """
-    A datetime that indicates when an token has been issued
+    A datetime that indicates when a token has been issued
     """
     return datetime.now(tz=timezone.utc)
 
@@ -131,6 +132,7 @@ def internal_token_encoded(
         .encode(internal_token)
 
 
+
 @pytest.fixture(scope='function')
 def seeded_session(
         mock_session: db.Session,
@@ -167,7 +169,7 @@ class TestOIDCEndpoint:
     """
 
     @pytest.mark.integrationtest
-    def test__logout__calling_oidc_logout_endpoint_with_correct_correct_body(
+    def test__logout__calling_oidc_logout_endpoint_with_correct_body(
             self,
             client: FlaskClient,
             seeded_session: db.Session,
@@ -287,6 +289,59 @@ class TestDatabaseTokens:
 
         assert query.count() == 1
 
+    @pytest.mark.integrationtest
+    def test__logout_with_valid_token__does_delete_correct_session_tokens(
+            self,
+            client: FlaskClient,
+            seeded_session: db.Session,
+            oidc_adapter: requests_mock.Adapter,
+            opaque_token: str,
+            id_token: str,
+            internal_token_encoded: str,
+    ):
+        """
+        When logging out, this test that only the correct opaque_token
+        is being deleted
+        """
+
+        seeded_session.add(DbToken(
+            subject='subject',
+            opaque_token='opaque_token_test',
+            internal_token='internal_token_encoded',
+            issued=datetime.now(),
+            expires=datetime.now() + timedelta(days=1),
+            id_token='id_token',
+        ))
+
+        seeded_session.commit()
+
+        # -- Arrange ---------------------------------------------------------
+
+        # Create a cookie required for authentication
+        client.set_cookie(
+            server_name='domain.com',
+            key=TOKEN_COOKIE_NAME,
+            value=opaque_token,
+        )
+
+        # -- Act -------------------------------------------------------------
+
+        client.post(
+            path='/logout',
+            headers={
+                'Authorization': 'Bearer: ' + internal_token_encoded
+            }
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert not TokenQuery(seeded_session) \
+            .has_opaque_token(opaque_token) \
+            .exists()
+
+        assert TokenQuery(seeded_session) \
+            .has_opaque_token('opaque_token_test') \
+            .exists()
 
 
 class TestHTTPResponse:

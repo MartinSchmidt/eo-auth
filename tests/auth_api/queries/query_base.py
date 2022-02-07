@@ -79,7 +79,8 @@ class TestQueryBase:
     @pytest.fixture(scope='function')
     def id_token(self) -> str:
         """
-        Returns the a dummy idtoken used for the OpenID Connect identity provider.
+        Returns a dummy idtoken used for the OpenID Connect
+        identity provider.
         """
         return 'id-token'
 
@@ -160,6 +161,7 @@ class TestQueryBase:
         expires_datetime: datetime,
         issued_datetime: datetime,
         opaque_token: str,
+        internal_token: InternalToken,
     ) -> db.Session:
         """
         Inserts a list of mock-users and mock-external-users into the database.

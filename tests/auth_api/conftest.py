@@ -75,7 +75,6 @@ def internal_token_encoder() -> TokenEncoder[InternalToken]:
         secret=INTERNAL_TOKEN_SECRET,
     )
 
-
 # -- Keys & Security ---------------------------------------------------------
 
 
