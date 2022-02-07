@@ -30,8 +30,6 @@ class TestExternalUserQueries(TestQueryBase):
             .has_external_subject(user['external_subject']) \
             .exists()
 
-
-
     def test__has_external_subject__external_subject_does_not_exists__return_none(
             self,
             seeded_session: db.Session,
@@ -49,9 +47,11 @@ class TestExternalUserQueries(TestQueryBase):
             .has_external_subject('invalid_external_subject') \
             .exists()
 
-
-    @pytest.mark.parametrize('identity_provider', ['midid', 'nemid', 'invalid_nemid'])
-    def testy__has_identit_provider__identity_provider__exists__return_correct_external_user(
+    @pytest.mark.parametrize(
+        'identity_provider',
+        ['midid', 'nemid', 'invalid_nemid']
+    )
+    def testy__has_identity_provider__identity_provider__exists__return_correct_external_user(
             self,
             seeded_session: db.Session,
             identity_provider: str,
@@ -65,7 +65,10 @@ class TestExternalUserQueries(TestQueryBase):
         """
         # -- Arrange ---------------------------------------------------------
 
-        seeded_users = [user for user in USER_EXTERNAL_LIST if user['identity_provider'] == identity_provider]
+        seeded_users = [
+            user for user in USER_EXTERNAL_LIST
+            if user['identity_provider'] == identity_provider
+        ]
 
         # -- Act -------------------------------------------------------------
 
@@ -75,5 +78,8 @@ class TestExternalUserQueries(TestQueryBase):
 
         # -- Assert ----------------------------------------------------------
 
-        assert all(user.identity_provider == identity_provider for user in query)
+        assert all(
+            user.identity_provider == identity_provider
+            for user in query
+        )
         assert len(seeded_users) == len(query)

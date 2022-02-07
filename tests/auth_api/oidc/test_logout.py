@@ -132,7 +132,6 @@ def internal_token_encoded(
         .encode(internal_token)
 
 
-
 @pytest.fixture(scope='function')
 def seeded_session(
         mock_session: db.Session,
@@ -304,9 +303,15 @@ class TestDatabaseTokens:
         is being deleted
         """
 
+        # -- Arrange ---------------------------------------------------------
+
+        # Add new token record in the database
+        # that's not supposed to get deleted
+        opaque_token_2 = 'opaque_token_test'
+
         seeded_session.add(DbToken(
             subject='subject',
-            opaque_token='opaque_token_test',
+            opaque_token=opaque_token_2,
             internal_token='internal_token_encoded',
             issued=datetime.now(),
             expires=datetime.now() + timedelta(days=1),
@@ -314,8 +319,6 @@ class TestDatabaseTokens:
         ))
 
         seeded_session.commit()
-
-        # -- Arrange ---------------------------------------------------------
 
         # Create a cookie required for authentication
         client.set_cookie(
@@ -340,7 +343,7 @@ class TestDatabaseTokens:
             .exists()
 
         assert TokenQuery(seeded_session) \
-            .has_opaque_token('opaque_token_test') \
+            .has_opaque_token(opaque_token_2) \
             .exists()
 
 
@@ -348,6 +351,7 @@ class TestHTTPResponse:
     """
     Tests the HTTP response returned by the endpoint.
     """
+
     def test__logout_success__returned_cookie_is_expired(
             self,
             client: FlaskClient,
