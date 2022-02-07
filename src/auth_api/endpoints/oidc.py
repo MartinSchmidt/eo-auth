@@ -1,5 +1,5 @@
 from typing import Optional, Any, Union
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 
 from origin.auth import TOKEN_COOKIE_NAME
@@ -23,18 +23,16 @@ from auth_api.config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_URL,
     TERMS_ACCEPT_URL,
-    TOKEN_EXPIRY_DELTA,
 )
 
 from auth_api.oidc import (
     oidc_backend,
     OpenIDConnectToken,
 )
-from auth_api.queries import UserQuery
 
 from auth_api.state import (
-    AuthState, 
-    state_encoder, 
+    AuthState,
+    state_encoder,
     redirect_to_failure,
     redirect_to_success,
 )
@@ -270,8 +268,7 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         :param session: Database session
         :param state: OpenID Connect state object
         :param token: OpenID Connect token fetched from Identity Provider
-        :param user: The user who just completed the flow, or None if
-            the user is not registered in the system
+        :param user: The user who just completed the flow, or None if the user is not registered in the system    # noqa: E501
         :returns: HTTP response
         """
 

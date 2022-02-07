@@ -1,1 +1,1 @@
-from .backend import SignaturgruppenBackend
+from .backend import SignaturgruppenBackend  # noqa: F401
