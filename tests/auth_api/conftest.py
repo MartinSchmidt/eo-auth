@@ -8,19 +8,19 @@ from typing import Dict, Any
 from unittest.mock import patch
 from authlib.jose import jwt, jwk
 from flask.testing import FlaskClient
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from testcontainers.postgres import PostgresContainer
 
 from origin.tokens import TokenEncoder
 from origin.sql import SqlEngine, POSTGRES_VERSION
+from origin.models.auth import InternalToken
 
 from auth_api.app import create_app
 from auth_api.endpoints import AuthState
-from auth_api.config import INTERNAL_TOKEN_SECRET
+from auth_api.config import INTERNAL_TOKEN_SECRET, TOKEN_EXPIRY_DELTA
 from auth_api.db import db as _db
 
 from .keys import PRIVATE_KEY, PUBLIC_KEY
-
 
 # -- API ---------------------------------------------------------------------
 
@@ -64,6 +64,16 @@ def state_encoder() -> TokenEncoder[AuthState]:
         secret=INTERNAL_TOKEN_SECRET,
     )
 
+
+@pytest.fixture(scope='function')
+def internal_token_encoder() -> TokenEncoder[InternalToken]:
+    """
+    Returns InternalToken encoder with correct secret embedded.
+    """
+    return TokenEncoder(
+        schema=InternalToken,
+        secret=INTERNAL_TOKEN_SECRET,
+    )
 
 # -- Keys & Security ---------------------------------------------------------
 
@@ -114,11 +124,35 @@ def token_ssn() -> str:
 
 
 @pytest.fixture(scope='function')
+def token_tin() -> str:
+    """
+    Identity Provider's social security number (used in mocked tokens).
+    """
+    return '39315041'
+
+
+@pytest.fixture(scope='function')
+def token_aud() -> str:
+    """
+    Identity Provider's aud (used in mocked tokens).
+    """
+    return str(uuid4())
+
+
+@pytest.fixture(scope='function')
+def token_transaction_id() -> str:
+    """
+    Identity Provider's transaction id (used in mocked tokens).
+    """
+    return str(uuid4())
+
+
+@pytest.fixture(scope='function')
 def token_issued() -> datetime:
     """
     Time of issue Identity Provider's token.
     """
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=timezone.utc).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
@@ -126,7 +160,7 @@ def token_expires(token_issued: datetime) -> datetime:
     """
     Time of expire Identity Provider's token.
     """
-    return token_issued + timedelta(days=1)
+    return (token_issued + TOKEN_EXPIRY_DELTA).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
@@ -143,7 +177,7 @@ def ip_token(
         'access_token': '',
         'expires_in': 3600,
         'token_type': 'Bearer',
-        'scope': 'openid mitid nemid ssn userinfo_token',
+        'scope': 'openid mitid nemid userinfo_token',
         'userinfo_token': userinfo_token_encoded,
         'expires_at': int(token_expires.timestamp()),
     }
@@ -155,27 +189,33 @@ def id_token(
         token_idp: str,
         token_issued: datetime,
         token_expires: datetime,
+        token_tin: str,
+        token_aud: str,
+        token_transaction_id: str,
 ) -> Dict[str, Any]:
     """
     Mocked ID-token from Identity Provider (unencoded).
     """
     return {
-        'iss': 'https://pp.netseidbroker.dk/op',
-        'nbf': 1632389546,
-        'iat': int(token_issued.timestamp()),
-        'exp': int(token_expires.timestamp()),
-        'auth_time': int(token_issued.timestamp()),
-        'aud': str(uuid4()),
-        'amr': ['code_app'],
-        'at_hash': '-Y-YJBoneGN5sEk6vawM9A',
-        'sub': token_subject,
-        'idp': token_idp,
-        'acr': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'neb_sid': str(uuid4()),
-        'loa': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'identity_type': 'private',
-        'transaction_id': str(uuid4()),
-        'session_expiry': '1632403505',
+        "iss": "https://pp.netseidbroker.dk/op",
+        "nbf": 1643290895,
+        "iat": int(token_issued.timestamp()),
+        "exp": int(token_expires.timestamp()),
+        "aud": token_aud,
+        "amr": [
+            "nemid.otp"
+        ],
+        "at_hash": "MeVzZfa1Xl_eZZWPK7szfg",
+        "sub": token_subject,
+        "auth_time": int(token_issued.timestamp()),
+        "idp": token_idp,
+        "neb_sid": str(uuid4()),
+        "identity_type": "professional",
+        "transaction_id": token_transaction_id,
+        "idp_environment": "test",
+        "session_expiry": "1643305295",
+        "nemid.cvr": token_tin,
+        "nemid.company_name": "Energinet DataHub A/S ",
     }
 
 
@@ -200,30 +240,35 @@ def id_token_encoded(
 def userinfo_token(
         token_subject: str,
         token_idp: str,
-        token_ssn: str,
+        token_issued: datetime,
+        token_expires: datetime,
+        token_tin: str,
+        token_aud: str,
+        token_transaction_id: str,
 ) -> Dict[str, Any]:
     """
     Mocked userinfo-token from Identity Provider (unencoded).
     """
     return {
-        'iss': 'https://pp.netseidbroker.dk/op',
-        'nbf': 1632389572,
-        'iat': 1632389572,
-        'exp': 1632389872,
-        'amr': ['code_app'],
-        'mitid.uuid': '7ddb51e7-5a04-41f8-9f3c-eec1d9444979',
-        'mitid.age': '55',
-        'mitid.identity_name': 'Anker Andersen',
-        'mitid.date_of_birth': '1966-02-03',
-        'loa': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'acr': 'https://data.gov.dk/concept/core/nsis/Substantial',
-        'identity_type': 'private',
-        'idp': token_idp,
-        'dk.cpr': token_ssn,
-        'auth_time': '1632387312',
-        'sub': token_subject,
-        'aud': '0a775a87-878c-4b83-abe3-ee29c720c3e7',
-        'transaction_id': 'a805f253-e8ea-4457-9996-c67bf704ab4a',
+        "iss": "https://pp.netseidbroker.dk/op",
+        "nbf": 1643290895,
+        "iat": 1643290895,
+        "exp": 1643291195,
+        "amr": [
+            "nemid.otp"
+        ],
+        "idp": token_idp,
+        "nemid.ssn": "CVR:39315041-RID:35613330",
+        "nemid.common_name": "TEST - Jakob Kristensen",
+        "nemid.dn": "CN=TEST - Jakob Kristensen+SERIALNUMBER=CVR:39315041-RID:35613330,O=Energinet DataHub A/S // CVR:39315041,C=DK",  # noqa: E501
+        "nemid.rid": "35613330",
+        "nemid.company_name": "Energinet DataHub A/S ",
+        "nemid.cvr": token_tin,
+        "identity_type": "professional",
+        "auth_time": int(token_issued.timestamp()),
+        "sub": token_subject,
+        "transaction_id": token_transaction_id,
+        "aud": token_aud,
     }
 
 
