@@ -10,7 +10,7 @@ class TestTokenQueries(TestQueryBase):
     """
     Tests the tokens queries in the database
     """
-    def test__has_opaque_token__opaque_token_exits__return_correct_opaque_token(
+    def test__has_opaque_token__opaque_token_exits__return_correct_opaque_token(   # noqa: E501
         self,
         seeded_session: db.Session,
         opaque_token: str,
