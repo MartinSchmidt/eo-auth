@@ -17,6 +17,7 @@ authlib = "*"
 requests = "*"
 python-decouple = "*"
 origin-platform-utils = "0.5.1"
+pytz = "*"
 
 [scripts]
 lint-flake8 = "flake8"
