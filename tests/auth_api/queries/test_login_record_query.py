@@ -14,40 +14,33 @@ class TestLoginRecordQuery(TestQueryBase):
     def test__has_subject__subject_exits__return_correct_subject(
             self,
             seeded_session: db.Session,
-            user
+            user,
     ):
         """
-        TODO
-
+        Test if the current user exits in the database
+        and returns true if it exists.
         :param seeded_session: Mocked database session
-        :param user: list of users
+        :param user: Current user inserted into the test
         """
 
-        # -- Act -------------------------------------------------------------
-
-        query = LoginRecordQuery(seeded_session)
-        fetched_user = query.has_subject('SUBJECT_LOGIN_RECORD').one_or_none()
-
         # -- Assert ----------------------------------------------------------
-        assert fetched_user is not None
-        assert fetched_user.subject == user['subject']
+
+        assert LoginRecordQuery(seeded_session) \
+            .has_subject(user['subject']) \
+            .exists()
 
     def test__has_subject__subject_does_not_exists__return_none(
         self,
         seeded_session: db.Session,
     ):
         """
-        TODO
-
+        Test if the user exits in the database and returns false if
+        it does not exist.
         :param seeded_session: Mocked database session
         """
-        # -- Act -------------------------------------------------------------
-
-        query = LoginRecordQuery(seeded_session)
-        fetched_user = query.has_subject('INVALID_SUBJECT_LOGIN_RECORD').one_or_none()
 
         # -- Assert ----------------------------------------------------------
 
-        assert fetched_user is None
-
-
+        assert not LoginRecordQuery(seeded_session) \
+            .has_subject('INVALID_SUBJECT_LOGIN_RECORD') \
+            .exists()

@@ -1,7 +1,3 @@
-"""
-conftest.py according to pytest docs:
-https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
-"""
 from uuid import uuid4
 
 import pytest
@@ -74,12 +70,15 @@ USER_LOGIN_RECORD = [
 
 class TestQueryBase:
     """
-    TODO
+    Base class for all queries that tests behavior, where
+    the the user's token in known by the system.
+    This setup's all the required users before each test.
     """
     @pytest.fixture(scope='function')
     def id_token(self) -> str:
         """
-        Returns the a dummy idtoken used for the OpenID Connect identity provider.
+        Returns a dummy idtoken used for the OpenID Connect
+        identity provider.
         """
         return 'id-token'
 
@@ -160,6 +159,7 @@ class TestQueryBase:
         expires_datetime: datetime,
         issued_datetime: datetime,
         opaque_token: str,
+        internal_token: InternalToken,
     ) -> db.Session:
         """
         Inserts a list of mock-users and mock-external-users into the database.
@@ -203,5 +203,3 @@ class TestQueryBase:
         mock_session.commit()
 
         yield mock_session
-
-
