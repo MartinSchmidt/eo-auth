@@ -13,6 +13,7 @@ from testcontainers.postgres import PostgresContainer
 
 from origin.tokens import TokenEncoder
 from origin.sql import SqlEngine, POSTGRES_VERSION
+from origin.models.auth import InternalToken
 
 from auth_api.app import create_app
 from auth_api.endpoints import AuthState
@@ -20,7 +21,6 @@ from auth_api.config import INTERNAL_TOKEN_SECRET
 from auth_api.db import db as _db
 
 from .keys import PRIVATE_KEY, PUBLIC_KEY
-
 
 # -- API ---------------------------------------------------------------------
 
@@ -61,6 +61,17 @@ def state_encoder() -> TokenEncoder[AuthState]:
     """
     return TokenEncoder(
         schema=AuthState,
+        secret=INTERNAL_TOKEN_SECRET,
+    )
+
+
+@pytest.fixture(scope='function')
+def internal_token_encoder() -> TokenEncoder[InternalToken]:
+    """
+    Returns InternalToken encoder with correct secret embedded.
+    """
+    return TokenEncoder(
+        schema=InternalToken,
         secret=INTERNAL_TOKEN_SECRET,
     )
 
