@@ -8,13 +8,16 @@ pytest = "*"
 pytest-cov = "*"
 testcontainers = "*"
 flake8 = "*"
+pylint = "*"
+requests-mock = "*"
 
 [packages]
 pyjwt = "*"
 authlib = "*"
 requests = "*"
 python-decouple = "*"
-origin-platform-utils = "0.5.1"
+origin-platform-utils = "==0.5.1"
+pytz = "*"
 
 [scripts]
 lint-flake8 = "flake8"
