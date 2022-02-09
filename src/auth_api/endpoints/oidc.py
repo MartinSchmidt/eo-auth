@@ -25,6 +25,7 @@ from auth_api.config import (
     TERMS_URL,
     TERMS_ACCEPT_URL,
     SSN_ENCRYPTION_KEY,
+    OIDC_LANGUAGE,
 )
 
 from auth_api.oidc import (
@@ -93,6 +94,7 @@ class OpenIdLogin(Endpoint):
             state=state_encoder.encode(state),
             callback_uri=OIDC_LOGIN_CALLBACK_URL,
             validate_ssn=False,
+            language=OIDC_LANGUAGE,
         )
 
         return self.Response(next_url=next_url)
