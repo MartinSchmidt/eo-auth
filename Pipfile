@@ -8,6 +8,8 @@ pytest = "*"
 pytest-cov = "*"
 testcontainers = "*"
 flake8 = "*"
+pylint = "*"
+requests-mock = "*"
 
 [packages]
 pyjwt = "*"
@@ -16,6 +18,7 @@ requests = "*"
 python-decouple = "*"
 origin-platform-utils = "0.6.0"
 markdown2 = "*"
+pytz = "*"
 
 [scripts]
 lint-flake8 = "flake8"

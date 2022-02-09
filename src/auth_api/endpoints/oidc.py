@@ -379,6 +379,7 @@ class OpenIdLogout(Endpoint):
         if token is not None:
             session.delete(token)
             oidc_backend.logout(token.id_token)
+            session.commit()
 
         cookie = Cookie(
             name=TOKEN_COOKIE_NAME,

@@ -58,7 +58,7 @@ def create_app() -> Application:
     # -- OpenID Connect Logout -----------------------------------------------
 
     app.add_endpoint(
-        method='GET',
+        method='POST',
         path='/logout',
         endpoint=OpenIdLogout(),
         guards=[TokenGuard()],
