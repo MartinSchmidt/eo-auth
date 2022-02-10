@@ -21,7 +21,6 @@ from .endpoints import (
     InspectToken,
     CreateTestToken,
 )
-from .endpoints.test import TestLogging, TestLoggingException
 
 
 def create_app() -> Application:
@@ -33,20 +32,6 @@ def create_app() -> Application:
         name='Auth API',
         secret=INTERNAL_TOKEN_SECRET,
         health_check_path='/health',
-    )
-
-    # -- OpenID Connect Login ------------------------------------------------
-
-    app.add_endpoint(
-        method='GET',
-        path='/log/test',
-        endpoint=TestLogging(),
-    )
-
-    app.add_endpoint(
-        method='GET',
-        path='/log/test/exception',
-        endpoint=TestLoggingException(),
     )
 
     # -- OpenID Connect Login ------------------------------------------------

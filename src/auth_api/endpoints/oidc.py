@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from origin.serialize import Serializable
 from origin.tokens import TokenEncoder
 from origin.auth import TOKEN_COOKIE_NAME
-from origin.tools import append_query_parameters
+from origin.tools import url_append
 from origin.api import (
     Endpoint,
     Context,
@@ -252,7 +252,7 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         # Append (or override) query parameters to the return_url provided
         # by the client, but keep all other query parameters
-        actual_redirect_url = append_query_parameters(
+        actual_redirect_url = url_append(
             url=state.return_url,
             query_extra={'success': '1'},
         )
@@ -317,7 +317,7 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         # Append (or override) query parameters to the return_url provided
         # by the client, but keep all other query parameters
-        actual_redirect_url = append_query_parameters(
+        actual_redirect_url = url_append(
             url=state.return_url,
             query_extra=query,
         )
