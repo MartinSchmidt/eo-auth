@@ -152,8 +152,8 @@ class TestOidcCallbackEndpoints(object):
         # -- Arrange ---------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar')
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar')
         state_encoded = state_encoder.encode(state)
 
         # -- Act -------------------------------------------------------------
@@ -172,7 +172,7 @@ class TestOidcCallbackEndpoints(object):
 
         assert_base_url(
             url=r.headers['Location'],
-            expected_base_url='http://redirect-here.com/foobar',
+            expected_base_url='https://redirect-here.com/foobar',
             check_path=True,
         )
 
@@ -203,8 +203,8 @@ class TestOidcCallbackEndpoints(object):
 
         # -- Arrange ---------------------------------------------------------
 
-        fe_url = 'http://foobar.com'
-        return_url = 'http://redirect-here.com/foobar'
+        fe_url = 'https://foobar.com'
+        return_url = 'https://redirect-here.com/foobar'
 
         state = AuthState(
             fe_url=fe_url,

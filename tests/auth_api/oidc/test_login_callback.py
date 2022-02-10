@@ -56,8 +56,8 @@ class TestOidcLoginCallbackSubjectUnknown:
         # -- Arrange ---------------------------------------------------------
 
         state = AuthState(
-            fe_url='http://foobar.com',
-            return_url='http://redirect-here.com/foobar')
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar')
         state_encoded = state_encoder.encode(state)
 
         mock_get_jwk.return_value = jwk_public
