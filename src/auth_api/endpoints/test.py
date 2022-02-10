@@ -1,8 +1,6 @@
 import json
 import logging
 
-from origin.api import Endpoint
-
 
 class JsonFormatter(logging.Formatter):
     """
