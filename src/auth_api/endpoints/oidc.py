@@ -1,9 +1,11 @@
 from typing import Optional, Any, Union
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 
+from origin.serialize import Serializable
+from origin.tokens import TokenEncoder
 from origin.auth import TOKEN_COOKIE_NAME
-from origin.tools import url_append
+from origin.tools import append_query_parameters
 from origin.api import (
     Endpoint,
     Context,
@@ -17,31 +19,39 @@ from auth_api.db import db
 from auth_api.models import DbUser
 from auth_api.controller import db_controller
 from auth_api.config import (
+    INTERNAL_TOKEN_SECRET,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_SAMESITE,
     TOKEN_COOKIE_HTTP_ONLY,
+    TOKEN_DEFAULT_SCOPES,
     OIDC_LOGIN_CALLBACK_URL,
-    TERMS_URL,
-    TERMS_ACCEPT_URL,
-    TOKEN_EXPIRY_DELTA,
+    OIDC_SSN_VALIDATE_CALLBACK_URL,
     OIDC_LANGUAGE,
 )
 
 from auth_api.oidc import (
     oidc_backend,
     OpenIDConnectToken,
-)
-from auth_api.queries import UserQuery
-
-from auth_api.state import (
-    AuthState, 
-    state_encoder, 
-    redirect_to_failure,
-    redirect_to_success,
+    OIDC_ERROR_CODES,
 )
 
 
 # -- Models ------------------------------------------------------------------
+
+
+@dataclass
+class AuthState(Serializable):
+    """
+    AuthState is an intermediate token generated when the user requests
+    an authorization URL. It encodes to a [JWT] string.
+    The token is included in the authorization URL, and is returned by the
+    OIDC Identity Provider when the client is redirected back.
+    It provides a way to keep this service stateless.
+    """
+    fe_url: str
+    return_url: str
+    created: datetime = field(
+        default_factory=lambda: datetime.now(tz=timezone.utc))
 
 
 @dataclass
@@ -60,6 +70,15 @@ class OidcCallbackParams:
     error_description: Optional[str] = field(default=None)
 
 
+# -- Encoders ----------------------------------------------------------------
+
+
+state_encoder = TokenEncoder(
+    schema=AuthState,
+    secret=INTERNAL_TOKEN_SECRET,
+)
+
+
 # -- Login Endpoints ---------------------------------------------------------
 
 
@@ -72,7 +91,7 @@ class OpenIdLogin(Endpoint):
     @dataclass
     class Request:
         return_url: str
-        fe_url: str
+        fe_url: Optional[str] = field(default=None)
 
     @dataclass
     class Response:
@@ -148,35 +167,29 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         # Fetch token from Identity Provider
         try:
-            oidc_token = oidc_backend.fetch_token(
+            token = oidc_backend.fetch_token(
                 code=request.code,
                 state=request.state,
                 redirect_uri=self.url,
             )
         except Exception:
             # TODO Log this exception
-            return redirect_to_failure(
+            return self._redirect_to_failure(
                 state=state,
                 error_code='E505',
             )
 
-        # Set values for later use
-        state.tin = oidc_token.tin
-        state.id_token = oidc_token.id_token
-        state.identity_provider = oidc_token.provider
-        state.external_subject = oidc_token.subject
-
         # User is unknown when logging in for the first time and may be None
         user = db_controller.get_user_by_external_subject(
             session=session,
-            external_subject=oidc_token.subject,
-            identity_provider=oidc_token.provider,
+            external_subject=token.subject,
+            identity_provider=token.provider,
         )
 
         return self.on_oidc_flow_succeeded(
             session=session,
             state=state,
-            token=oidc_token,
+            token=token,
             user=user,
         )
 
@@ -207,11 +220,46 @@ class OpenIDCallbackEndpoint(Endpoint):
         if user is None:
             raise RuntimeError('Can not succeed flow without a user')
 
-        return redirect_to_success(
-            state=state,
+        # -- User ------------------------------------------------------------
+
+        db_controller.register_user_login(
             session=session,
             user=user,
+        )
+
+        # -- Token -----------------------------------------------------------
+
+        opaque_token = db_controller.create_token(
+            session=session,
+            issued=token.issued,
+            expires=token.expires,
+            subject=user.subject,
+            scope=TOKEN_DEFAULT_SCOPES,
             id_token=token.id_token,
+        )
+
+        # -- Response --------------------------------------------------------
+
+        cookie = Cookie(
+            name=TOKEN_COOKIE_NAME,
+            value=opaque_token,
+            domain=TOKEN_COOKIE_DOMAIN,
+            path='/',
+            http_only=TOKEN_COOKIE_HTTP_ONLY,
+            same_site=TOKEN_COOKIE_SAMESITE,
+            secure=True,
+        )
+
+        # Append (or override) query parameters to the return_url provided
+        # by the client, but keep all other query parameters
+        actual_redirect_url = append_query_parameters(
+            url=state.return_url,
+            query_extra={'success': '1'},
+        )
+
+        return TemporaryRedirect(
+            url=actual_redirect_url,
+            cookies=(cookie,),
         )
 
     def on_oidc_flow_failed(
@@ -243,9 +291,39 @@ class OpenIDCallbackEndpoint(Endpoint):
         else:
             error_code = 'E0'
 
-        return redirect_to_failure(
+        return self._redirect_to_failure(
             state=state,
             error_code=error_code,
+        )
+
+    def _redirect_to_failure(
+            self,
+            state: AuthState,
+            error_code: str,
+    ) -> TemporaryRedirect:
+        """
+        Creates a 307-redirect to the return_url defined in the state
+        with query parameters appended appropriately according to the error.
+
+        :param state: State object
+        :param error_code: Internal error code
+        :returns: Http response
+        """
+        query = {
+            'success': '0',
+            'error_code': error_code,
+            'error': OIDC_ERROR_CODES[error_code],
+        }
+
+        # Append (or override) query parameters to the return_url provided
+        # by the client, but keep all other query parameters
+        actual_redirect_url = append_query_parameters(
+            url=state.return_url,
+            query_extra=query,
+        )
+
+        return TemporaryRedirect(
+            url=actual_redirect_url,
         )
 
 
@@ -255,7 +333,9 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
     or interrupting an OpenID Connect authorization flow.
 
     The user may not be known to the system in case its the first time
-    they login. In that case, we redirect them to the terms and conditions.
+    they login. In this case, we initiate another OpenID Connect flow,
+    but this time requesting social security number. After completing this
+    second flow, the user is redirected back to OpenIdSsnCallback-endpoint.
     """
 
     def on_oidc_flow_succeeded(
@@ -278,17 +358,25 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         """
 
         if user is None:
-            return TemporaryRedirect(
-                url=url_append(
-                    url=state.fe_url,
-                    path_extra='/terms',
-                    query_extra={
-                        'state': state_encoder.encode(state),
-                        'terms_url': TERMS_URL,
-                        'terms_accept_url': TERMS_ACCEPT_URL,
-                    }
+            # If the user is not known by the Identity Provider's subject,
+            # we initiate a new OpenID Connect authorization flow, but this
+            # time requesting the user's social security number.
+            # This flow results in a callback to the OpenIDSsnCallback
+            # endpoint (below).
+            if token.is_private:
+                return TemporaryRedirect(
+                    url=oidc_backend.create_authorization_url(
+                        state=state_encoder.encode(state),
+                        callback_uri=OIDC_SSN_VALIDATE_CALLBACK_URL,
+                        validate_ssn=True,
+                        language=OIDC_LANGUAGE,
+                    ),
                 )
-            )
+            elif token.is_company:
+                user = db_controller.get_or_create_user(
+                    session=session,
+                    tin=token.tin,
+                )
 
         return super(OpenIDLoginCallback, self).on_oidc_flow_succeeded(
             session=session,
@@ -298,55 +386,53 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         )
 
 
-class CreateUser(Endpoint):
+class OpenIDSsnCallback(OpenIDCallbackEndpoint):
     """
-    Attempts to create a user if it doesn't exist and the terms and conditions
-    have been accepted, then redirects to return_url.
+    Client is redirected to this callback endpoint after completing
+    or interrupting an OpenID Connect SSN verification flow.
+
+    The user may not be known to the system in case its the first time
+    they login. In this case, we create the user locally.
+
+    Afterwards, the client is redirected back to it's return_uri.
     """
 
-    @dataclass
-    class Request:
-        state: str
-
-    @db.atomic()
-    def handle_request(
+    def on_oidc_flow_succeeded(
             self,
             session: db.Session,
-            request: Request,
-    ) -> TemporaryRedirect:
+            state: AuthState,
+            token: OpenIDConnectToken,
+            user: Optional[DbUser],
+    ) -> Any:
         """
-        Handle HTTP request.
-        """
-        # Decode state
-        try:
-            state = state_encoder.decode(request.state)
-        except state_encoder.DecodeError:
-            # TODO Handle...
-            raise BadRequest()
+        Invoked when OpenID Connect flow succeeds, and the client was
+        returned to the callback endpoint.
 
-        if not state.terms_accepted:
-            return redirect_to_failure(
-                state=state,
-                error_code='E4',
+        :param session: Database session
+        :param state: OpenID Connect state object
+        :param token: OpenID Connect token fetched from Identity Provider
+        :param user: The user who just completed the flow, or None if
+            the user is not registered in the system
+        :returns: HTTP response
+        """
+        if user is None:
+            user = db_controller.get_or_create_user(
+                session=session,
+                ssn=token.ssn,
             )
 
-        user = db_controller.get_or_create_user(
-            session=session,
-            tin=state.tin,
-        )
+            db_controller.attach_external_user(
+                session=session,
+                user=user,
+                identity_provider=token.provider,
+                external_subject=token.subject,
+            )
 
-        db_controller.attach_external_user(
+        return super(OpenIDSsnCallback, self).on_oidc_flow_succeeded(
             session=session,
-            user=user,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
-        )
-
-        return redirect_to_success(
             state=state,
-            session=session,
+            token=token,
             user=user,
-            id_token=state.id_token,
         )
 
 
