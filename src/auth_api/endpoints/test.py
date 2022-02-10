@@ -1,8 +1,6 @@
 import json
 import logging
 
-from origin.api import Endpoint
-
 
 class JsonFormatter(logging.Formatter):
     """
@@ -126,45 +124,3 @@ handler.setFormatter(JsonFormatter())
 
 logger = logging.getLogger(__name__)
 logger.addHandler(handler)
-
-j = 2
-
-class TestLogging(Endpoint):
-    def handle_request(self):
-        """
-        Handle HTTP request.
-        """
-        extra = {
-            "service": "auth-api",
-            "something": {
-                "foo": "bar",
-                "spam": [1, 2, 3, 4],
-            },
-        }
-
-        logger.error(
-            "Something happened",
-            extra={"extra": extra},
-        )
-
-
-class TestLoggingException(Endpoint):
-    def handle_request(self):
-        """
-        Handle HTTP request.
-        """
-        extra = {
-            "service": "auth-api",
-            "something": {
-                "foo": "bar",
-                "spam": [1, 2, 3, 4],
-            },
-        }
-
-        try:
-            0/0
-        except Exception:
-            logger.exception(
-                "Something happened",
-                extra={"extra": extra},
-            )
