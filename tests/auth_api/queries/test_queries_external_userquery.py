@@ -40,7 +40,7 @@ class TestExternalUserQueries(TestQueryBase):
 
         :param seeded_session: Mocked database session
         """
-        print()
+
         # -- Assert ----------------------------------------------------------
 
         assert not ExternalUserQuery(seeded_session) \
