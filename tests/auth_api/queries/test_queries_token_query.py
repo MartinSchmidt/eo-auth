@@ -19,7 +19,7 @@ class TestTokenQueries(TestQueryBase):
         This test returns the true if the correct opaque_token is found
         and returned, in the database.
         :param seeded_session: Mocked database session
-        :param opaque_token:
+        :param opaque_token: Primary Key Constraint
         """
 
         # -- Assert ----------------------------------------------------------

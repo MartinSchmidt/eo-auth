@@ -6,6 +6,10 @@ from origin.api import Endpoint, Context
 
 @dataclass
 class UserProfile:
+    """
+    User profile information.
+    """
+
     id: str
     name: str
     scope: List[str] = field(default_factory=list)
@@ -14,7 +18,7 @@ class UserProfile:
 
 class GetProfile(Endpoint):
     """
-    An endpoint the returns the user's (actor's) profile.
+    Returns the user's (actor's) profile.
     """
 
     @dataclass
@@ -22,9 +26,14 @@ class GetProfile(Endpoint):
         success: bool
         profile: UserProfile
 
-    def handle_request(self, context: Context) -> Response:
+    def handle_request(
+            self,
+            context: Context
+    ) -> Response:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
         """
         return self.Response(
             success=True,

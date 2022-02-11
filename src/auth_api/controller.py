@@ -49,12 +49,13 @@ class DatabaseController(object):
             external_subject: str,
     ) -> Optional[DbUser]:
         """
-        TODO
+        Looks up an external subject in the database.
 
         :param session: Database session
         :param identity_provider: ID/name of Identity Provider
         :param external_subject: Identity Provider's subject
-        :returns: TODO
+        :returns: if the current user exits, in the database, it will be
+            returned
         """
         external_user = ExternalUserQuery(session) \
             .has_identity_provider(identity_provider) \
@@ -71,11 +72,12 @@ class DatabaseController(object):
             tin: Optional[str] = None,
     ) -> DbUser:
         """
-        TODO
+        Looks up a subject in the database.
+        If the user does exist it returns, if not the user will be created.
 
         :param session: Database session
         :param ssn: Social security number, unencrypted
-        :param tin:
+        :param tin: Tax Identification Number
         :returns: TODO
         """
         ssn_encrypted = encrypt_ssn(ssn) if ssn is not None else None
@@ -108,7 +110,7 @@ class DatabaseController(object):
             external_subject: str,
     ):
         """
-        TODO
+        Added an external user to the database.
 
         :param session: Database session
         :param user: The user
@@ -127,7 +129,7 @@ class DatabaseController(object):
             ssn: str,
     ) -> DbUser:
         """
-        TODO
+        Creates a new user in the database.
 
         :param session: Database session
         :param ssn: Social security number, unencrypted
@@ -153,7 +155,7 @@ class DatabaseController(object):
         Logs a user's login.
 
         :param session: Database session
-        :param user: The user
+        :param user: The user which should be added to the database
         """
         session.add(DbLoginRecord(
             subject=user.subject,
