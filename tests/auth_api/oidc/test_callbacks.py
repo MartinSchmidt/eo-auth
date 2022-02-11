@@ -332,7 +332,7 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
                 http_only=TOKEN_COOKIE_HTTP_ONLY,
                 same_site=TOKEN_COOKIE_SAMESITE,
                 secure=True,
-            )
+        )
 
         opaque_token = cookies.get_value(TOKEN_COOKIE_NAME)
 
