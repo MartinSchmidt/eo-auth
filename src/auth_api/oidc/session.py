@@ -14,7 +14,7 @@ class OAuth2Session(_OAuth2Session):
             **kwargs,
     ):
         """
-        TODO
+        Construct a OAuth 2 client session.
         """
         self.jwk_endpoint = jwk_endpoint
         self.api_logout_url = api_logout_url
