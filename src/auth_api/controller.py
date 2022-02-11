@@ -155,7 +155,7 @@ class DatabaseController(object):
         Logs a user's login.
 
         :param session: Database session
-        :param user: The user which should be added to the database
+        :param user: The user who logged in to the database.
         """
         session.add(DbLoginRecord(
             subject=user.subject,
