@@ -17,13 +17,17 @@ class UserQuery(SqlQuery):
 
     def has_ssn(self, ssn: str) -> 'UserQuery':
         """
+        Check if the actor's ssn matches a ssn in the database
+
         :param ssn: Social security number, encrypted
         """
         return self.filter(DbUser.ssn == ssn)
 
     def has_tin(self, tin: str) -> 'UserQuery':
         """
-        :param tin:
+        Check if the subject's tin matches a tin in the database
+
+        :param tin: Tax Identification Number
         """
         return self.filter(DbUser.cvr == tin)
 
@@ -40,12 +44,16 @@ class ExternalUserQuery(SqlQuery):
 
     def has_external_subject(self, subject: str) -> 'ExternalUserQuery':
         """
-        TODO
+        Check if the external subject exists in the database
+
+        :param subject: ID/Name of the external subject
         """
         return self.filter(DbExternalUser.external_subject == subject)
 
     def has_identity_provider(self, ip: str) -> 'ExternalUserQuery':
         """
+        Checks if the subject has the given identity provider in the database.
+
         :param ip: ID/name of Identity Provider
         """
         return self.filter(DbExternalUser.identity_provider == ip)
@@ -63,7 +71,9 @@ class LoginRecordQuery(SqlQuery):
 
     def has_subject(self, subject: str) -> 'LoginRecordQuery':
         """
-        TODO
+        Check if the subject exists in the database
+
+        param subject: ID/Name of the subject
         """
         return self.filter(DbLoginRecord.subject == subject)
 
@@ -80,13 +90,15 @@ class TokenQuery(SqlQuery):
 
     def has_opaque_token(self, opaque_token: str) -> 'TokenQuery':
         """
-        TODO
+        Check if the opaque token exists in the database
+
+        param opaque_token: Primary Key Constraint
         """
         return self.filter(DbToken.opaque_token == opaque_token)
 
     def is_valid(self) -> 'TokenQuery':
         """
-        TODO
+        Check if the token has a correct issued and expires datetime
         """
         return self.filter(and_(
             DbToken.issued <= func.now(),

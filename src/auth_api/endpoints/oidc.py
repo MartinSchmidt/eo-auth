@@ -48,6 +48,7 @@ class AuthState(Serializable):
     OIDC Identity Provider when the client is redirected back.
     It provides a way to keep this service stateless.
     """
+
     fe_url: str
     return_url: str
     created: datetime = field(
@@ -59,7 +60,14 @@ class OidcCallbackParams:
     """
     Parameters provided by the Identity Provider when redirecting
     clients back to callback endpoints.
-    TODO Describe each field separately
+
+    :param state: OpenID Connect state object
+    :param iss: Identifier for the issuer as an URL.
+    :param code: Response type
+    :param scope: OpenID Connect scopes ('openid', 'mitid', 'nemid', ...)
+    :param error: Error response.
+    :param error_hint: Text hint of the error.
+    :param error_description: Text description of the error.
     """
     state: Optional[str] = field(default=None)
     iss: Optional[str] = field(default=None)
@@ -137,7 +145,7 @@ class OpenIDCallbackEndpoint(Endpoint):
 
     def __init__(self, url: str):
         """
-        :param url: Absolute, public URL to this endpoint
+        :param url: Absolute, public URL to this endpoint.
         """
         self.url = url
 
@@ -149,8 +157,10 @@ class OpenIDCallbackEndpoint(Endpoint):
     ) -> TemporaryRedirect:
         """
         Handle request.
-        """
 
+        :param request: Parameters provided by the Identity Provider
+        :param session: Database session
+        """
         # Decode state
         try:
             state = state_encoder.decode(request.state)
@@ -214,7 +224,6 @@ class OpenIDCallbackEndpoint(Endpoint):
             the user is not registered in the system
         :returns: HTTP response
         """
-
         # Inherited classes should make sure this method is only invoked
         # if a user already exists, otherwise something went wrong
         if user is None:
@@ -356,7 +365,6 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
             the user is not registered in the system
         :returns: HTTP response
         """
-
         if user is None:
             # If the user is not known by the Identity Provider's subject,
             # we initiate a new OpenID Connect authorization flow, but this
@@ -457,6 +465,9 @@ class OpenIdLogout(Endpoint):
     ) -> HttpResponse:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
+        :param session: Database session.
         """
         token = db_controller.get_token(
             session=session,
