@@ -1,8 +1,9 @@
 from typing import Optional, Any, Union
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 
 from origin.auth import TOKEN_COOKIE_NAME
+from origin.encrypt import aes256_encrypt
 from origin.tools import url_append
 from origin.api import (
     Endpoint,
@@ -23,18 +24,17 @@ from auth_api.config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_URL,
     TERMS_ACCEPT_URL,
-    TOKEN_EXPIRY_DELTA,
+    SSN_ENCRYPTION_KEY,
 )
 
 from auth_api.oidc import (
     oidc_backend,
     OpenIDConnectToken,
 )
-from auth_api.queries import UserQuery
 
 from auth_api.state import (
-    AuthState, 
-    state_encoder, 
+    AuthState,
+    state_encoder,
     redirect_to_failure,
     redirect_to_success,
 )
@@ -160,9 +160,12 @@ class OpenIDCallbackEndpoint(Endpoint):
 
         # Set values for later use
         state.tin = oidc_token.tin
-        state.id_token = oidc_token.id_token
         state.identity_provider = oidc_token.provider
         state.external_subject = oidc_token.subject
+        state.id_token = aes256_encrypt(
+           data=oidc_token.id_token,
+           key=SSN_ENCRYPTION_KEY,
+        )
 
         # User is unknown when logging in for the first time and may be None
         user = db_controller.get_user_by_external_subject(
@@ -174,7 +177,6 @@ class OpenIDCallbackEndpoint(Endpoint):
         return self.on_oidc_flow_succeeded(
             session=session,
             state=state,
-            token=oidc_token,
             user=user,
         )
 
@@ -182,7 +184,6 @@ class OpenIDCallbackEndpoint(Endpoint):
             self,
             session: db.Session,
             state: AuthState,
-            token: OpenIDConnectToken,
             user: Optional[DbUser],
     ) -> TemporaryRedirect:
         """
@@ -209,7 +210,6 @@ class OpenIDCallbackEndpoint(Endpoint):
             state=state,
             session=session,
             user=user,
-            id_token=token.id_token,
         )
 
     def on_oidc_flow_failed(
@@ -260,7 +260,6 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
             self,
             session: db.Session,
             state: AuthState,
-            token: OpenIDConnectToken,
             user: Optional[DbUser],
     ) -> Any:
         """
@@ -291,7 +290,6 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         return super(OpenIDLoginCallback, self).on_oidc_flow_succeeded(
             session=session,
             state=state,
-            token=token,
             user=user,
         )
 
@@ -344,7 +342,6 @@ class CreateUser(Endpoint):
             state=state,
             session=session,
             user=user,
-            id_token=state.id_token,
         )
 
 

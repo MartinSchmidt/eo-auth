@@ -97,6 +97,7 @@ class TestCreateUser:
         token_tin: str,
         token_idp: str,
         token_subject: str,
+        id_token_encrypted: str,
     ):
         # -- Arrange ----------------------------------------------------------
 
@@ -104,7 +105,7 @@ class TestCreateUser:
             fe_url='https://foobar.com',
             return_url='https://redirect-here.com/foobar',
             tin=token_tin,
-            id_token=ip_token['id_token'],
+            id_token=id_token_encrypted,
             terms_accepted=True,
             terms_version='0.1',
             identity_provider=token_idp,

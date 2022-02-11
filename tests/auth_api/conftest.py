@@ -8,17 +8,22 @@ from typing import Dict, Any
 from unittest.mock import patch
 from authlib.jose import jwt, jwk
 from flask.testing import FlaskClient
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from testcontainers.postgres import PostgresContainer
 
 from origin.tokens import TokenEncoder
 from origin.sql import SqlEngine, POSTGRES_VERSION
 from origin.models.auth import InternalToken
+from origin.encrypt import aes256_encrypt
 
 from auth_api.app import create_app
 from auth_api.endpoints import AuthState
-from auth_api.config import INTERNAL_TOKEN_SECRET, TOKEN_EXPIRY_DELTA
 from auth_api.db import db as _db
+from auth_api.config import (
+    INTERNAL_TOKEN_SECRET,
+    TOKEN_EXPIRY_DELTA,
+    SSN_ENCRYPTION_KEY,
+)
 
 from .keys import PRIVATE_KEY, PUBLIC_KEY
 
@@ -235,6 +240,19 @@ def id_token_encoded(
     )
 
     return token.decode()
+
+
+@pytest.fixture(scope='function')
+def id_token_encrypted(
+        id_token_encoded: str,
+) -> str:
+    """
+    Mocked ID-token from Identity Provider (encoded).
+    """
+    return aes256_encrypt(
+        id_token_encoded,
+        SSN_ENCRYPTION_KEY,
+    )
 
 
 @pytest.fixture(scope='function')

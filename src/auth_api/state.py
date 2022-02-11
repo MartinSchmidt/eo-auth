@@ -1,11 +1,12 @@
 from typing import Optional
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 
 from origin.tokens import TokenEncoder
 from origin.api import TemporaryRedirect, Cookie
 from origin.tools import url_append
 from origin.auth import TOKEN_COOKIE_NAME
+from origin.encrypt import aes256_decrypt
 
 from auth_api.oidc import OIDC_ERROR_CODES
 from auth_api.db import db
@@ -18,6 +19,7 @@ from auth_api.config import (
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_DEFAULT_SCOPES,
     TOKEN_EXPIRY_DELTA,
+    SSN_ENCRYPTION_KEY,
 )
 
 
@@ -100,7 +102,6 @@ def redirect_to_success(
     state: AuthState,
     session: db.session,
     user: Optional[DbUser],
-    id_token: str
 ) -> TemporaryRedirect:
     """
     After a successful action, redirect to return url with an opaque token
@@ -121,7 +122,10 @@ def redirect_to_success(
         expires=issued + TOKEN_EXPIRY_DELTA,
         subject=user.subject,
         scope=TOKEN_DEFAULT_SCOPES,
-        id_token=id_token,
+        id_token=aes256_decrypt(
+            state.id_token,
+            SSN_ENCRYPTION_KEY
+        ),
     )
 
     # -- Response --------------------------------------------------------

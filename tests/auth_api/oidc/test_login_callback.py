@@ -3,7 +3,9 @@ import pytest
 from typing import Dict, Any
 from unittest.mock import MagicMock
 from flask.testing import FlaskClient
+from urllib.parse import parse_qs, urlsplit
 
+from origin.encrypt import aes256_decrypt
 from origin.tokens import TokenEncoder
 from origin.api.testing import (
     assert_base_url,
@@ -14,6 +16,7 @@ from auth_api.db import db
 from auth_api.endpoints import AuthState
 from auth_api.config import (
     OIDC_LOGIN_CALLBACK_PATH,
+    SSN_ENCRYPTION_KEY,
     TERMS_URL,
     TERMS_ACCEPT_URL,
 )
@@ -38,6 +41,7 @@ class TestOidcLoginCallbackSubjectUnknown:
         token_tin: str,
         token_idp: str,
         token_subject: str,
+        id_token_encrypted: str,
     ):
         """
         When logging in, if the user doesn't exist the user needs
@@ -99,8 +103,13 @@ class TestOidcLoginCallbackSubjectUnknown:
             value=TERMS_ACCEPT_URL,
         )
 
-        assert_query_parameter(
-            url=redirect_location,
-            name='state',
-            value=state_encoder.encode(expected_state),
+        url = urlsplit(redirect_location)
+        query = parse_qs(url.query)
+        state_decoded = state_encoder.decode(query['state'][0])
+
+        state_decoded.id_token = aes256_decrypt(
+            state_decoded.id_token,
+            SSN_ENCRYPTION_KEY
         )
+
+        assert expected_state == state_decoded
