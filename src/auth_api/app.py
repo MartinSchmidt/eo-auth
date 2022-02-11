@@ -14,7 +14,7 @@ from .endpoints import (
     OpenIDLoginCallback,
     OpenIDSsnCallback,
     OpenIdLogout,
-    # Profiles
+    # Profiles:
     GetProfile,
     # Tokens:
     ForwardAuth,

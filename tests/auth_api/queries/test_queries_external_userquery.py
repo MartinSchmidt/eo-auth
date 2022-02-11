@@ -18,8 +18,8 @@ class TestExternalUserQueries(TestQueryBase):
             user: dict,
     ):
         """
-        Test if the current user exits in the database
-        and returns true if it exists.
+        Test if the current user exits in the database and returns true if
+        it exists.
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
         """
@@ -35,8 +35,9 @@ class TestExternalUserQueries(TestQueryBase):
             seeded_session: db.Session,
     ):
         """
-        Test if the user exits in the database and returns false if
-        it does not exist.
+        Test if the user exits in the database and returns false if it does
+        not exist.
+
         :param seeded_session: Mocked database session
         """
 
@@ -59,7 +60,8 @@ class TestExternalUserQueries(TestQueryBase):
         Tests if the number of users with the given identity provider
         matches with the database
         :param seeded_session: Mocked database session
-        :param identity_provider: Current identity provider inserted into the test   # noqa: E501
+        :param identity_provider: Current identity provider inserted into
+            the test
         """
         # -- Arrange ---------------------------------------------------------
 

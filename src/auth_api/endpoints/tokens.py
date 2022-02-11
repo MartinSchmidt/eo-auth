@@ -22,9 +22,14 @@ class ForwardAuth(Endpoint):
     https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
     """
 
-    def handle_request(self, context: Context) -> HttpResponse:
+    def handle_request(
+            self,
+            context: Context
+    ) -> HttpResponse:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
         """
         if not context.opaque_token:
             raise Unauthorized()
@@ -48,10 +53,11 @@ class ForwardAuth(Endpoint):
             session: db.Session,
     ) -> str:
         """
-        TODO
+        Returns the internal token if the correct opaque_token is found in
+        the database.
 
-        :param opaque_token:
-        :param session:
+        :param opaque_token: Primary Key Constraint
+        :param session: Database session
         """
         token = TokenQuery(session) \
             .has_opaque_token(opaque_token) \
@@ -71,9 +77,14 @@ class InspectToken(Endpoint):
     class Response:
         token: InternalToken
 
-    def handle_request(self, context: Context) -> Response:
+    def handle_request(
+            self,
+            context: Context
+    ) -> Response:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
         """
         return self.Response(
             token=context.token,
@@ -93,9 +104,16 @@ class CreateTestToken(Endpoint):
     class Response:
         token: str
 
-    def handle_request(self, request: Request, context: Context) -> Response:
+    def handle_request(
+            self,
+            request: Request,
+            context: Context
+    ) -> Response:
         """
         Handle HTTP request.
+
+        :param request: The internal token for the request.
+        :param context: Context for a single HTTP request.
         """
         encoder = TokenEncoder(
             schema=InternalToken,
