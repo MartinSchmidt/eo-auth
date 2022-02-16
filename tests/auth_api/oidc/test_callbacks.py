@@ -1,4 +1,6 @@
 """
+Tests callback endpoints.
+
 All OIDC callback endpoints have a few things in common. They interpret
 query parameters (passed on by the Identity Provider) identically, thus
 should also act identically for some cases.
@@ -43,14 +45,16 @@ def assert_token(
         expected_token: Dict[str, Any],
 ):
     """
+    Assert opaque token using internal token.
+
     Provided an opaque token, this function translates it to an
     internal token and asserts on it's content.
 
     :param client:
     :param opaque_token:
     :param expected_token:
-    :return:
     """
+
     client.set_cookie(
         server_name=TOKEN_COOKIE_DOMAIN,
         key=TOKEN_COOKIE_NAME,
@@ -79,9 +83,8 @@ def assert_token(
     OIDC_SSN_VALIDATE_CALLBACK_PATH,
 ])
 def callback_endpoint_path(request) -> str:
-    """
-    Returns path to callback endpoint.
-    """
+    """Return path to callback endpoint."""
+
     return request.param
 
 
@@ -90,7 +93,8 @@ def callback_endpoint_path(request) -> str:
 
 class TestOidcCallbackEndpoints(object):
     """
-    Common tests for all OIDC callback endpoints that require
+    Common tests for all OIDC callback endpoints that require.
+
     no setup or teardown.
     """
 
@@ -103,6 +107,8 @@ class TestOidcCallbackEndpoints(object):
             state: str,
     ):
         """
+        Test that status code 400 occur when provided a invalid state.
+
         If the Identity Provider omits state, or provides an invalid state,
         the endpoint should return HTTP status 400 Bad Request.
 
@@ -113,14 +119,14 @@ class TestOidcCallbackEndpoints(object):
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=callback_endpoint_path,
             query_string={'state': state},
         )
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400
 
     @pytest.mark.unittest
     @pytest.mark.parametrize('ip_error_description, error_code_expected', (
@@ -129,7 +135,7 @@ class TestOidcCallbackEndpoints(object):
         ('internal_server_error', 'E0'),
         ('mitid_user_aborted', 'E1'),
     ))
-    def test__provide_oidc_errors__should_redirect_to_return_url_with_internal_error_code(
+    def test__provide_oidc_errors__should_redirect_to_return_url_with_internal_error_code(  # noqa 501
             self,
             client: FlaskClient,
             state_encoder: TokenEncoder[AuthState],
@@ -138,6 +144,8 @@ class TestOidcCallbackEndpoints(object):
             error_code_expected: str,
     ):
         """
+        Test when identity provider provides an error.
+
         If the Identity Provider provides an error, the endpoint should
         translate it into an internal error code, and 307-redirect the
         client back to the return_url defined in the state.
@@ -158,7 +166,7 @@ class TestOidcCallbackEndpoints(object):
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=callback_endpoint_path,
             query_string={
                 'state': state_encoded,
@@ -168,16 +176,16 @@ class TestOidcCallbackEndpoints(object):
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 307
+        assert res.status_code == 307
 
         assert_base_url(
-            url=r.headers['Location'],
+            url=res.headers['Location'],
             expected_base_url='https://redirect-here.com/foobar',
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.headers['Location'],
+            url=res.headers['Location'],
             name='success',
             value='0',
         )
@@ -191,9 +199,10 @@ class TestOidcCallbackEndpoints(object):
             callback_endpoint_path: str,
     ):
         """
-        When failing to fetch token from Identity Provider, the endpoint
-        should 307-redirect the client back to the return_url defined in
-        the state with success=0 and error.
+        When failing to fetch token from Identity Provider.
+
+        The endpoint should 307-redirect the client back to the return_url
+        defined in the state with success=0 and error.
 
         :param client: API client
         :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
@@ -215,23 +224,23 @@ class TestOidcCallbackEndpoints(object):
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=callback_endpoint_path,
             query_string={'state': state_encoded},
         )
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 307
+        assert res.status_code == 307
 
         assert_base_url(
-            url=r.headers['Location'],
+            url=res.headers['Location'],
             expected_base_url=return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.headers['Location'],
+            url=res.headers['Location'],
             name='success',
             value='0',
         )
@@ -239,9 +248,11 @@ class TestOidcCallbackEndpoints(object):
 
 class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBase):  # noqa: E501
     """
-    Common tests for all OIDC callback endpoints where the Identity
-    Provider's subject is known to the system. A setup-method creates
-    the user before each test (look at the base-class for details).
+    Common tests for all OIDC callback endpoints.
+
+    Where the Identity Provider's subject is known to the system.
+    A setup-method creates the user before each test
+    (look at the base-class for details).
     """
 
     @pytest.mark.integrationtest
@@ -253,8 +264,9 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
             state_encoded: str,
     ):
         """
-        Redirect to client's return_url and add appropriate query parameters
-        while keeping the original query parameters from return_url.
+        Redirect to client's return_url and add appropriate query parameters.
+
+        While keeping the original query parameters from return_url.
 
         :param client: API client
         :param return_url: Client's return_url
@@ -263,16 +275,16 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=callback_endpoint_path,
             query_string={'state': state_encoded},
         )
 
         # -- Assert ----------------------------------------------------------
 
-        redirect_location = r.headers['Location']
+        redirect_location = res.headers['Location']
 
-        assert r.status_code == 307
+        assert res.status_code == 307
 
         # Redirect to Identity Provider should be to correct URL (without
         # taking query parameters into consideration)
@@ -307,7 +319,7 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
             id_token: Dict[str, Any],
     ):
         """
-        TODO
+        Create token record in dateabase and correctly set cookie.
 
         :param client: API client
         :param return_url: Client's return_url
@@ -316,14 +328,14 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=callback_endpoint_path,
             query_string={'state': state_encoded},
         )
 
         # -- Assert ----------------------------------------------------------
 
-        cookies = CookieTester(r.headers) \
+        cookies = CookieTester(res.headers) \
             .assert_has_cookies(TOKEN_COOKIE_NAME) \
             .assert_cookie(
                 name=TOKEN_COOKIE_NAME,
@@ -371,8 +383,7 @@ class TestOidcCallbackEndpointsSubjectKnown(OidcCallbackEndpointsSubjectKnownBas
             state_encoded: str,
     ):
         """
-        Redirect to client's return_url and add appropriate query parameters
-        while keeping the original query parameters from return_url.
+        Test that login record is saved correctly in database after login.
 
         :param client: API client
         :param mock_session: Mocked database session

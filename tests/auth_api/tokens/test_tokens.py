@@ -70,7 +70,7 @@ class TestForwardAuth:
         ),
     ])
     @pytest.mark.integrationtest
-    def test__token_issue_or_expire_not_valid_right_now__should_return_no_header_and_status_401(
+    def test__token_issue_or_expire_not_valid_right_now__should_return_no_header_and_status_401( # noqa 501
             self,
             issued: datetime,
             expires: datetime,
