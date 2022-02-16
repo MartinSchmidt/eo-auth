@@ -6,7 +6,6 @@ from .config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_PATH,
     TERMS_ACCEPT_PATH,
-    CREATE_USER_PATH,
 )
 
 from .endpoints import (
@@ -23,8 +22,6 @@ from .endpoints import (
     # Terms:
     GetTerms,
     AcceptTerms,
-    # Users:
-    CreateUser,
 )
 
 
@@ -107,14 +104,6 @@ def create_app() -> Application:
         method='POST',
         path=TERMS_ACCEPT_PATH,
         endpoint=AcceptTerms(),
-    )
-
-    # -- Users ---------------------------------------------------------------
-
-    app.add_endpoint(
-        method='POST',
-        path=CREATE_USER_PATH,
-        endpoint=CreateUser(),
     )
 
     return app

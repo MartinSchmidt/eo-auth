@@ -4,7 +4,6 @@ publicIngress:
     - /api/auth/oidc/login
     - /api/auth/terms
     - /api/auth/terms/accept
-    - /api/auth/user/create
   middlewares:
     - name: auth-stripprefix
 
@@ -58,7 +57,6 @@ eo-base-helm-chart:
       - /api/auth/oidc/login
       - /api/auth/terms
       - /api/auth/terms/accept
-      - /api/auth/user/create
     servicePort: 80
     middlewares:
       - name: auth-stripprefix

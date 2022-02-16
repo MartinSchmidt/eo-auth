@@ -2,12 +2,13 @@ import markdown2
 
 from dataclasses import dataclass
 
-from origin.api import Endpoint, Context, BadRequest
-from origin.tools import url_append
+from origin.api import Endpoint, Context, BadRequest, TemporaryRedirect
 
 from auth_api.db import db
-from auth_api.config import TERMS_MARKDOWN_PATH, CREATE_USER_URL
-from auth_api.state import state_encoder, build_failure_url
+from auth_api.config import TERMS_MARKDOWN_PATH
+from auth_api.state import redirect_to_failure, state_encoder
+
+from auth_api.user import create_user_and_redirect
 
 
 class GetTerms(Endpoint):
@@ -46,17 +47,13 @@ class AcceptTerms(Endpoint):
         accepted: bool
         version: str
 
-    @dataclass
-    class Response:
-        next_url: str
-
     @db.atomic()
     def handle_request(
         self,
         request: Request,
         context: Context,
         session: db.Session,
-    ) -> Response:
+    ) -> TemporaryRedirect:
         """
         Handle HTTP request.
         """
@@ -73,14 +70,12 @@ class AcceptTerms(Endpoint):
         state.terms_version = request.version
 
         if request.accepted:
-            next_url = url_append(
-                url=CREATE_USER_URL,
-                query_extra={'state': state_encoder.encode(state)}
+            return create_user_and_redirect(
+                session=session,
+                state=state,
             )
         else:
-            next_url = build_failure_url(
+            return redirect_to_failure(
                 state=state,
                 error_code='E4',
             )
-
-        return self.Response(next_url=next_url)

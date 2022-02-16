@@ -102,11 +102,6 @@ TERMS_ACCEPT_PATH = '/terms/accept'
 TERMS_ACCEPT_URL = \
     f'{SERVICE_URL}{TERMS_ACCEPT_PATH}'
 
-# Create user URL
-CREATE_USER_PATH = '/user/create'
-CREATE_USER_URL = \
-    f'{SERVICE_URL}{CREATE_USER_PATH}'
-
 
 # -- OpenID Connect ----------------------------------------------------------
 

@@ -287,57 +287,6 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
         )
 
 
-class CreateUser(Endpoint):
-    """
-    Attempts to create a user if it doesn't exist and the terms and conditions
-    have been accepted, then redirects to return_url.
-    """
-
-    @dataclass
-    class Request:
-        state: str
-
-    @db.atomic()
-    def handle_request(
-            self,
-            session: db.Session,
-            request: Request,
-    ) -> TemporaryRedirect:
-        """
-        Handle HTTP request.
-        """
-        # Decode state
-        try:
-            state = state_encoder.decode(request.state)
-        except state_encoder.DecodeError:
-            # TODO Handle...
-            raise BadRequest()
-
-        if not state.terms_accepted:
-            return redirect_to_failure(
-                state=state,
-                error_code='E4',
-            )
-
-        user = db_controller.get_or_create_user(
-            session=session,
-            tin=state.tin,
-        )
-
-        db_controller.attach_external_user(
-            session=session,
-            user=user,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
-        )
-
-        return redirect_to_success(
-            state=state,
-            session=session,
-            user=user,
-        )
-
-
 # -- Logout Endpoints --------------------------------------------------------
 
 
