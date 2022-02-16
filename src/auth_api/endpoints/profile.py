@@ -1,7 +1,9 @@
-from typing import Optional, List
+# Standard Library
 from dataclasses import dataclass, field
+from typing import List, Optional
 
-from origin.api import Endpoint, Context
+# First party
+from origin.api import Context, Endpoint
 
 
 @dataclass
