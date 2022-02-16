@@ -45,7 +45,7 @@ jobs:
   build_container_and_release_chart:
     name: Build containers
     needs: [py_validate, define_build]
-    uses: Energinet-DataHub/.github/.github/workflows/build-containers-and-release-chart.yaml@fix-quote
+    uses: Energinet-DataHub/.github/.github/workflows/build-containers-and-release-chart.yaml@main
     with:
       helm_repository: ${{ github.repository_owner }}/helm-charts
       chart_folder: chart
