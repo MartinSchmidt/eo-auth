@@ -1,5 +1,7 @@
+# First party
 from origin.api import Application, TokenGuard
 
+# Local
 from .config import (
     INTERNAL_TOKEN_SECRET,
     OIDC_LOGIN_CALLBACK_PATH,
@@ -7,27 +9,27 @@ from .config import (
     OIDC_SSN_VALIDATE_CALLBACK_PATH,
     OIDC_SSN_VALIDATE_CALLBACK_URL,
 )
-
 from .endpoints import (
-    # OpenID Connect:
+    CreateTestToken,
+    ForwardAuth,
+    GetProfile,
+    InspectToken,
     OpenIdLogin,
     OpenIDLoginCallback,
-    OpenIDSsnCallback,
     OpenIdLogout,
-    # Profiles:
-    GetProfile,
-    # Tokens:
-    ForwardAuth,
-    InspectToken,
-    CreateTestToken,
+    OpenIDSsnCallback,
 )
 
 
 def create_app() -> Application:
     """
-    Creates a new instance of the application.
-    """
+    Create a new instance of the application.
 
+    Create a new instance of the application and adds all the endpoints to it.
+
+    :return: The Application instance.
+    :rtype: Application
+    """
     app = Application.create(
         name='Auth API',
         secret=INTERNAL_TOKEN_SECRET,
