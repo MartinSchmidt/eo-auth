@@ -4,22 +4,24 @@ from .config import (
     INTERNAL_TOKEN_SECRET,
     OIDC_LOGIN_CALLBACK_PATH,
     OIDC_LOGIN_CALLBACK_URL,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_URL,
+    TERMS_PATH,
+    TERMS_ACCEPT_PATH,
 )
 
 from .endpoints import (
     # OpenID Connect:
     OpenIdLogin,
     OpenIDLoginCallback,
-    OpenIDSsnCallback,
     OpenIdLogout,
-    # Profiles
+    # Profiles:
     GetProfile,
     # Tokens:
     ForwardAuth,
     InspectToken,
     CreateTestToken,
+    # Terms:
+    GetTerms,
+    AcceptTerms,
 )
 
 
@@ -48,13 +50,6 @@ def create_app() -> Application:
         method='GET',
         path=OIDC_LOGIN_CALLBACK_PATH,
         endpoint=OpenIDLoginCallback(url=OIDC_LOGIN_CALLBACK_URL),
-    )
-
-    # Callback, after verifying SSN
-    app.add_endpoint(
-        method='GET',
-        path=OIDC_SSN_VALIDATE_CALLBACK_PATH,
-        endpoint=OpenIDSsnCallback(url=OIDC_SSN_VALIDATE_CALLBACK_URL),
     )
 
     # -- OpenID Connect Logout -----------------------------------------------
@@ -95,6 +90,20 @@ def create_app() -> Application:
         method='POST',
         path='/token/create-test-token',
         endpoint=CreateTestToken(),
+    )
+
+    # -- Terms ---------------------------------------------------------------
+
+    app.add_endpoint(
+        method='GET',
+        path=TERMS_PATH,
+        endpoint=GetTerms(),
+    )
+
+    app.add_endpoint(
+        method='POST',
+        path=TERMS_ACCEPT_PATH,
+        endpoint=AcceptTerms(),
     )
 
     return app
