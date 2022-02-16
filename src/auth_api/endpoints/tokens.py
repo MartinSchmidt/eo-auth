@@ -1,18 +1,21 @@
+# Standard Library
 from dataclasses import dataclass
 
-from origin.tokens import TokenEncoder
-from origin.auth import TOKEN_HEADER_NAME
-from origin.models.auth import InternalToken
+# First party
 from origin.api import (
-    Endpoint,
     Context,
+    Endpoint,
     HttpResponse,
     Unauthorized,
 )
+from origin.auth import TOKEN_HEADER_NAME
+from origin.models.auth import InternalToken
+from origin.tokens import TokenEncoder
 
+# Local
+from auth_api.config import INTERNAL_TOKEN_SECRET
 from auth_api.db import db
 from auth_api.queries import TokenQuery
-from auth_api.config import INTERNAL_TOKEN_SECRET
 
 
 class ForwardAuth(Endpoint):
@@ -53,8 +56,9 @@ class ForwardAuth(Endpoint):
             session: db.Session,
     ) -> str:
         """
-        Returns the internal token if the correct opaque_token is found in
-        the database.
+        Return internal token.
+
+        Only if the correct opaque_token is found in the database.
 
         :param opaque_token: Primary Key Constraint
         :param session: Database session
@@ -70,11 +74,16 @@ class ForwardAuth(Endpoint):
 
 class InspectToken(Endpoint):
     """
-    TODO
+    Return the the internalToken.
+
+    Makes it possible to retieve the internal token from the request it self.
+    This is mostly used for testing.
     """
 
     @dataclass
     class Response:
+        """HTTP Response returning the internalToken."""
+
         token: InternalToken
 
     def handle_request(
@@ -92,16 +101,18 @@ class InspectToken(Endpoint):
 
 
 class CreateTestToken(Endpoint):
-    """
-    Creates a new token (for testing purposes).
-    """
+    """Creates a new token (for testing purposes)."""
 
     @dataclass
     class Request:
+        """HTTP request retuning the InternalToken."""
+
         token: InternalToken
 
     @dataclass
     class Response:
+        """HTTP response retuning the InternalToken."""
+
         token: str
 
     def handle_request(
