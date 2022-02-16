@@ -6,9 +6,7 @@ from origin.api import Endpoint, Context
 
 @dataclass
 class UserProfile:
-    """
-    User profile information.
-    """
+    """User profile information."""
 
     id: str
     name: str
@@ -17,12 +15,12 @@ class UserProfile:
 
 
 class GetProfile(Endpoint):
-    """
-    Returns the user's (actor's) profile.
-    """
+    """Returns the user's (actor's) profile."""
 
     @dataclass
     class Response:
+        """Response containing UserProfile on success."""
+
         success: bool
         profile: UserProfile
 
