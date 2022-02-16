@@ -92,6 +92,7 @@ class DatabaseController(object):
         :param tin: Tax Identification Number
         :returns: TODO
         """
+
         ssn_encrypted = encrypt_ssn(ssn) if ssn is not None else None
 
         query = UserQuery(session)
