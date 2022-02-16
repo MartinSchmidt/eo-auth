@@ -3,11 +3,14 @@ import logging
 
 
 class JsonFormatter(logging.Formatter):
-    """
-    Formatter that outputs JSON strings after parsing the LogRecord.
-    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.
-    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"
-    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"
+    """Formatter that outputs JSON strings after parsing the LogRecord.
+
+    @param dict fmt_dict: Key: logging format attribute pairs.
+        Defaults to {"message": "message"}.
+    @param str time_format: time.strftime() format string.
+        Default: "%Y-%m-%dT%H:%M:%S"
+    @param str msec_format: Microsecond formatting. Appended at the end.
+        Default: "%s.%03dZ"
     """
 
     def __init__(self, fmt_dict: dict = None,
@@ -63,9 +66,12 @@ class JsonFormatter(logging.Formatter):
 class JakobsJsonFormatter(logging.Formatter):
     """
     Formatter that outputs JSON strings after parsing the LogRecord.
-    @param dict fmt_dict: Key: logging format attribute pairs. Defaults to {"message": "message"}.
-    @param str time_format: time.strftime() format string. Default: "%Y-%m-%dT%H:%M:%S"
-    @param str msec_format: Microsecond formatting. Appended at the end. Default: "%s.%03dZ"
+    @param dict fmt_dict: Key: logging format attribute pairs.
+        Defaults to {"message": "message"}.
+    @param str time_format: time.strftime() format string.
+        Default: "%Y-%m-%dT%H:%M:%S"
+    @param str msec_format: Microsecond formatting. Appended at the end.
+        Default: "%s.%03dZ"
     """
 
     def __init__(self, fmt_dict: dict = None,
