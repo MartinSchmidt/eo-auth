@@ -1,16 +1,30 @@
-from uuid import uuid4
-from typing import Optional, List
+# Standard Library
 from datetime import datetime, timezone
+from typing import List, Optional
+from uuid import uuid4
 
-from origin.tokens import TokenEncoder
+# First party
 from origin.encrypt import aes256_encrypt
 from origin.models.auth import InternalToken
+from origin.tokens import TokenEncoder
 
+# Local
+from .config import (
+    INTERNAL_TOKEN_SECRET,
+    SSN_ENCRYPTION_KEY,
+)
 from .db import db
-from .queries import UserQuery, ExternalUserQuery, TokenQuery
-from .models import DbUser, DbExternalUser, DbLoginRecord, DbToken
-from .config import INTERNAL_TOKEN_SECRET, SSN_ENCRYPTION_KEY
-
+from .models import (
+    DbExternalUser,
+    DbLoginRecord,
+    DbToken,
+    DbUser,
+)
+from .queries import (
+    ExternalUserQuery,
+    TokenQuery,
+    UserQuery,
+)
 
 # -- Encoders & Encryption ---------------------------------------------------
 
@@ -23,7 +37,7 @@ internal_token_encoder = TokenEncoder(
 
 def encrypt_ssn(ssn: str) -> str:
     """
-    Encrypts social security number using encryption key from project config.
+    Encrypt social security number using encryption key from project config.
 
     :param ssn: Social security number to encrypt
     :returns: Encrypted social security number
@@ -38,9 +52,7 @@ def encrypt_ssn(ssn: str) -> str:
 
 
 class DatabaseController(object):
-    """
-    Controls business logic for SQL database.
-    """
+    """Control business logic for SQL database."""
 
     def get_user_by_external_subject(
             self,
@@ -49,7 +61,7 @@ class DatabaseController(object):
             external_subject: str,
     ) -> Optional[DbUser]:
         """
-        Looks up an external subject in the database.
+        Look up an external subject in the database.
 
         :param session: Database session
         :param identity_provider: ID/name of Identity Provider
@@ -72,7 +84,7 @@ class DatabaseController(object):
             tin: Optional[str] = None,
     ) -> DbUser:
         """
-        Looks up a subject in the database.
+        Look up a subject in the database.
         If the user does exist it returns, if not the user will be created.
 
         :param session: Database session
@@ -129,7 +141,7 @@ class DatabaseController(object):
             ssn: str,
     ) -> DbUser:
         """
-        Creates a new user in the database.
+        Create a new user in the database.
 
         :param session: Database session
         :param ssn: Social security number, unencrypted
@@ -152,7 +164,7 @@ class DatabaseController(object):
             user: DbUser,
     ):
         """
-        Logs a user's login.
+        Log a user's login.
 
         :param session: Database session
         :param user: The user who logged in to the database.
@@ -172,9 +184,10 @@ class DatabaseController(object):
             scope: List[str],
     ) -> str:
         """
-        Creates an internal token with the provided scopes on behalf of
-        the provided subject, and returns the opaque token.
+        Create an internal token with the provided scopes.
 
+        Create an internal token with the provided scopes on behalf of
+        the provided subject, and returns the opaque token.
         The raw ID token is saved together with the token. It is used when
         logging out the user via Signaturgruppen back-channel logout via
         their API.
@@ -218,7 +231,7 @@ class DatabaseController(object):
             only_valid: bool = False,
     ) -> Optional[DbToken]:
         """
-        Looks up token by opaque token.
+        Look up token by opaque token.
 
         :param session: Database session
         :param opaque_token: Opaque token
