@@ -85,6 +85,7 @@ class DatabaseController(object):
     ) -> DbUser:
         """
         Look up a subject in the database.
+
         If the user does exist it returns, if not the user will be created.
 
         :param session: Database session
