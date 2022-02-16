@@ -17,8 +17,8 @@ class TestLoginRecordQuery(TestQueryBase):
             user,
     ):
         """
-        Test if the current user exits in the database
-        and returns true if it exists.
+        Test if the current user exits in the database and returns true if
+        it exists.
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
         """
@@ -34,8 +34,9 @@ class TestLoginRecordQuery(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if the user exits in the database and returns false if
-        it does not exist.
+        Test if the user exits in the database and returns false if it does
+        not exist.
+
         :param seeded_session: Mocked database session
         """
 

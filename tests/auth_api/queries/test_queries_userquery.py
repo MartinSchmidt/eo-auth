@@ -18,8 +18,8 @@ class TestUserQueries(TestQueryBase):
         ssn: str,
     ):
         """
-        Test if the correct number of users, exits in the database
-        and returns true if they exists.
+        Test if the correct number of users exits in the database
+        and returns true if the number matches.
         :param seeded_session: Mocked database session
         """
 

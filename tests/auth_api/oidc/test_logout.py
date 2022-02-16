@@ -416,7 +416,7 @@ class TestHTTPResponse:
             opaque_token: str,
     ):
         """
-        When logging out, test that the reponse body is correct
+        When logging out, test that the response body is correct.
         """
 
         # -- Arrange ---------------------------------------------------------

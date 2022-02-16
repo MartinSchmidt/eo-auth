@@ -16,7 +16,7 @@ class OpenIDConnectToken:
     @abstractmethod
     def issued(self) -> datetime:
         """
-        TODO
+        Time of issued.
         """
         raise NotImplementedError
 

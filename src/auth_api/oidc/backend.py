@@ -5,6 +5,9 @@ from .models import OpenIDConnectToken
 
 
 class OpenIDConnectBackend(object):
+    """
+    Initiate an OpenID Connect at the Identity Provider.
+    """
 
     def __init__(self, session: OAuth2Session):
         """

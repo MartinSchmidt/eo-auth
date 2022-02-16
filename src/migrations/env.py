@@ -22,8 +22,8 @@ fileConfig(config.config_file_name)
 
 def run_migrations():
     """Run migrations in 'online' mode.
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
+    In this scenario we need to create an Engine and associate a connection
+    with the context.
     """
     with db.engine.connect() as connection:
         context.configure(
