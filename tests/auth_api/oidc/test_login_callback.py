@@ -22,8 +22,10 @@ from auth_api.config import (
 
 class TestOidcLoginCallbackSubjectUnknown:
     """
-    Tests cases where returning to login callback, and the Identity
-    Provider's subject is unknown to the system.
+    Tests cases where returning to login callback.
+
+    This also includes when the Identity Provider's subject
+    is unknown to the system.
     """
 
     @pytest.mark.integrationtest
@@ -38,6 +40,8 @@ class TestOidcLoginCallbackSubjectUnknown:
             ip_token: Dict[str, Any],
     ):
         """
+        User does not exists and should redirect to verify ssn.
+
         After logging in, if the system does not recognize the Identity
         Provider's subject, it should initiate a new authorization flow at
         the Identity Provider, but this time request the user to verify
@@ -46,7 +50,7 @@ class TestOidcLoginCallbackSubjectUnknown:
         :param client: API client
         :param mock_session: Mocked database session
         :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
-        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session 
+        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
                object
         :param state_encoder: AuthState encoder
         :param jwk_public: Mocked public key from Identity Provider
@@ -65,16 +69,16 @@ class TestOidcLoginCallbackSubjectUnknown:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path=OIDC_LOGIN_CALLBACK_PATH,
             query_string={'state': state_encoded},
         )
 
         # -- Assert ----------------------------------------------------------
 
-        redirect_location = r.headers['Location']
+        redirect_location = res.headers['Location']
 
-        assert r.status_code == 307
+        assert res.status_code == 307
 
         # Redirect to Identity Provider should be to correct URL (without
         # taking query parameters into consideration)

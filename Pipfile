@@ -7,9 +7,12 @@ verify_ssl = true
 pytest = "*"
 pytest-cov = "*"
 testcontainers = "*"
-flake8 = "*"
-pylint = "*"
 requests-mock = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+pylint = "*"
+pydocstyle = "*"
+pycodestyle = "*"
 
 [packages]
 pyjwt = "*"
@@ -21,10 +24,14 @@ pytz = "*"
 
 [scripts]
 lint-flake8 = "flake8"
+lint-pylint = "pylint ."
+lint-pycodestyle = "pycodestyle ."
+lint-all = "bash -c './scripts/lint.sh'"
 testall= "pytest tests"
 unittest= "pytest tests -m unittest --tb=native"
 integrationtest= "pytest tests -m integrationtest --tb=native"
 update-platform = "pip install --upgrade ./../eo-platform-utils"
+
 
 [requires]
 python_version = "3.8"
