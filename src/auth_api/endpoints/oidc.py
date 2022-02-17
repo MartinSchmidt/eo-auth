@@ -15,6 +15,8 @@ from origin.api import (
 
 from auth_api.db import db
 from auth_api.controller import db_controller
+from auth_api.orchestrator import LoginOrchestrator, state_encoder
+from auth_api.state import AuthState, redirect_to_failure
 from auth_api.config import (
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_SAMESITE,
@@ -23,14 +25,9 @@ from auth_api.config import (
     SSN_ENCRYPTION_KEY,
     OIDC_LANGUAGE,
 )
-
 from auth_api.oidc import (
     oidc_backend,
 )
-
-from auth_api.orchestrator import LoginOrchestrator, state_encoder
-
-from auth_api.state import AuthState, redirect_to_failure
 
 
 # -- Models ------------------------------------------------------------------

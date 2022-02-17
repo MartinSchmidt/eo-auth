@@ -17,7 +17,7 @@ from origin.models.auth import InternalToken
 from origin.encrypt import aes256_encrypt
 
 from auth_api.app import create_app
-from auth_api.endpoints import AuthState
+from auth_api.state import AuthState
 from auth_api.db import db as _db
 from auth_api.config import (
     INTERNAL_TOKEN_SECRET,

@@ -2,11 +2,16 @@ import markdown2
 
 from dataclasses import dataclass
 
-from origin.api import Endpoint, Context, BadRequest
+from origin.api import Endpoint, Context, BadRequest, HttpResponse
 
 from auth_api.db import db
 from auth_api.config import TERMS_MARKDOWN_PATH
-from auth_api.state import build_failure_url, state_encoder, LoginOrchestrator, LoginResponse
+from auth_api.state import build_failure_url
+from auth_api.orchestrator import (
+    state_encoder,
+    LoginOrchestrator,
+    LoginResponse,
+)
 
 
 class GetTerms(Endpoint):
@@ -51,7 +56,7 @@ class AcceptTerms(Endpoint):
         request: Request,
         context: Context,
         session: db.Session,
-    ) -> LoginResponse:
+    ) -> HttpResponse:
         """
         Handle HTTP request.
         """
@@ -66,7 +71,7 @@ class AcceptTerms(Endpoint):
 
         state.terms_accepted = request.accepted
         state.terms_version = request.version
-        
+
         orchestrator = LoginOrchestrator(
             session=session,
             state=state,
@@ -80,6 +85,9 @@ class AcceptTerms(Endpoint):
                 error_code='E4'
             )
 
-            return LoginResponse(
-                next_url=url
+            return HttpResponse(
+                status=200,
+                model=LoginResponse(
+                    next_url=url,
+                )
             )

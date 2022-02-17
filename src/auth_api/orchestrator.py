@@ -36,7 +36,7 @@ from auth_api.state import AuthState
 @dataclass
 class LoginResponse:
     next_url: str
-    state: AuthState
+    state: Optional[AuthState] = field(default=None)
 
 
 @dataclass
@@ -91,7 +91,10 @@ class LoginOrchestrator:
             state=self.state if next_step.cookie is None else None,
         )
 
-        return HttpResponse(response)
+        return HttpResponse(
+            status=200,
+            model=response
+        )
 
     def _get_next_step(
         self
@@ -114,10 +117,7 @@ class LoginOrchestrator:
 
         self.user = create_user(
             session=self.session,
-            terms_accepted=self.state.terms_accepted,
-            tin=self.state.tin,
-            external_subject=self.state.external_subject,
-            identity_provider=self.state.identity_provider,
+            state=self.state,
         )
 
         return self.return_login_success()
@@ -155,8 +155,6 @@ class LoginOrchestrator:
             user=self.user,
         )
 
-        # -- Token -----------------------------------------------------------
-
         issued = datetime.now(tz=timezone.utc)
 
         opaque_token = db_controller.create_token(
@@ -170,8 +168,6 @@ class LoginOrchestrator:
                 SSN_ENCRYPTION_KEY
             ),
         )
-
-        # -- Response --------------------------------------------------------
 
         return Cookie(
             name=TOKEN_COOKIE_NAME,

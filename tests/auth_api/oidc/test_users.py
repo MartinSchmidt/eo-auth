@@ -15,6 +15,7 @@ from auth_api.user import create_user
 
 # -- Tests --------------------------------------------------------------------
 
+
 class TestCreateUser:
 
     # -- Fixtures -------------------------------------------------------------
@@ -108,10 +109,7 @@ class TestCreateUser:
 
         create_user(
             session=mock_session,
-            terms_accepted=state.terms_accepted,
-            tin=state.tin,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
+            state=state,
         )
 
         # -- Assert -----------------------------------------------------------
@@ -149,10 +147,7 @@ class TestCreateUser:
 
         create_user(
             session=seeded_session,
-            terms_accepted=state.terms_accepted,
-            tin=state.tin,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
+            state=state,
         )
 
         # -- Assert -----------------------------------------------------------
@@ -191,10 +186,7 @@ class TestCreateUser:
 
         create_user(
             session=mock_session,
-            terms_accepted=state.terms_accepted,
-            tin=state.tin,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
+            state=state,
         )
 
         # -- Assert -----------------------------------------------------------

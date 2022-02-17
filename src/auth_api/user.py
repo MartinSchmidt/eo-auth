@@ -30,4 +30,4 @@ def create_user(
             identity_provider=state.identity_provider,
         )
 
-    return user
+        return user

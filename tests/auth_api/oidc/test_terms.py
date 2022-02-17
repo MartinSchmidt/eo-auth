@@ -11,7 +11,7 @@ from origin.api.testing import (
 )
 
 from auth_api.db import db
-from auth_api.endpoints import AuthState
+from auth_api.state import AuthState
 from auth_api.config import TERMS_ACCEPT_PATH
 
 
@@ -65,16 +65,16 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 307
+        assert r.status_code == 200
 
         assert_base_url(
-            url=r.headers['Location'],
+            url=r.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.headers['Location'],
+            url=r.json['next_url'],
             name='success',
             value='1',
         )
@@ -172,16 +172,16 @@ class TestTermsDecline:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 307
+        assert r.status_code == 200
 
         assert_base_url(
-            url=r.headers['Location'],
+            url=r.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.headers['Location'],
+            url=r.json['next_url'],
             name='success',
             value='0',
         )
