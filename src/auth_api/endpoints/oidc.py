@@ -42,12 +42,15 @@ from auth_api.oidc import (
 @dataclass
 class AuthState(Serializable):
     """
+    Auth state used to identify how faer the user is in the auth process.
+
     AuthState is an intermediate token generated when the user requests
     an authorization URL. It encodes to a [JWT] string.
     The token is included in the authorization URL, and is returned by the
     OIDC Identity Provider when the client is redirected back.
     It provides a way to keep this service stateless.
     """
+
     fe_url: str
     return_url: str
     created: datetime = field(
@@ -57,10 +60,20 @@ class AuthState(Serializable):
 @dataclass
 class OidcCallbackParams:
     """
+    HTTP Payload parsed by Identity Provider.
+
     Parameters provided by the Identity Provider when redirecting
     clients back to callback endpoints.
-    TODO Describe each field separately
+
+    :param state: OpenID Connect state object
+    :param iss: Identifier for the issuer as an URL.
+    :param code: Response type
+    :param scope: OpenID Connect scopes ('openid', 'mitid', 'nemid', ...)
+    :param error: Error response.
+    :param error_hint: Text hint of the error.
+    :param error_description: Text description of the error.
     """
+
     state: Optional[str] = field(default=None)
     iss: Optional[str] = field(default=None)
     code: Optional[str] = field(default=None)
@@ -84,26 +97,31 @@ state_encoder = TokenEncoder(
 
 class OpenIdLogin(Endpoint):
     """
-    Returns a URL which initiates a login flow @ the
+    HTTP Endpoint which starts the whole login flow.
+
+    Return a URL which initiates a login flow @ the
     OpenID Connect Identity Provider.
     """
 
     @dataclass
     class Request:
+        """The HTTP request payload."""
+
         return_url: str
         fe_url: Optional[str] = field(default=None)
 
     @dataclass
     class Response:
+        """The HTTP response body."""
+
         next_url: Optional[str] = field(default=None)
 
     def handle_request(
             self,
             request: Request,
     ) -> Union[Response, TemporaryRedirect]:
-        """
-        Handle HTTP request.
-        """
+        """Handle HTTP request."""
+
         state = AuthState(
             fe_url=request.fe_url,
             return_url=request.return_url,
@@ -124,21 +142,21 @@ class OpenIdLogin(Endpoint):
 
 class OpenIDCallbackEndpoint(Endpoint):
     """
+    HTTP Endpoint for handling users completing or interrupting OIDC Auth flow.
+
     Base-class for OpenID Connect callback endpoints that handles when a
     client is returned from the Identity Provider after either completing
     or interrupting an OpenID Connect authorization flow.
-
     Inherited classes can implement methods on_oidc_flow_failed()
     and on_oidc_flow_succeeded(), which are invoked depending on the
     result of the flow.
+
+    :param url: Absolute, public URL to this endpoint.
     """
 
     Request = OidcCallbackParams
 
     def __init__(self, url: str):
-        """
-        :param url: Absolute, public URL to this endpoint
-        """
         self.url = url
 
     @db.atomic()
@@ -149,8 +167,10 @@ class OpenIDCallbackEndpoint(Endpoint):
     ) -> TemporaryRedirect:
         """
         Handle request.
-        """
 
+        :param request: Parameters provided by the Identity Provider
+        :param session: Database session
+        """
         # Decode state
         try:
             state = state_encoder.decode(request.state)
@@ -201,9 +221,10 @@ class OpenIDCallbackEndpoint(Endpoint):
             user: Optional[DbUser],
     ) -> TemporaryRedirect:
         """
+        Invoke when OpenID Connect Flow succeeds.
+
         Invoked when OpenID Connect flow succeeds, and the client was
         returned to the callback endpoint.
-
         Note: Inherited classes override this method and add some extra
         logic before it is invoked.
 
@@ -214,7 +235,6 @@ class OpenIDCallbackEndpoint(Endpoint):
             the user is not registered in the system
         :returns: HTTP response
         """
-
         # Inherited classes should make sure this method is only invoked
         # if a user already exists, otherwise something went wrong
         if user is None:
@@ -268,6 +288,8 @@ class OpenIDCallbackEndpoint(Endpoint):
             params: OidcCallbackParams,
     ) -> TemporaryRedirect:
         """
+        Invoke when OpenID Connect Flow fails.
+
         Invoked when OpenID Connect flow fails, and the user was returned to
         the callback endpoint. Redirects clients back to return_uri with
         the necessary query parameters.
@@ -302,6 +324,8 @@ class OpenIDCallbackEndpoint(Endpoint):
             error_code: str,
     ) -> TemporaryRedirect:
         """
+        Redirect to return url when process fails.
+
         Creates a 307-redirect to the return_url defined in the state
         with query parameters appended appropriately according to the error.
 
@@ -329,6 +353,8 @@ class OpenIDCallbackEndpoint(Endpoint):
 
 class OpenIDLoginCallback(OpenIDCallbackEndpoint):
     """
+    Clients redirect endpoint after completing or interrupting OIDC auth flow.
+
     Client is redirected to this callback endpoint after completing
     or interrupting an OpenID Connect authorization flow.
 
@@ -346,6 +372,8 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
             user: Optional[DbUser],
     ) -> Any:
         """
+        Invoke when OpenID Connect Flow succeeds.
+
         Invoked when OpenID Connect flow succeeds, and the client was
         returned to the callback endpoint.
 
@@ -356,7 +384,6 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
             the user is not registered in the system
         :returns: HTTP response
         """
-
         if user is None:
             # If the user is not known by the Identity Provider's subject,
             # we initiate a new OpenID Connect authorization flow, but this
@@ -388,6 +415,8 @@ class OpenIDLoginCallback(OpenIDCallbackEndpoint):
 
 class OpenIDSsnCallback(OpenIDCallbackEndpoint):
     """
+    OpenID Connect SSN endpoint.
+
     Client is redirected to this callback endpoint after completing
     or interrupting an OpenID Connect SSN verification flow.
 
@@ -405,6 +434,8 @@ class OpenIDSsnCallback(OpenIDCallbackEndpoint):
             user: Optional[DbUser],
     ) -> Any:
         """
+        Invoke when OpenID Connect Flow succeeds.
+
         Invoked when OpenID Connect flow succeeds, and the client was
         returned to the callback endpoint.
 
@@ -441,12 +472,17 @@ class OpenIDSsnCallback(OpenIDCallbackEndpoint):
 
 class OpenIdLogout(Endpoint):
     """
-    Returns a logout URL which initiates a logout flow @ the
-    OpenID Connect Identity Provider.
+    OpenID Logout endpoint which logs the user out.
+
+    Logs out the user from both the own system as well as the used
+    OpenId Connect Identity Provider. This is done by calling the OIDC
+    logout endpoint as well as deleting the OIDC login session.
     """
 
     @dataclass
     class Response:
+        """The HTTP response body."""
+
         success: bool
 
     @db.atomic()
@@ -457,6 +493,9 @@ class OpenIdLogout(Endpoint):
     ) -> HttpResponse:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
+        :param session: Database session.
         """
         token = db_controller.get_token(
             session=session,
