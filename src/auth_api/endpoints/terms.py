@@ -2,13 +2,11 @@ import markdown2
 
 from dataclasses import dataclass
 
-from origin.api import Endpoint, Context, BadRequest, TemporaryRedirect
+from origin.api import Endpoint, Context, BadRequest
 
 from auth_api.db import db
 from auth_api.config import TERMS_MARKDOWN_PATH
-from auth_api.state import redirect_to_failure, state_encoder
-
-from auth_api.user import create_user_and_redirect
+from auth_api.state import build_failure_url, state_encoder, LoginOrchestrator, LoginResponse
 
 
 class GetTerms(Endpoint):
@@ -53,7 +51,7 @@ class AcceptTerms(Endpoint):
         request: Request,
         context: Context,
         session: db.Session,
-    ) -> TemporaryRedirect:
+    ) -> LoginResponse:
         """
         Handle HTTP request.
         """
@@ -68,14 +66,20 @@ class AcceptTerms(Endpoint):
 
         state.terms_accepted = request.accepted
         state.terms_version = request.version
+        
+        orchestrator = LoginOrchestrator(
+            session=session,
+            state=state,
+        )
 
         if request.accepted:
-            return create_user_and_redirect(
-                session=session,
-                state=state,
-            )
+            return orchestrator.response_next_step()
         else:
-            return redirect_to_failure(
+            url = build_failure_url(
                 state=state,
-                error_code='E4',
+                error_code='E4'
+            )
+
+            return LoginResponse(
+                next_url=url
             )

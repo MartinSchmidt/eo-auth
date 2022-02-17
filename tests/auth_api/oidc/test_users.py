@@ -5,17 +5,13 @@ from uuid import uuid4
 
 # Third party
 import pytest
-from flask.testing import FlaskClient
-
-# First party
-from origin.tokens import TokenEncoder
 
 # Local
 from auth_api.db import db
 from auth_api.endpoints import AuthState
 from auth_api.models import DbExternalUser, DbUser
 from auth_api.queries import UserQuery
-from auth_api.user import create_user_and_redirect
+from auth_api.user import create_user
 
 # -- Tests --------------------------------------------------------------------
 
@@ -110,9 +106,12 @@ class TestCreateUser:
 
         # -- Act --------------------------------------------------------------
 
-        create_user_and_redirect(
-            mock_session,
-            state,
+        create_user(
+            session=mock_session,
+            terms_accepted=state.terms_accepted,
+            tin=state.tin,
+            external_subject=state.external_subject,
+            identity_provider=state.identity_provider,
         )
 
         # -- Assert -----------------------------------------------------------
@@ -148,9 +147,12 @@ class TestCreateUser:
 
         # -- Act --------------------------------------------------------------
 
-        create_user_and_redirect(
-            seeded_session,
-            state,
+        create_user(
+            session=seeded_session,
+            terms_accepted=state.terms_accepted,
+            tin=state.tin,
+            external_subject=state.external_subject,
+            identity_provider=state.identity_provider,
         )
 
         # -- Assert -----------------------------------------------------------
@@ -187,9 +189,12 @@ class TestCreateUser:
 
         # -- Act --------------------------------------------------------------
 
-        create_user_and_redirect(
-            mock_session,
-            state,
+        create_user(
+            session=mock_session,
+            terms_accepted=state.terms_accepted,
+            tin=state.tin,
+            external_subject=state.external_subject,
+            identity_provider=state.identity_provider,
         )
 
         # -- Assert -----------------------------------------------------------

@@ -9,7 +9,7 @@ from .tokens import (
 from .oidc import (
     AuthState,
     OpenIdLogin,
-    OpenIDLoginCallback,
+    OpenIDCallbackEndpoint,
     OpenIdLogout,
 )
 

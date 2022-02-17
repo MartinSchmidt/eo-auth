@@ -11,7 +11,7 @@ from .config import (
 from .endpoints import (
     # OpenID Connect:
     OpenIdLogin,
-    OpenIDLoginCallback,
+    OpenIDCallbackEndpoint,
     OpenIdLogout,
     # Profiles:
     GetProfile,
@@ -49,7 +49,7 @@ def create_app() -> Application:
     app.add_endpoint(
         method='GET',
         path=OIDC_LOGIN_CALLBACK_PATH,
-        endpoint=OpenIDLoginCallback(url=OIDC_LOGIN_CALLBACK_URL),
+        endpoint=OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL),
     )
 
     # -- OpenID Connect Logout -----------------------------------------------

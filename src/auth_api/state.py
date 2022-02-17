@@ -1,29 +1,12 @@
-from typing import Optional
-from datetime import datetime, timezone
+# Standard Library
 from dataclasses import dataclass, field
+from typing import Optional
 
-from origin.tokens import TokenEncoder
-from origin.api import TemporaryRedirect, Cookie
+# First party
+from origin.api import TemporaryRedirect
 from origin.tools import url_append
-from origin.auth import TOKEN_COOKIE_NAME
-from origin.encrypt import aes256_decrypt
 
 from auth_api.oidc import OIDC_ERROR_CODES
-from auth_api.db import db
-from auth_api.models import DbUser
-from auth_api.controller import db_controller
-from auth_api.config import (
-    INTERNAL_TOKEN_SECRET,
-    TOKEN_COOKIE_DOMAIN,
-    TOKEN_COOKIE_SAMESITE,
-    TOKEN_COOKIE_HTTP_ONLY,
-    TOKEN_DEFAULT_SCOPES,
-    TOKEN_EXPIRY_DELTA,
-    SSN_ENCRYPTION_KEY,
-)
-
-
-# -- Models ------------------------------------------------------------------
 
 
 @dataclass
@@ -43,18 +26,6 @@ class AuthState:
     tin: Optional[str] = field(default=None)
     identity_provider: Optional[str] = field(default=None)
     external_subject: Optional[str] = field(default=None)
-
-
-# -- Encoders ----------------------------------------------------------------
-
-
-state_encoder = TokenEncoder(
-    schema=AuthState,
-    secret=INTERNAL_TOKEN_SECRET,
-)
-
-
-# -- Functions ---------------------------------------------------------------
 
 
 def build_failure_url(
@@ -95,59 +66,4 @@ def redirect_to_failure(
             state=state,
             error_code=error_code,
         ),
-    )
-
-
-def redirect_to_success(
-    state: AuthState,
-    session: db.session,
-    user: Optional[DbUser],
-) -> TemporaryRedirect:
-    """
-    After a successful action, redirect to return url with an opaque token
-    and success = 1
-    """
-    db_controller.register_user_login(
-        session=session,
-        user=user,
-    )
-
-    # -- Token -----------------------------------------------------------
-
-    issued = datetime.now(tz=timezone.utc)
-
-    opaque_token = db_controller.create_token(
-        session=session,
-        issued=issued,
-        expires=issued + TOKEN_EXPIRY_DELTA,
-        subject=user.subject,
-        scope=TOKEN_DEFAULT_SCOPES,
-        id_token=aes256_decrypt(
-            state.id_token,
-            SSN_ENCRYPTION_KEY
-        ),
-    )
-
-    # -- Response --------------------------------------------------------
-
-    cookie = Cookie(
-        name=TOKEN_COOKIE_NAME,
-        value=opaque_token,
-        domain=TOKEN_COOKIE_DOMAIN,
-        path='/',
-        http_only=TOKEN_COOKIE_HTTP_ONLY,
-        same_site=TOKEN_COOKIE_SAMESITE,
-        secure=True,
-    )
-
-    # Append (or override) query parameters to the return_url provided
-    # by the client, but keep all other query parameters
-    actual_redirect_url = url_append(
-        url=state.return_url,
-        query_extra={'success': '1'},
-    )
-
-    return TemporaryRedirect(
-        url=actual_redirect_url,
-        cookies=(cookie,),
     )

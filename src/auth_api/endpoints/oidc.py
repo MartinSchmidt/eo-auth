@@ -1,10 +1,9 @@
-from typing import Optional, Any, Union
+from typing import Optional, Union
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 
 from origin.auth import TOKEN_COOKIE_NAME
 from origin.encrypt import aes256_encrypt
-from origin.tools import url_append
 from origin.api import (
     Endpoint,
     Context,
@@ -15,15 +14,12 @@ from origin.api import (
 )
 
 from auth_api.db import db
-from auth_api.models import DbUser
 from auth_api.controller import db_controller
 from auth_api.config import (
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_SAMESITE,
     TOKEN_COOKIE_HTTP_ONLY,
     OIDC_LOGIN_CALLBACK_URL,
-    TERMS_URL,
-    TERMS_ACCEPT_URL,
     SSN_ENCRYPTION_KEY,
     OIDC_LANGUAGE,
 )
@@ -32,12 +28,9 @@ from auth_api.oidc import (
     oidc_backend,
 )
 
-from auth_api.state import (
-    AuthState,
-    state_encoder,
-    redirect_to_failure,
-    redirect_to_success,
-)
+from auth_api.orchestrator import LoginOrchestrator, state_encoder
+
+from auth_api.state import AuthState, redirect_to_failure
 
 
 # -- Models ------------------------------------------------------------------
@@ -174,41 +167,13 @@ class OpenIDCallbackEndpoint(Endpoint):
             identity_provider=oidc_token.provider,
         )
 
-        return self.on_oidc_flow_succeeded(
+        orchestrator = LoginOrchestrator(
             session=session,
             state=state,
             user=user,
         )
 
-    def on_oidc_flow_succeeded(
-            self,
-            session: db.Session,
-            state: AuthState,
-            user: Optional[DbUser],
-    ) -> TemporaryRedirect:
-        """
-        Invoked when OpenID Connect flow succeeds, and the client was
-        returned to the callback endpoint.
-        Note: Inherited classes override this method and add some extra
-        logic before it is invoked.
-        :param session: Database session
-        :param state: OpenID Connect state object
-        :param token: OpenID Connect token fetched from Identity Provider
-        :param user: The user who just completed the flow, or None if
-            the user is not registered in the system
-        :returns: HTTP response
-        """
-
-        # Inherited classes should make sure this method is only invoked
-        # if a user already exists, otherwise something went wrong
-        if user is None:
-            raise RuntimeError('Can not succeed flow without a user')
-
-        return redirect_to_success(
-            state=state,
-            session=session,
-            user=user,
-        )
+        return orchestrator.redirect_next_step()
 
     def on_oidc_flow_failed(
             self,
@@ -239,51 +204,6 @@ class OpenIDCallbackEndpoint(Endpoint):
         return redirect_to_failure(
             state=state,
             error_code=error_code,
-        )
-
-
-class OpenIDLoginCallback(OpenIDCallbackEndpoint):
-    """
-    Client is redirected to this callback endpoint after completing
-    or interrupting an OpenID Connect authorization flow.
-    The user may not be known to the system in case its the first time
-    they login. In that case, we redirect them to the terms and conditions.
-    """
-
-    def on_oidc_flow_succeeded(
-            self,
-            session: db.Session,
-            state: AuthState,
-            user: Optional[DbUser],
-    ) -> Any:
-        """
-        Invoked when OpenID Connect flow succeeds, and the client was
-        returned to the callback endpoint.
-        :param session: Database session
-        :param state: OpenID Connect state object
-        :param token: OpenID Connect token fetched from Identity Provider
-        :param user: The user who just completed the flow, or None if
-            the user is not registered in the system
-        :returns: HTTP response
-        """
-
-        if user is None:
-            return TemporaryRedirect(
-                url=url_append(
-                    url=state.fe_url,
-                    path_extra='/terms',
-                    query_extra={
-                        'state': state_encoder.encode(state),
-                        'terms_url': TERMS_URL,
-                        'terms_accept_url': TERMS_ACCEPT_URL,
-                    }
-                )
-            )
-
-        return super(OpenIDLoginCallback, self).on_oidc_flow_succeeded(
-            session=session,
-            state=state,
-            user=user,
         )
 
 
