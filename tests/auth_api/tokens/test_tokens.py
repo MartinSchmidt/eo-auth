@@ -9,9 +9,7 @@ from auth_api.models import DbToken
 
 
 class TestForwardAuth:
-    """
-    TODO
-    """
+    """Test tokens."""
 
     @pytest.mark.integrationtest
     def test__no_token__should_return_no_header_and_status_401(
@@ -19,18 +17,16 @@ class TestForwardAuth:
             client: FlaskClient,
             mock_session: SqlEngine.Session,
     ):
-        """
-        TODO
-        """
+        """When no token provided return 401 and no headers."""
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get('/token/forward-auth')
+        res = client.get('/token/forward-auth')
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
-        assert 'Authorization' not in r.headers
+        assert res.status_code == 401
+        assert 'Authorization' not in res.headers
 
     @pytest.mark.integrationtest
     def test__invalid_token__should_return_no_header_and_status_401(
@@ -38,9 +34,7 @@ class TestForwardAuth:
             client: FlaskClient,
             mock_session: SqlEngine.Session,
     ):
-        """
-        TODO
-        """
+        """When invalid token provided return 401 and no headers."""
 
         # -- Act -------------------------------------------------------------
 
@@ -50,12 +44,12 @@ class TestForwardAuth:
             value='INVALID-TOKEN',
         )
 
-        r = client.get('/token/forward-auth')
+        res = client.get('/token/forward-auth')
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
-        assert 'Authorization' not in r.headers
+        assert res.status_code == 401
+        assert 'Authorization' not in res.headers
 
     @pytest.mark.parametrize('issued, expires', [
         # Token is issued AFTER now:
@@ -70,16 +64,14 @@ class TestForwardAuth:
         ),
     ])
     @pytest.mark.integrationtest
-    def test__token_issue_or_expire_not_valid_right_now__should_return_no_header_and_status_401(
+    def test__token_issue_or_expire_not_valid_right_now__should_return_no_header_and_status_401(  # noqa E261
             self,
             issued: datetime,
             expires: datetime,
             client: FlaskClient,
             mock_session: SqlEngine.Session,
     ):
-        """
-        TODO
-        """
+        """Non valid token should return status 401."""
 
         opaque_token = '12345'
         internal_token = '54321'
@@ -103,12 +95,12 @@ class TestForwardAuth:
             value=opaque_token,
         )
 
-        r = client.get('/token/forward-auth')
+        res = client.get('/token/forward-auth')
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
-        assert 'Authorization' not in r.headers
+        assert res.status_code == 401
+        assert 'Authorization' not in res.headers
 
     @pytest.mark.integrationtest
     def test__token_exists__should_return_authorization_header_and_status_200(
@@ -116,9 +108,7 @@ class TestForwardAuth:
             client: FlaskClient,
             mock_session: SqlEngine.Session,
     ):
-        """
-        TODO
-        """
+        """Correct token provided should return correct auth header and 200."""
 
         opaque_token = '12345'
         internal_token = '54321'
@@ -142,9 +132,9 @@ class TestForwardAuth:
             value=opaque_token,
         )
 
-        r = client.get('/token/forward-auth')
+        res = client.get('/token/forward-auth')
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.headers['Authorization'] == f'Bearer: {internal_token}'
+        assert res.status_code == 200
+        assert res.headers['Authorization'] == f'Bearer: {internal_token}'

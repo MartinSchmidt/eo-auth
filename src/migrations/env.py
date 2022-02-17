@@ -1,11 +1,14 @@
+from auth_api.models import *  # noqa F403
+from auth_api.db import db
 import os
 import sys
 from logging.config import fileConfig
 from alembic import context
 
-sys.path.append(os.path.join(os.path.abspath(os.path.split(os.path.abspath(__file__))[0]), '..'))
-
-from auth_api.models import *
+sys.path.append(
+    os.path.join(os.path.abspath(os.path.split(
+        os.path.abspath(__file__))[0]), '..')
+)
 
 
 # this is the Alembic Config object, which provides
@@ -19,8 +22,8 @@ fileConfig(config.config_file_name)
 
 def run_migrations():
     """Run migrations in 'online' mode.
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
+    In this scenario we need to create an Engine and associate a connection
+    with the context.
     """
     with db.engine.connect() as connection:
         context.configure(

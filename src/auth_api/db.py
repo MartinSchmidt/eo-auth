@@ -2,8 +2,12 @@ from origin.sql import SqlEngine
 
 from .config import SQL_URI, SQL_POOL_SIZE
 
-
 db = SqlEngine(
     uri=SQL_URI,
     pool_size=SQL_POOL_SIZE,
 )
+"""
+Database instance.
+
+Used to access database.
+"""
