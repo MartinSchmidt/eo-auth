@@ -4,26 +4,23 @@ from authlib.integrations.requests_client import \
 
 
 class OAuth2Session(_OAuth2Session):
-    """
-    Adds a few useful methods to the default OAuth2Session from authlib.
-    """
+    """Adds a few useful methods to the default OAuth2Session from authlib."""
+
     def __init__(
             self,
             jwk_endpoint: str,
             api_logout_url: str,
             **kwargs,
     ):
-        """
-        Construct a OAuth 2 client session.
-        """
+        """Construct a OAuth 2 client session."""
         self.jwk_endpoint = jwk_endpoint
         self.api_logout_url = api_logout_url
         super(OAuth2Session, self).__init__(**kwargs)
 
     def get_jwk(self) -> str:
-        """
-        TODO Cache result in a period
-        """
+        """TODO."""
+
+        # TODO Cache result in a period
         jwks_response = requests.get(
             url=self.jwk_endpoint,
             verify=True,
@@ -33,11 +30,14 @@ class OAuth2Session(_OAuth2Session):
 
     def logout(self, id_token: str):
         """
+        Logout the user from used Identity Provider.
+
         Provided an ID-token, this method invokes the back-channel logout
         endpoint on the Identity Provider, which logs the user out on
         their side, forcing the user to login again next time he is
         redirected to the authorization URL.
         """
+
         response = requests.post(
             url=self.api_logout_url,
             json={'id_token': id_token},

@@ -7,17 +7,16 @@ from .query_base import TestQueryBase
 
 
 class TestTokenQueries(TestQueryBase):
-    """
-    Tests the tokens queries in the database
-    """
-    def test__has_opaque_token__opaque_token_exits__return_correct_opaque_token(   # noqa: E501
+    """Tests the tokens queries in the database."""
+
+    def test__has_opaque_token__opaque_token_exits__return_correct_true(   # noqa: E501
         self,
         seeded_session: db.Session,
         opaque_token: str,
     ):
         """
-        This test returns the true if the correct opaque_token is found
-        and returned, in the database.
+        Token exists and query correct token should return True.
+
         :param seeded_session: Mocked database session
         :param opaque_token: Primary Key Constraint
         """
@@ -33,8 +32,8 @@ class TestTokenQueries(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        This test looks for an opaque token with name INVALID_OPAQUE_TOKEN.
-        It returns false if not found in the database.
+        Has opaque token with invalid token should return False.
+
         :param seeded_session: Mocked database session
         """
 
@@ -52,7 +51,8 @@ class TestTokenQueries(TestQueryBase):
         expires_datetime: datetime,
     ):
         """
-        Tests if the token has the correct issued and expires datetime
+        If token is valid return correct token, with correct attributes.
+
         :param seeded_session: Mocked database session
         :param opaque_token: Primary Key Constraint
         :param issued_datetime: Indicates when a token has been issued
@@ -79,6 +79,7 @@ class TestTokenQueries(TestQueryBase):
     ):
         """
         A token's issued_datetime and expires_datetime should be in UTC time.
+
         This test if the time is given in Danish time (+1/+2) and not UTC.
         :param seeded_session: Mocked database session
         :param opaque_token: Primary Key Constraint

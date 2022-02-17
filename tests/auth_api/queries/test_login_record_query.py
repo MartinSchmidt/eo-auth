@@ -7,9 +7,12 @@ from .query_base import TestQueryBase, USER_LOGIN_RECORD
 
 class TestLoginRecordQuery(TestQueryBase):
     """
+    Test LoginRecord queries.
+
     Tests cases where a subject in written into the database
     and can be returned if correct subject is called.
     """
+
     @pytest.mark.parametrize('user', USER_LOGIN_RECORD)
     def test__has_subject__subject_exits__return_correct_subject(
             self,
@@ -17,8 +20,8 @@ class TestLoginRecordQuery(TestQueryBase):
             user,
     ):
         """
-        Test if the current user exits in the database and returns true if
-        it exists.
+        If subject exists return correct subject.
+
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
         """
@@ -34,8 +37,7 @@ class TestLoginRecordQuery(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if the user exits in the database and returns false if it does
-        not exist.
+        If subject does not exists return none.
 
         :param seeded_session: Mocked database session
         """
