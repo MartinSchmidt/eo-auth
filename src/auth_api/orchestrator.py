@@ -91,9 +91,16 @@ class LoginOrchestrator:
             state=self.state if next_step.cookie is None else None,
         )
 
+        if next_step.cookie is not None:
+            return HttpResponse(
+                status=200,
+                model=response,
+                cookies=(next_step.cookie,)
+            )
+        
         return HttpResponse(
             status=200,
-            model=response
+            model=response,
         )
 
     def _get_next_step(
