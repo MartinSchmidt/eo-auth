@@ -25,14 +25,27 @@ jobs:
       chart_version: ${{ steps.get_semver.outputs.semver }}
       containers: >-
         [
-          { "deployment_name": "api", "dockerfile": "Dockerfile", "tag": "${{ steps.get_semver.outputs.semver }}" }
+          { 
+            "deployment_name": "api", 
+            "dockerfile": "Dockerfile", 
+            "image_name": "eo-auth-api", 
+            "image_tag": "${{ steps.get_api_container_version.outputs.semver }}" 
+          }
         ]
     steps:
       - name: Get chart version
         id: get_semver
-        uses: Energinet-DataHub/.github/.github/actions/get-chart-semver@main
+        uses: Energinet-DataHub/.github/.github/actions/get-semver@main
         with:
-          chart_folder: chart
+          yaml_file: chart/Chart.yaml
+          yaml_path: version
+
+      - name: Get container version
+        id: get_api_container_version
+        uses: Energinet-DataHub/.github/.github/actions/get-semver@main
+        with:
+          yaml_file: chart/values.yaml
+          yaml_path: eo-base-helm-chart.deployments.api.image.tag
 
   build_container_and_release_chart:
     name: Build containers

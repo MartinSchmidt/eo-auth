@@ -9,7 +9,11 @@ from .tokens import (
 from .oidc import (
     AuthState,
     OpenIdLogin,
-    OpenIDLoginCallback,
-    OpenIDSsnCallback,
+    OpenIDCallbackEndpoint,
     OpenIdLogout,
+)
+
+from .terms import (
+    GetTerms,
+    AcceptTerms,
 )
