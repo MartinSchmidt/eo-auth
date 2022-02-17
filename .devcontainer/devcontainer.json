@@ -43,7 +43,8 @@
         "python.linting.pycodestyleEnabled": true,
         "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
         //pydocstyle linter
-        "python.linting.pydocstyleEnabled": true,
+        // Not needed since it's done by flake8
+        "python.linting.pydocstyleEnabled": false,
         "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
         // misc
         "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",

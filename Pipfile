@@ -24,6 +24,8 @@ pytz = "*"
 
 [scripts]
 lint-flake8 = "flake8"
+lint-pylint = "pylint ."
+lint-pycodestyle = "pycodestyle ."
 lint-all = "bash -c './scripts/lint.sh'"
 testall= "pytest tests"
 unittest= "pytest tests -m unittest --tb=native"
