@@ -25,7 +25,12 @@ jobs:
       chart_version: ${{ steps.get_semver.outputs.semver }}
       containers: >-
         [
-          { "deployment_name": "api", "dockerfile": "Dockerfile", "tag": "${{ steps.get_api_container_version.outputs.semver }}" }
+          { 
+            "deployment_name": "api", 
+            "dockerfile": "Dockerfile", 
+            "image_name": "eo-auth-api", 
+            "image_tag": "${{ steps.get_api_container_version.outputs.semver }}" 
+          }
         ]
     steps:
       - name: Get chart version
@@ -45,7 +50,7 @@ jobs:
   build_container_and_release_chart:
     name: Build containers
     needs: [py_validate, define_build]
-    uses: Energinet-DataHub/.github/.github/workflows/build-containers-and-release-chart.yaml@main
+    uses: Energinet-DataHub/.github/.github/workflows/build-containers-and-release-chart.yaml@add-image_name-to-build
     with:
       helm_repository: ${{ github.repository_owner }}/helm-charts
       chart_folder: chart
