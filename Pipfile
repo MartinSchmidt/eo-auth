@@ -7,9 +7,12 @@ verify_ssl = true
 pytest = "*"
 pytest-cov = "*"
 testcontainers = "*"
-flake8 = "*"
-pylint = "*"
 requests-mock = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+pylint = "*"
+pydocstyle = "*"
+pycodestyle = "*"
 
 [packages]
 pyjwt = "*"
