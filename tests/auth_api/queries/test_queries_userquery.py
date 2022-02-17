@@ -6,10 +6,7 @@ from tests.auth_api.queries.query_base import TestQueryBase, USER_LIST
 
 
 class TestUserQueries(TestQueryBase):
-    """
-    Tests cases where a subject in written into the database
-    and can be returned if correct subject is called.
-    """
+    """Test user queries."""
 
     @pytest.mark.parametrize('ssn', ['SSN_1', 'SSN_2', 'SSN_3'])
     def test__correct_number_of_ssns__return_correct_number_of_users(
@@ -18,9 +15,9 @@ class TestUserQueries(TestQueryBase):
         ssn: str,
     ):
         """
-        Test if the correct number of users, exits in the database
-        and returns true if they exists.
-        :param seeded_session: Mocked database session
+        FIXME: This tests seems to be wrong and tests nothing.
+
+        No query is used and only tests the test data.
         """
 
         # -- Act -------------------------------------------------------------
@@ -40,8 +37,8 @@ class TestUserQueries(TestQueryBase):
         user: dict,
     ):
         """
-        Test if the current user, with a given ssn, exits in the database
-        and returns true if it exists.
+        If user with ssn exists return correct user.
+
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
         """
@@ -62,10 +59,11 @@ class TestUserQueries(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if a user with an invalid ssn exits in the database and returns
-        None if it does not exist.
+        When searching for non existent SSN, return None.
+
         :param seeded_session: Mocked database session
         """
+
         # -- Act -------------------------------------------------------------
 
         query = UserQuery(seeded_session) \
@@ -83,11 +81,12 @@ class TestUserQueries(TestQueryBase):
         user: dict,
     ):
         """
-        Test if the current user, with a given tin, exits in the database
-        and returns true if it exists.
+        When tin exists and searching for tin, return correct user.
+
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
         """
+
         # -- Act -------------------------------------------------------------
 
         query = UserQuery(seeded_session) \
@@ -104,10 +103,11 @@ class TestUserQueries(TestQueryBase):
         seeded_session: db.Session,
     ):
         """
-        Test if a user with an invalid tin exits in the database and
-        returns None if it does not exist.
+        Query invalid_tin with no matching user return None.
+
         :param seeded_session: Mocked database session
         """
+
         # -- Act -------------------------------------------------------------
 
         query = UserQuery(seeded_session) \

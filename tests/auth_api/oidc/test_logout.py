@@ -1,27 +1,26 @@
-"""
-Tests specifically for OIDC logout endpoint.
-"""
-from uuid import uuid4
-import pytest
+"""Tests specifically for OIDC logout endpoint."""
+# Standard Library
 from datetime import datetime, timedelta, timezone
-import requests_mock
+from uuid import uuid4
 
+# Third party
+import pytest
+import requests_mock
 from flask.testing import FlaskClient
 
-from origin.tokens import TokenEncoder
-from origin.models.auth import InternalToken
-
-from auth_api.db import db
-from origin.auth import TOKEN_COOKIE_NAME
-
+# First party
 from origin.api.testing import CookieTester
+from origin.auth import TOKEN_COOKIE_NAME
+from origin.models.auth import InternalToken
+from origin.tokens import TokenEncoder
 
-
+# Local
 from auth_api.config import (
     OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
 )
+from auth_api.db import db
 from auth_api.models import DbToken
 from auth_api.queries import TokenQuery
 
@@ -30,19 +29,19 @@ from auth_api.queries import TokenQuery
 @pytest.fixture(scope='function')
 def request_mocker() -> requests_mock:
     """
-    A request mock which can be used to mock requests responses
-    made to eg. OpenID Connect api endpoints.
+    Request mock which can be used to mock requests responses.
+
+    Specifically meant for OpenID Connect api endpoints.
     """
 
-    with requests_mock.Mocker() as m:
-        yield m
+    with requests_mock.Mocker() as mock:
+        yield mock
 
 
 @pytest.fixture(scope='function')
 def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
-    """
-    Mock the oidc endpoint response to return status code 200.
-    """
+    """Mock the oidc endpoint response to return status code 200."""
+
     adapter = request_mocker.post(
         OIDC_API_LOGOUT_URL,
         text='',
@@ -53,50 +52,41 @@ def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
 
 @pytest.fixture(scope='function')
 def id_token() -> str:
-    """
-    Returns the a dummy idtoken used for the OpenID Connect identity provider.
-    """
+    """Return the a dummy identity provider id_token."""
+
     return 'id-token'
 
 
 @pytest.fixture(scope='function')
 def subject() -> str:
-    """
-    Returns the subject.
-    """
+    """Return the subject."""
+
     return 'subject'
 
 
 @pytest.fixture(scope='function')
 def actor() -> str:
-    """
-    Returns an actor name.
-    """
+    """Return an actor name."""
     return 'actor'
 
 
 @pytest.fixture(scope='function')
 def opaque_token() -> str:
-    """
-    Returns a opaque token, which are the token
-    that are actual visible to the frontend.
-    """
+    """Return a opaque token, which are the token used by the frontend."""
+
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def issued_datetime() -> datetime:
-    """
-    A datetime that indicates when a token has been issued
-    """
+    """Datetime that indicates when a token has been issued."""
+
     return datetime.now(tz=timezone.utc)
 
 
 @pytest.fixture(scope='function')
 def expires_datetime() -> datetime:
-    """
-    A datetime that indicates when an token will expire
-    """
+    """Datetime that indicates when an token will expire."""
     return datetime.now(tz=timezone.utc) + timedelta(days=1)
 
 
@@ -107,9 +97,7 @@ def internal_token(
     issued_datetime: datetime,
     actor: str,
 ) -> InternalToken:
-    """
-    Returns the internal token used within the system itself.
-    """
+    """Return the internal token used within the system itself."""
     return InternalToken(
         issued=issued_datetime,
         expires=expires_datetime,
@@ -124,9 +112,7 @@ def internal_token_encoded(
     internal_token: InternalToken,
     internal_token_encoder: TokenEncoder[InternalToken],
 ) -> str:
-    """
-    Returns the internal token in encoded string format.
-    """
+    """Return the internal token in encoded string format."""
     return internal_token_encoder \
         .encode(internal_token)
 
@@ -142,8 +128,9 @@ def seeded_session(
         opaque_token: str,
 ) -> db.Session:
     """
-    Seeds the database with a token, which make it seem like
-    a user has been logged in.
+    Seed the database with a token.
+
+    This makes it seem like a user has been logged in.
     """
 
     mock_session.add(DbToken(
@@ -163,9 +150,7 @@ def seeded_session(
 
 
 class TestOIDCEndpoint:
-    """
-    Tests the HTTP requests made to the oidcEndpoint.
-    """
+    """Tests the HTTP requests made to the oidcEndpoint."""
 
     @pytest.mark.integrationtest
     def test__logout__calling_oidc_logout_endpoint_with_correct_body(
@@ -178,6 +163,8 @@ class TestOIDCEndpoint:
             id_token: str,
     ):
         """
+        Call OIDC endpoint with correct body on logout.
+
         When logging out, this is tests that the HTTP request payload
         sent to the OIDC logout endpoint, is actually correct.
         """
@@ -193,7 +180,7 @@ class TestOIDCEndpoint:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        client.post(
             path='/logout',
             headers={
                 'Authorization': 'Bearer: ' + internal_token_encoded
@@ -218,6 +205,8 @@ class TestOIDCEndpoint:
             opaque_token: str,
     ):
         """
+        Do not call OIDC when provided with invalid internal token.
+
         When logging out with invalid header, this is tests that no HTTP
         request is sent to the oidc endpoint.
         """
@@ -246,9 +235,7 @@ class TestOIDCEndpoint:
 
 
 class TestDatabaseTokens:
-    """
-    Tests the token read/writes to the database
-    """
+    """Test the token read/writes to the database."""
 
     @pytest.mark.integrationtest
     def test__logout_with_invalid_token__does_not_delete_any_session_tokens(
@@ -259,6 +246,8 @@ class TestDatabaseTokens:
             opaque_token: str,
     ):
         """
+        Logout with invalid token does not delete any sessions tokens.
+
         When logging out with invalid header, this is tests that no HTTP
         request is sent to the oidc endpoint.
         """
@@ -299,6 +288,8 @@ class TestDatabaseTokens:
             internal_token_encoded: str,
     ):
         """
+        Delete the tokens from the database when user logs out.
+
         When logging out, this test that only the correct opaque_token
         is being deleted
         """
@@ -348,9 +339,7 @@ class TestDatabaseTokens:
 
 
 class TestHTTPResponse:
-    """
-    Tests the HTTP response returned by the endpoint.
-    """
+    """Tests the HTTP response returned by the endpoint."""
 
     def test__logout_success__returned_cookie_is_expired(
             self,
@@ -360,10 +349,7 @@ class TestHTTPResponse:
             internal_token_encoded: str,
             opaque_token: str,
     ):
-        """
-        When logging out, this is tests that the new returned cookie
-        has expired.
-        """
+        """On logout success the returned cookie is expired."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -415,9 +401,7 @@ class TestHTTPResponse:
             internal_token_encoded: str,
             opaque_token: str,
     ):
-        """
-        When logging out, test that the reponse body is correct
-        """
+        """When logging out, test that the response body is correct."""
 
         # -- Arrange ---------------------------------------------------------
 
