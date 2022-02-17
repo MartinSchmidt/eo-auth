@@ -1,9 +1,0 @@
-name: Helm Chart Version Check
-on:
-  pull_request:
-    branches: [ main ]
-jobs:
-  check_version:
-    uses: Energinet-DataHub/.github/.github/workflows/helm-chart-version-check.yaml@main
-    with:
-      chart_folder: chart
