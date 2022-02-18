@@ -131,7 +131,7 @@ def token_ssn() -> str:
 @pytest.fixture(scope='function')
 def token_tin() -> str:
     """
-    Identity Provider's social security number (used in mocked tokens).
+    Identity Provider's tin number (used in mocked tokens).
     """
     return '39315041'
 
