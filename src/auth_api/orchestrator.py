@@ -153,7 +153,7 @@ class LoginOrchestrator:
         After a successful action, redirect to return url with an opaque token
         and success = 1
         """
-        cookie = self.log_in_user_and_create_cookie()
+        cookie = self._log_in_user_and_create_cookie()
 
         # Append (or override) query parameters to the return_url provided
         # by the client, but keep all other query parameters
