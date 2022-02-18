@@ -167,7 +167,7 @@ class LoginOrchestrator:
             cookie=cookie
         )
 
-    def log_in_user_and_create_cookie(
+    def _log_in_user_and_create_cookie(
         self
     ) -> Cookie:
         """
