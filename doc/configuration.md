@@ -28,7 +28,7 @@ Name | Description | Example
 `TOKEN_COOKIE_SAMESITE` | Whether the token cookie should be set as a SameSite cookie | `True`/`False`
 `TOKEN_COOKIE_HTTP_ONLY` | Whether the token cookie should be set as a HttpOnly cookie | `True`/`False`
 `INTERNAL_TOKEN_SECRET` | Secret to sign and verify internal tokens | `something-secret`
-`SSN_ENCRYPTION_KEY` | Key en encrypt social security numbers | `also-something-secret`
+`STATE_ENCRYPTION_SECRET` | Secret used to encrypt id_token in state | `also-something-secret`
 **SQL:** | |
 `PSQL_HOST` | PostgreSQL server hostname | `127.0.0.1`
 `PSQL_PORT` | PostgreSQL server port | `5432`

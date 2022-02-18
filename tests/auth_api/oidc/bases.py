@@ -50,7 +50,7 @@ class OidcCallbackEndpointsSubjectKnownBase:
         """
         state = AuthState(
             fe_url=fe_url,
-            return_url=return_url
+            return_url=return_url,
         )
         state_encoded = state_encoder.encode(state)
         return state_encoded
