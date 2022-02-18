@@ -31,15 +31,14 @@ class GetTerms(Endpoint):
         Handle HTTP request.
         """
 
-        file: TextIOWrapper
-
         try:
-            file = open(TERMS_MARKDOWN_PATH)
+            with open(TERMS_MARKDOWN_PATH) as file:
+                markdown_content = file.read()
         except Exception:
             raise RuntimeError("An error occured reading the markdown file")
         
         try:
-            html = markdown2.markdown(file.read())
+            html = markdown2.markdown(markdown_content)
             return self.Response(
                 headline='Privacy Policy',
                 terms=html,
