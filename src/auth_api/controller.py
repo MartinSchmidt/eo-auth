@@ -9,7 +9,7 @@ from origin.models.auth import InternalToken
 from .db import db
 from .queries import UserQuery, ExternalUserQuery, TokenQuery
 from .models import DbUser, DbExternalUser, DbLoginRecord, DbToken
-from .config import INTERNAL_TOKEN_SECRET, SSN_ENCRYPTION_KEY
+from .config import INTERNAL_TOKEN_SECRET, STATE_ENCRYPTION_SECRET
 
 
 # -- Encoders & Encryption ---------------------------------------------------
@@ -30,7 +30,7 @@ def encrypt_ssn(ssn: str) -> str:
     """
     return aes256_encrypt(
         data=ssn,
-        key=SSN_ENCRYPTION_KEY,
+        key=STATE_ENCRYPTION_SECRET,
     )
 
 

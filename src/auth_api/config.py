@@ -52,8 +52,8 @@ TOKEN_DEFAULT_SCOPES = [
 # Secret used to sign internal token
 INTERNAL_TOKEN_SECRET = config('INTERNAL_TOKEN_SECRET')
 
-# Key to encrypt social security numbers
-SSN_ENCRYPTION_KEY = config('SSN_ENCRYPTION_KEY')
+# Secret used to encrypt id_token in state
+STATE_ENCRYPTION_SECRET = config('STATE_ENCRYPTION_SECRET')
 
 
 # -- SQL ---------------------------------------------------------------------

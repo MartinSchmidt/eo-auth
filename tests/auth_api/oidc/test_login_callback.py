@@ -16,7 +16,7 @@ from auth_api.db import db
 from auth_api.endpoints import AuthState
 from auth_api.config import (
     OIDC_LOGIN_CALLBACK_PATH,
-    SSN_ENCRYPTION_KEY,
+    STATE_ENCRYPTION_SECRET,
     TERMS_URL,
     TERMS_ACCEPT_URL,
 )
@@ -109,7 +109,7 @@ class TestOidcLoginCallbackSubjectUnknown:
 
         state_decoded.id_token = aes256_decrypt(
             state_decoded.id_token,
-            SSN_ENCRYPTION_KEY
+            STATE_ENCRYPTION_SECRET
         )
 
         assert expected_state == state_decoded

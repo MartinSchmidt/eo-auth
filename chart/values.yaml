@@ -26,9 +26,9 @@ eo-base-helm-chart:
       secretName: auth-random-secret
       key: eo-token-secret
 
-    SSN_ENCRYPTION_KEY:
+    STATE_ENCRYPTION_SECRET:
       secretName: auth-random-secret
-      key: eo-ssn-secret
+      key: eo-state-encryption-secret
 
     PSQL_PASSWORD:
       secretName: auth-postgres-secret

@@ -22,7 +22,7 @@ from auth_api.config import (
     TOKEN_COOKIE_SAMESITE,
     TOKEN_COOKIE_HTTP_ONLY,
     OIDC_LOGIN_CALLBACK_URL,
-    SSN_ENCRYPTION_KEY,
+    STATE_ENCRYPTION_SECRET,
     OIDC_LANGUAGE,
 )
 from auth_api.oidc import (
@@ -154,7 +154,7 @@ class OpenIDCallbackEndpoint(Endpoint):
         state.external_subject = oidc_token.subject
         state.id_token = aes256_encrypt(
            data=oidc_token.id_token,
-           key=SSN_ENCRYPTION_KEY,
+           key=STATE_ENCRYPTION_SECRET,
         )
 
         # User is unknown when logging in for the first time and may be None

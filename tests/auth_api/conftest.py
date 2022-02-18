@@ -22,7 +22,7 @@ from auth_api.db import db as _db
 from auth_api.config import (
     INTERNAL_TOKEN_SECRET,
     TOKEN_EXPIRY_DELTA,
-    SSN_ENCRYPTION_KEY,
+    STATE_ENCRYPTION_SECRET,
 )
 
 from .keys import PRIVATE_KEY, PUBLIC_KEY
@@ -250,7 +250,7 @@ def id_token_encrypted(
     """
     return aes256_encrypt(
         id_token_encoded,
-        SSN_ENCRYPTION_KEY,
+        STATE_ENCRYPTION_SECRET,
     )
 
 

@@ -17,7 +17,7 @@ from origin.tools import url_append
 # Local
 from auth_api.config import (
     INTERNAL_TOKEN_SECRET,
-    SSN_ENCRYPTION_KEY,
+    STATE_ENCRYPTION_SECRET,
     TERMS_ACCEPT_URL,
     TERMS_URL,
     TOKEN_COOKIE_DOMAIN,
@@ -189,7 +189,7 @@ class LoginOrchestrator:
             scope=TOKEN_DEFAULT_SCOPES,
             id_token=aes256_decrypt(
                 self.state.id_token,
-                SSN_ENCRYPTION_KEY
+                STATE_ENCRYPTION_SECRET
             ),
         )
 
