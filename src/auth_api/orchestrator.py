@@ -146,7 +146,7 @@ class LoginOrchestrator:
 
         return self.return_login_success()
 
-    def return_login_success(
+    def _return_login_success(
         self
     ) -> NextStep:
         """
