@@ -1,4 +1,3 @@
-from io import TextIOWrapper
 import markdown2
 
 from dataclasses import dataclass
@@ -36,7 +35,7 @@ class GetTerms(Endpoint):
                 markdown_content = file.read()
         except Exception:
             raise RuntimeError("An error occured reading the markdown file")
-        
+
         try:
             html = markdown2.markdown(markdown_content)
             return self.Response(
