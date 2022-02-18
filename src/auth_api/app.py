@@ -12,6 +12,7 @@ from .endpoints import (
     # OpenID Connect:
     OpenIdLogin,
     OpenIDCallbackEndpoint,
+    OpenIdAbort,
     OpenIdLogout,
     # Profiles:
     GetProfile,
@@ -36,7 +37,7 @@ def create_app() -> Application:
         health_check_path='/health',
     )
 
-    # -- OpenID Connect Login ------------------------------------------------
+    # -- OpenID Connect ------------------------------------------------------
 
     # Login
     app.add_endpoint(
@@ -52,8 +53,14 @@ def create_app() -> Application:
         endpoint=OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL),
     )
 
-    # -- OpenID Connect Logout -----------------------------------------------
+    # Abort login
+    app.add_endpoint(
+        method='POST',
+        path='/abort',
+        endpoint=OpenIdAbort(),
+    )
 
+    # Logout
     app.add_endpoint(
         method='POST',
         path='/logout',

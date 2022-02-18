@@ -46,6 +46,8 @@ TOKEN_DEFAULT_SCOPES = [
     'measurements.read',
 ]
 
+# The path to set token cookie on
+TOKEN_COOKIE_PATH = '/'
 
 # -- Secrets -----------------------------------------------------------------
 
