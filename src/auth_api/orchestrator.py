@@ -144,7 +144,7 @@ class LoginOrchestrator:
             state=self.state,
         )
 
-        return self.return_login_success()
+        return self._return_login_success()
 
     def _return_login_success(
         self
