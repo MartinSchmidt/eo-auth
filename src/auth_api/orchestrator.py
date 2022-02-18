@@ -124,7 +124,7 @@ class LoginOrchestrator:
         current position in the onboarding setup
         """
         if self.user is not None:
-            return self.return_login_success()
+            return self._return_login_success()
 
         if not self.state.terms_accepted:
             return NextStep(
