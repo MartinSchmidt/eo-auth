@@ -41,7 +41,7 @@ class GetTerms(Endpoint):
         try:
             html = markdown2.markdown(file.read())
             return self.Response(
-                headline='Terms and Conditions',
+                headline='Privacy Policy',
                 terms=html,
                 version='0.1',
             )
