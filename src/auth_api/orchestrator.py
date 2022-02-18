@@ -29,7 +29,7 @@ from auth_api.config import (
 from auth_api.controller import db_controller
 from auth_api.db import db
 from auth_api.models import DbUser
-from auth_api.user import create_user
+from auth_api.user import create_or_get_user
 from auth_api.state import AuthState
 
 
@@ -139,7 +139,7 @@ class LoginOrchestrator:
                 )
             )
 
-        self.user = create_user(
+        self.user = create_or_get_user(
             session=self.session,
             state=self.state,
         )

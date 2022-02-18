@@ -11,7 +11,7 @@ from auth_api.db import db
 from auth_api.endpoints import AuthState
 from auth_api.models import DbExternalUser, DbUser
 from auth_api.queries import UserQuery
-from auth_api.user import create_user
+from auth_api.user import create_or_get_user
 
 # -- Tests --------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ class TestCreateUser:
 
         # -- Act --------------------------------------------------------------
 
-        create_user(
+        create_or_get_user(
             session=mock_session,
             state=state,
         )
@@ -143,15 +143,18 @@ class TestCreateUser:
             external_subject=token_subject,
         )
 
-        # -- Act --------------------------------------------------------------
+        #Assert we already have a user in the db
+        assert UserQuery(seeded_session) \
+            .has_tin(token_tin) \
+            .count() == 1
 
-        create_user(
+        #Attempt to create a user
+        create_or_get_user(
             session=seeded_session,
             state=state,
         )
 
-        # -- Assert -----------------------------------------------------------
-
+        #Assert we have not added an additional user
         assert UserQuery(seeded_session) \
             .has_tin(token_tin) \
             .count() == 1
@@ -169,7 +172,6 @@ class TestCreateUser:
         When terms have not been accepted, we cannot create a user 
         This checks if a user is created when terms have been declined
         """
-        # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
             fe_url='https://foobar.com',
@@ -182,15 +184,19 @@ class TestCreateUser:
             external_subject=token_subject,
         )
 
-        # -- Act --------------------------------------------------------------
+        expectedMessage = 'User has not accepted terms'
 
-        create_user(
-            session=mock_session,
-            state=state,
-        )
+        #We expect an error to return here, as the user has not accepted terms
+        try:
+            create_or_get_user(
+                session=mock_session,
+                state=state,
+            )
+        except Exception as e:
+            #Checking we get the right error message returned
+            assert expectedMessage == e.args[0]
 
-        # -- Assert -----------------------------------------------------------
-
+        #Querying the db to make sure a user has not been created
         assert UserQuery(mock_session) \
             .has_tin(token_tin) \
             .count() == 0

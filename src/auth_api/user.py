@@ -5,29 +5,33 @@ from auth_api.models import DbUser
 from auth_api.state import AuthState
 
 
-def create_user(
+def create_or_get_user(
         session: db.Session,
         state: AuthState
 ) -> DbUser:
     """
-    Creates a user and an external user if they don't exist and redirects
-    and redirects with success = 1
+        Creates or gets a user and an external user if they don't exist
+    This only happens if they have accepted terms
+    
 
     :param session: The db session
     :param state: AuthState
+    :return: A DbUser if a user has been created or exists, otherwise an error
     """
 
-    if state.terms_accepted:
-        user = db_controller.get_or_create_user(
-            session=session,
-            tin=state.tin,
-        )
+    if not state.terms_accepted:
+        raise RuntimeError("User has not accepted terms")
 
-        db_controller.attach_external_user(
-            session=session,
-            user=user,
-            external_subject=state.external_subject,
-            identity_provider=state.identity_provider,
-        )
+    user = db_controller.get_or_create_user(
+        session=session,
+        tin=state.tin,
+    )
 
-        return user
+    db_controller.attach_external_user(
+        session=session,
+        user=user,
+        external_subject=state.external_subject,
+        identity_provider=state.identity_provider,
+    )
+
+    return user
