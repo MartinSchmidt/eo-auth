@@ -69,6 +69,12 @@ class LoginOrchestrator:
     def redirect_next_step(
         self
     ) -> TemporaryRedirect:
+        """
+        Redirects the user based on where _get_next_step decides the user is
+        in the flow
+        This is used when the backend has full control of where the user 
+        is going
+        """
         next_step = self._get_next_step()
 
         if next_step.cookie is not None:
@@ -84,6 +90,12 @@ class LoginOrchestrator:
     def response_next_step(
         self
     ) -> HttpResponse:
+        """
+        Returns an httpresponse based on where _get_next_step decides the user
+        is in the flow
+        This is used in cases where the frontend can't or doesn't accept a
+        redirect, e.g. an ajax request
+        """
         next_step = self._get_next_step()
 
         response = LoginResponse(
@@ -106,6 +118,11 @@ class LoginOrchestrator:
     def _get_next_step(
         self
     ) -> NextStep:
+        """
+        Controls the flow of the onboarding
+        Based on which values are set we can extrapolate the users
+        current position in the onboarding setup
+        """
         if self.user is not None:
             return self.return_login_success()
 
