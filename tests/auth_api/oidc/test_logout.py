@@ -3,8 +3,8 @@ Tests specifically for OIDC logout endpoint.
 """
 from uuid import uuid4
 import pytest
-from datetime import datetime, timedelta, timezone
 import requests_mock
+from datetime import datetime, timedelta, timezone
 
 from flask.testing import FlaskClient
 
@@ -16,40 +16,18 @@ from origin.auth import TOKEN_COOKIE_NAME
 
 from origin.api.testing import CookieTester
 
-
 from auth_api.config import (
     OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
+    TOKEN_COOKIE_PATH,
 )
 from auth_api.models import DbToken
 from auth_api.queries import TokenQuery
+from auth_api.state import AuthState
 
 
 # -- Fixtures ----------------------------------------------------------------
-@pytest.fixture(scope='function')
-def request_mocker() -> requests_mock:
-    """
-    A request mock which can be used to mock requests responses
-    made to eg. OpenID Connect api endpoints.
-    """
-
-    with requests_mock.Mocker() as m:
-        yield m
-
-
-@pytest.fixture(scope='function')
-def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
-    """
-    Mock the oidc endpoint response to return status code 200.
-    """
-    adapter = request_mocker.post(
-        OIDC_API_LOGOUT_URL,
-        text='',
-        status_code=200
-    )
-    return adapter
-
 
 @pytest.fixture(scope='function')
 def id_token() -> str:
@@ -315,7 +293,7 @@ class TestDatabaseTokens:
             internal_token='internal_token_encoded',
             issued=datetime.now(),
             expires=datetime.now() + timedelta(days=1),
-            id_token='id_token',
+            id_token=id_token,
         ))
 
         seeded_session.commit()
@@ -392,7 +370,7 @@ class TestHTTPResponse:
         auth_cookie = cookies.cookies[TOKEN_COOKIE_NAME]
 
         assert auth_cookie.value == ''
-        assert auth_cookie['path'] == '/'
+        assert auth_cookie['path'] == TOKEN_COOKIE_PATH
         assert auth_cookie['domain'] == TOKEN_COOKIE_DOMAIN
         assert auth_cookie['httponly'] == TOKEN_COOKIE_HTTP_ONLY
         assert auth_cookie['samesite'] == 'Strict'
@@ -440,3 +418,92 @@ class TestHTTPResponse:
         # -- Assert ----------------------------------------------------------
 
         assert response.json == {'success': True}
+
+    def test__abort_succeeds__returned_status_200(
+        self,
+        client: FlaskClient,
+        id_token: str,
+        state_encoder: TokenEncoder[AuthState],
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """When aborting, test that the response status is okay"""
+
+        state = AuthState(
+            fe_url="http://example.com",
+            return_url="http://example.com",
+            id_token=id_token,
+        )
+
+        state_encoded = state_encoder.encode(state)
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path='/abort',
+            json={
+                'state': state_encoded,
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 1
+
+        assert response.status_code == 200
+
+    def test__abort_fails_when_token_is_malformed__returned_error_status(
+        self,
+        client: FlaskClient,
+        id_token: str,
+        state_encoder: TokenEncoder[AuthState],
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """
+        When aborting with a malformed AuthState,
+        test that the response status is okay
+        """
+
+        state = AuthState(
+            fe_url="http://example.com",
+            return_url="http://example.com",
+        )
+
+        state_encoded = state_encoder.encode(state)
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path='/abort',
+            json={
+                'state': state_encoded,
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 0
+
+        assert response.status_code == 400
+
+    def test__abort_fails_when_token_is_missing__returned_error_status(
+        self,
+        client: FlaskClient,
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """
+        When aborting with a malformed AuthState,
+        test that the response status is okay
+        """
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path='/abort',
+            json={},
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 0
+
+        assert response.status_code == 400

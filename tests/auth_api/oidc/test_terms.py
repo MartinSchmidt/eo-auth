@@ -1,4 +1,5 @@
 import pytest
+import requests_mock
 
 from typing import Dict, Any
 from unittest.mock import MagicMock
@@ -191,6 +192,7 @@ class TestTermsDecline:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        oidc_adapter: requests_mock.Adapter,
     ):
         # -- Arrange ----------------------------------------------------------
 
@@ -221,6 +223,8 @@ class TestTermsDecline:
         )
 
         # -- Assert -----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 1
 
         assert r.status_code == 200
 

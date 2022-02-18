@@ -88,6 +88,8 @@ class AcceptTerms(Endpoint):
         if request.accepted:
             return orchestrator.response_next_step()
         else:
+            orchestrator.abort_login()
+
             url = build_failure_url(
                 state=state,
                 error_code='E4'
