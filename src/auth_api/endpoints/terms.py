@@ -1,3 +1,4 @@
+from io import TextIOWrapper
 import markdown2
 
 from dataclasses import dataclass
@@ -29,14 +30,23 @@ class GetTerms(Endpoint):
         """
         Handle HTTP request.
         """
-        with open(TERMS_MARKDOWN_PATH) as f:
-            html = markdown2.markdown(f.read())
 
-        return self.Response(
-            headline='Terms and Conditions',
-            terms=html,
-            version='0.1',
-        )
+        file: TextIOWrapper
+
+        try:
+            file = open(TERMS_MARKDOWN_PATH)
+        except Exception:
+            raise RuntimeError("An error occured reading the markdown file")
+        
+        try:
+            html = markdown2.markdown(file.read())
+            return self.Response(
+                headline='Terms and Conditions',
+                terms=html,
+                version='0.1',
+            )
+        except Exception:
+            raise RuntimeError("An error occured converting markdown to html")
 
 
 class AcceptTerms(Endpoint):
