@@ -9,7 +9,7 @@ from origin.models.auth import InternalToken
 from .db import db
 from .queries import UserQuery, ExternalUserQuery, TokenQuery
 from .models import DbUser, DbExternalUser, DbLoginRecord, DbToken
-from .config import INTERNAL_TOKEN_SECRET, SSN_ENCRYPTION_KEY
+from .config import INTERNAL_TOKEN_SECRET, STATE_ENCRYPTION_SECRET
 
 
 # -- Encoders & Encryption ---------------------------------------------------
@@ -30,7 +30,7 @@ def encrypt_ssn(ssn: str) -> str:
     """
     return aes256_encrypt(
         data=ssn,
-        key=SSN_ENCRYPTION_KEY,
+        key=STATE_ENCRYPTION_SECRET,
     )
 
 
@@ -97,7 +97,6 @@ class DatabaseController(object):
             )
 
             session.add(user)
-
         return user
 
     def attach_external_user(
@@ -108,18 +107,29 @@ class DatabaseController(object):
             external_subject: str,
     ):
         """
-        TODO
+        Inserts an external user if one doesn't already exist with matching
+        subject and identity_provider
 
         :param session: Database session
         :param user: The user
         :param identity_provider: ID/name of Identity Provider
         :param external_subject: Identity Provider's subject
         """
-        session.add(DbExternalUser(
-            user=user,
-            identity_provider=identity_provider,
-            external_subject=external_subject
-        ))
+
+        query = ExternalUserQuery(session)
+
+        query = query \
+            .has_external_subject(external_subject) \
+            .has_identity_provider(identity_provider)
+
+        external_user = query.one_or_none()
+
+        if external_user is None:
+            session.add(DbExternalUser(
+                user=user,
+                identity_provider=identity_provider,
+                external_subject=external_subject
+            ))
 
     def create_user(
             self,
