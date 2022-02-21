@@ -12,7 +12,7 @@ from origin.api.testing import (
 
 from auth_api.db import db
 from auth_api.state import AuthState
-from auth_api.config import TERMS_ACCEPT_PATH
+from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
 
 
 class TestTermsAccept:
@@ -235,3 +235,52 @@ class TestTermsDecline:
             name='success',
             value='0',
         )
+
+
+class TestTermsGet:
+    """
+    Tests cases where the user accepts the terms and conditions
+    """
+
+    def test__user_gets_terms__should_return_terms(
+        self,
+        client: FlaskClient,
+        mock_session: db.Session,
+        mock_get_jwk: MagicMock,
+        mock_fetch_token: MagicMock,
+        state_encoder: TokenEncoder[AuthState],
+        jwk_public: str,
+        ip_token: Dict[str, Any],
+        token_tin: str,
+        token_idp: str,
+        token_subject: str,
+        id_token_encrypted: str,
+    ):
+        # -- Arrange ----------------------------------------------------------
+
+        state = AuthState(
+            fe_url='https://foobar.com',
+            return_url='https://redirect-here.com/foobar',
+            tin=token_tin,
+            id_token=id_token_encrypted,
+            identity_provider=token_idp,
+            external_subject=token_subject
+        )
+
+        state_encoded = state_encoder.encode(state)
+        mock_get_jwk.return_value = jwk_public
+        mock_fetch_token.return_value = ip_token
+
+        # -- Act --------------------------------------------------------------
+
+        r = client.get(
+            path=TERMS_PATH
+        )
+
+        # -- Assert -----------------------------------------------------------
+
+        assert r.status_code == 200
+
+        assert r.json['headline'] is not None
+
+        assert r.json['terms'] is not None
