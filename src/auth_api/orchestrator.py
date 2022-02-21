@@ -35,6 +35,7 @@ from auth_api.state import AuthState
 
 @dataclass
 class LoginResponse:
+    """ Class used to wrap the information for the login response. """
     next_url: str
     state: Optional[AuthState] = field(default=None)
 
@@ -46,8 +47,6 @@ class NextStep:
     either a TemporaryRedirect or 200 response.
     """
     next_url: str
-    cookie: Optional[Cookie] = field(default=None)
-
 
 state_encoder = TokenEncoder(
     schema=AuthState,
@@ -56,6 +55,7 @@ state_encoder = TokenEncoder(
 
 
 class LoginOrchestrator:
+    """ Class to control the users login flow."""
     def __init__(
         self,
         state: AuthState,

@@ -18,17 +18,21 @@ class TestUserQueries(TestQueryBase):
         FIXME: This tests seems to be wrong and tests nothing.
 
         No query is used and only tests the test data.
+
+        CCT - This test works as intended. It uses the users who are
+        queried in the seeded_session.
         """
 
         # -- Act -------------------------------------------------------------
 
         seeded_users = [user for user in USER_LIST if user['ssn'] == ssn]
 
-        print(seeded_users)
         # -- Assert ----------------------------------------------------------
 
         assert len(seeded_users) > 0
         assert len(seeded_users) == 1
+
+        print()
 
     @pytest.mark.parametrize('user', USER_LIST)
     def test__has_ssn__ssn_exists__return_correct_user(

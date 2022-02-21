@@ -15,20 +15,17 @@ from auth_api.orchestrator import (
 
 
 class GetTerms(Endpoint):
-    """
-    An endpoint which returns the terms and conditions.
-    """
+    """ An endpoint which returns the terms and conditions. """
 
     @dataclass
     class Response:
+        """ Class to handle the response"""
         headline: str
         terms: str
         version: str
 
     def handle_request(self, context: Context) -> Response:
-        """
-        Handle HTTP request.
-        """
+        """ Handle HTTP request. """
 
         try:
             with open(TERMS_MARKDOWN_PATH) as file:
@@ -54,6 +51,7 @@ class AcceptTerms(Endpoint):
 
     @dataclass
     class Request:
+        """ Class to handle the request. """
         state: str
         accepted: bool
         version: str
@@ -65,9 +63,7 @@ class AcceptTerms(Endpoint):
         context: Context,
         session: db.Session,
     ) -> HttpResponse:
-        """
-        Handle HTTP request.
-        """
+        """ Handle HTTP request. """
         # Decode state
         try:
             state = state_encoder.decode(request.state)
