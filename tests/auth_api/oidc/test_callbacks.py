@@ -30,7 +30,6 @@ from auth_api.config import (
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_SAMESITE,
     OIDC_LOGIN_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
 )
 
 from .bases import OidcCallbackEndpointsSubjectKnownBase
@@ -70,9 +69,18 @@ def assert_token(
         path='/token/inspect',
         headers={TOKEN_HEADER_NAME: r_forwardauth.headers[TOKEN_HEADER_NAME]}
     )
+    token = r_inspect.json['token']
+    token['issued'] = \
+        datetime.fromisoformat(token['issued']) \
+        .replace(microsecond=0) \
+        .isoformat()
 
-    assert r_inspect.status_code == 200
-    assert r_inspect.json == {'token': expected_token}
+    token['expires'] = \
+        datetime.fromisoformat(token['expires']) \
+        .replace(microsecond=0) \
+        .isoformat()
+
+    assert token == expected_token
 
 
 # -- Fixtures ----------------------------------------------------------------
@@ -80,7 +88,6 @@ def assert_token(
 
 @pytest.fixture(params=[
     OIDC_LOGIN_CALLBACK_PATH,
-    OIDC_SSN_VALIDATE_CALLBACK_PATH,
 ])
 def callback_endpoint_path(request) -> str:
     """Return path to callback endpoint."""
@@ -161,7 +168,8 @@ class TestOidcCallbackEndpoints(object):
 
         state = AuthState(
             fe_url='https://foobar.com',
-            return_url='https://redirect-here.com/foobar')
+            return_url='https://redirect-here.com/foobar',
+        )
         state_encoded = state_encoder.encode(state)
 
         # -- Act -------------------------------------------------------------
@@ -217,7 +225,8 @@ class TestOidcCallbackEndpoints(object):
 
         state = AuthState(
             fe_url=fe_url,
-            return_url=return_url)
+            return_url=return_url,
+        )
         state_encoded = state_encoder.encode(state)
 
         mock_fetch_token.side_effect = Exception('Test')

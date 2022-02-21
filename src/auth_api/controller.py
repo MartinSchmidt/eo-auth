@@ -44,7 +44,7 @@ def encrypt_ssn(ssn: str) -> str:
     """
     return aes256_encrypt(
         data=ssn,
-        key=SSN_ENCRYPTION_KEY,
+        key=STATE_ENCRYPTION_SECRET,
     )
 
 
@@ -91,7 +91,7 @@ class DatabaseController(object):
         :param session: Database session
         :param ssn: Social security number, unencrypted
         :param tin: Tax Identification Number
-        :returns: TODO
+        :returns: user information
         """
 
         ssn_encrypted = encrypt_ssn(ssn) if ssn is not None else None
@@ -124,18 +124,29 @@ class DatabaseController(object):
             external_subject: str,
     ):
         """
-        Added an external user to the database.
+        Inserts an external user if one doesn't already exist with matching
+        subject and identity_provider
 
         :param session: Database session
         :param user: The user
         :param identity_provider: ID/name of Identity Provider
         :param external_subject: Identity Provider's subject
         """
-        session.add(DbExternalUser(
-            user=user,
-            identity_provider=identity_provider,
-            external_subject=external_subject
-        ))
+
+        query = ExternalUserQuery(session)
+
+        query = query \
+            .has_external_subject(external_subject) \
+            .has_identity_provider(identity_provider)
+
+        external_user = query.one_or_none()
+
+        if external_user is None:
+            session.add(DbExternalUser(
+                user=user,
+                identity_provider=identity_provider,
+                external_subject=external_subject
+            ))
 
     def create_user(
             self,
@@ -147,7 +158,7 @@ class DatabaseController(object):
 
         :param session: Database session
         :param ssn: Social security number, unencrypted
-        :returns: TODO
+        :returns: user information
         """
         ssn_encrypted = encrypt_ssn(ssn)
 
