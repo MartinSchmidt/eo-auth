@@ -247,6 +247,7 @@ def userinfo_token(
         token_subject: str,
         token_idp: str,
         token_issued: datetime,
+        token_expires: datetime,
         token_tin: str,
         token_aud: str,
         token_transaction_id: str,

@@ -184,7 +184,7 @@ class TestCreateUser:
             external_subject=token_subject,
         )
 
-        expected_message = 'User has not accepted terms'
+        expectedMessage = 'User has not accepted terms'
 
         #We expect an error to return here, as the user has not accepted terms
         try:
@@ -192,9 +192,9 @@ class TestCreateUser:
                 session=mock_session,
                 state=state,
             )
-        except Exception as exception:
+        except Exception as e:
             #Checking we get the right error message returned
-            assert expected_message == exception.args[0]
+            assert expectedMessage == e.args[0]
 
         #Querying the db to make sure a user has not been created
         assert UserQuery(mock_session) \

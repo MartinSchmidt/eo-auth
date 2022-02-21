@@ -99,7 +99,7 @@ class TestOidcLogin:
 
         # -- Assert ----------------------------------------------------------
 
-        assert res.status_code == 400
+        assert r.status_code == 400
 
     @pytest.mark.unittest
     def test__omit_parameter_fe_url__should_return_status_400(
@@ -113,7 +113,7 @@ class TestOidcLogin:
 
         # -- Act -------------------------------------------------------------
 
-        res = client.get(
+        r = client.get(
             path='/oidc/login',
             query_string={
                 # Missing parameter "fe_url"

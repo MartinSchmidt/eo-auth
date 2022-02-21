@@ -11,7 +11,7 @@ from origin.tokens import TokenEncoder
 # Local
 from .config import (
     INTERNAL_TOKEN_SECRET,
-    STATE_ENCRYPTION_SECRET,
+    SSN_ENCRYPTION_KEY,
 )
 from .db import db
 from .models import (

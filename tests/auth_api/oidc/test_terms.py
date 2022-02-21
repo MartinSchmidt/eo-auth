@@ -53,7 +53,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        res = client.post(
+        r = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -64,16 +64,16 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert res.status_code == 200
+        assert r.status_code == 200
 
         assert_base_url(
-            url=res.json['next_url'],
+            url=r.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=res.json['next_url'],
+            url=r.json['next_url'],
             name='success',
             value='1',
         )
@@ -106,7 +106,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        res = client.post(
+        r = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -117,7 +117,7 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert res.status_code == 500
+        assert r.status_code == 500
 
     def test__user_accepts_terms__should_redirect_with_httponly_cookie(
         self,
@@ -152,7 +152,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        res = client.post(
+        r = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -163,9 +163,9 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert res.status_code == 200
+        assert r.status_code == 200
 
-        cookie = res.headers['Set-Cookie']
+        cookie = r.headers['Set-Cookie']
 
         assert cookie is not None
 
@@ -211,7 +211,7 @@ class TestTermsDecline:
 
         # -- Act --------------------------------------------------------------
 
-        res = client.post(
+        r = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -222,16 +222,16 @@ class TestTermsDecline:
 
         # -- Assert -----------------------------------------------------------
 
-        assert res.status_code == 200
+        assert r.status_code == 200
 
         assert_base_url(
-            url=res.json['next_url'],
+            url=r.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=res.json['next_url'],
+            url=r.json['next_url'],
             name='success',
             value='0',
         )
