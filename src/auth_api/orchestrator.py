@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+from xmlrpc.client import Boolean
 
 # First party
 from origin.api import (
@@ -208,7 +209,10 @@ class LoginOrchestrator:
             secure=True,
         )
 
-    def abort_login(self):
-        """Abort an initiated login that is persistented only in state."""
+    def invalidate_login(self) -> Boolean:
+        """Invalidate an initiated login that is persistented only in state."""
         if self.state is not None and self.state.id_token is not None:
             oidc_backend.logout(self.state.id_token)
+            return True
+
+        return False

@@ -17,10 +17,10 @@ from origin.auth import TOKEN_COOKIE_NAME
 from origin.api.testing import CookieTester
 
 from auth_api.config import (
-    OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_PATH,
+    INVALIDATE_PENDING_LOGIN_URL,
 )
 from auth_api.models import DbToken
 from auth_api.queries import TokenQuery
@@ -28,6 +28,11 @@ from auth_api.state import AuthState
 
 
 # -- Fixtures ----------------------------------------------------------------
+
+@pytest.fixture(scope='function')
+def an_url() -> str:
+    """Returns a dummy url."""
+    return 'https://example.com'
 
 @pytest.fixture(scope='function')
 def id_token() -> str:
@@ -419,18 +424,19 @@ class TestHTTPResponse:
 
         assert response.json == {'success': True}
 
-    def test__abort_succeeds__returned_status_200(
+    def test__invalidate_succeeds__returned_status_200(
         self,
         client: FlaskClient,
         id_token: str,
+        an_url: str,
         state_encoder: TokenEncoder[AuthState],
         oidc_adapter: requests_mock.Adapter,
     ):
-        """When aborting, test that the response status is okay"""
+        """When invalidating a login, test that the response status is okay"""
 
         state = AuthState(
-            fe_url="http://example.com",
-            return_url="http://example.com",
+            fe_url=an_url,
+            return_url=an_url,
             id_token=id_token,
         )
 
@@ -439,7 +445,7 @@ class TestHTTPResponse:
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path='/abort',
+            path=INVALIDATE_PENDING_LOGIN_URL,
             json={
                 'state': state_encoded,
             },
@@ -451,21 +457,21 @@ class TestHTTPResponse:
 
         assert response.status_code == 200
 
-    def test__abort_fails_when_token_is_malformed__returned_error_status(
+    def test__invalidate_fails_when_token_is_malformed__returned_error_status(
         self,
         client: FlaskClient,
-        id_token: str,
+        an_url: str,
         state_encoder: TokenEncoder[AuthState],
         oidc_adapter: requests_mock.Adapter,
     ):
         """
-        When aborting with a malformed AuthState,
-        test that the response status is okay
+        When invalidate a malformed AuthState,
+        test that the response status indicates an error
         """
 
         state = AuthState(
-            fe_url="http://example.com",
-            return_url="http://example.com",
+            fe_url=an_url,
+            return_url=an_url,
         )
 
         state_encoded = state_encoder.encode(state)
@@ -473,7 +479,7 @@ class TestHTTPResponse:
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path='/abort',
+            path=INVALIDATE_PENDING_LOGIN_URL,
             json={
                 'state': state_encoded,
             },
@@ -485,20 +491,20 @@ class TestHTTPResponse:
 
         assert response.status_code == 400
 
-    def test__abort_fails_when_token_is_missing__returned_error_status(
+    def test__invalidate_fails_when_token_is_missing__returned_error_status(
         self,
         client: FlaskClient,
         oidc_adapter: requests_mock.Adapter,
     ):
         """
-        When aborting with a malformed AuthState,
-        test that the response status is okay
+        When invalidating with a malformed AuthState,
+        test that the response status indicates an error
         """
 
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path='/abort',
+            path=INVALIDATE_PENDING_LOGIN_URL,
             json={},
         )
 

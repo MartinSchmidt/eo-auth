@@ -256,9 +256,9 @@ class OpenIdLogout(Endpoint):
         )
 
 
-class OpenIdAbort(Endpoint):
+class OpenIdInvalidateLogin(Endpoint):
     """
-    Returns a abort URL which invalidates a login @ the
+    Returns a URL which invalidates a login @ the
     OpenID Connect Identity Provider.
     """
 
@@ -286,7 +286,8 @@ class OpenIdAbort(Endpoint):
             session=None
         )
 
-        orchestrator.abort_login()
+        if not orchestrator.invalidate_login():
+            raise BadRequest()
 
         return HttpResponse(
             status=200,

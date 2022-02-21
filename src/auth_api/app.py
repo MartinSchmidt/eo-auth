@@ -6,13 +6,14 @@ from .config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_PATH,
     TERMS_ACCEPT_PATH,
+    INVALIDATE_PENDING_LOGIN_URL,
 )
 
 from .endpoints import (
     # OpenID Connect:
     OpenIdLogin,
     OpenIDCallbackEndpoint,
-    OpenIdAbort,
+    OpenIdInvalidateLogin,
     OpenIdLogout,
     # Profiles:
     GetProfile,
@@ -53,11 +54,11 @@ def create_app() -> Application:
         endpoint=OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL),
     )
 
-    # Abort login
+    # Invalidate login
     app.add_endpoint(
         method='POST',
-        path='/abort',
-        endpoint=OpenIdAbort(),
+        path=INVALIDATE_PENDING_LOGIN_URL,
+        endpoint=OpenIdInvalidateLogin(),
     )
 
     # Logout
