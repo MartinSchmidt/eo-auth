@@ -239,7 +239,7 @@ class TestTermsDecline:
 
 class TestTermsGet:
     """
-    Tests cases where the user accepts the terms and conditions
+    Tests whether the get returns any content
     """
 
     def test__user_gets_terms__should_return_terms(
