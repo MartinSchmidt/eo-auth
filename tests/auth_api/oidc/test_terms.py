@@ -256,28 +256,9 @@ class TestTermsGet:
         token_subject: str,
         id_token_encrypted: str,
     ):
-        # -- Arrange ----------------------------------------------------------
-
-        state = AuthState(
-            fe_url='https://foobar.com',
-            return_url='https://redirect-here.com/foobar',
-            tin=token_tin,
-            id_token=id_token_encrypted,
-            identity_provider=token_idp,
-            external_subject=token_subject
-        )
-
-        state_encoded = state_encoder.encode(state)
-        mock_get_jwk.return_value = jwk_public
-        mock_fetch_token.return_value = ip_token
-
-        # -- Act --------------------------------------------------------------
-
         r = client.get(
             path=TERMS_PATH
         )
-
-        # -- Assert -----------------------------------------------------------
 
         assert r.status_code == 200
 
