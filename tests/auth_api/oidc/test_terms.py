@@ -245,16 +245,6 @@ class TestTermsGet:
     def test__user_gets_terms__should_return_terms(
         self,
         client: FlaskClient,
-        mock_session: db.Session,
-        mock_get_jwk: MagicMock,
-        mock_fetch_token: MagicMock,
-        state_encoder: TokenEncoder[AuthState],
-        jwk_public: str,
-        ip_token: Dict[str, Any],
-        token_tin: str,
-        token_idp: str,
-        token_subject: str,
-        id_token_encrypted: str,
     ):
         r = client.get(
             path=TERMS_PATH
