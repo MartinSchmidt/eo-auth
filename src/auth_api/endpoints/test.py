@@ -40,8 +40,9 @@ class JsonFormatter(logging.Formatter):
 
         _extended_summary_
 
-        :param record: ??
-        :type record: ??
+        TODO
+        :param record:
+        :type record:
         :return: The dict of the LogRecord
         :rtype: dict
         :raises KeyError: if an unknown attribute is provided in the fmt_dict.
@@ -56,8 +57,9 @@ class JsonFormatter(logging.Formatter):
         Mostly the same as the parent's class method, the difference being
         that a dict is manipulated and dumped as JSON instead of a string.
 
+        TODO
         :param record: The record to be formated
-        :type record: ??
+        :type record:
         :return: JSON formatted
         :rtype: str
         """
@@ -121,8 +123,9 @@ class JakobsJsonFormatter(logging.Formatter):
         instead of a string. KeyError is raised if an unknown
         attribute is provided in the fmt_dict.
 
-        :param record: ??
-        :type record: ??
+        TODO
+        :param record:
+        :type record:
         :return: The formated dict
         :rtype: dict
         """
@@ -133,8 +136,9 @@ class JakobsJsonFormatter(logging.Formatter):
         """
         Overriden function, that manipulates dict and dump as JSON and not str.
 
+        TODO
         :param record: The record to be formated
-        :type record: ??
+        :type record:
         :return: json
         :rtype: str
         """
