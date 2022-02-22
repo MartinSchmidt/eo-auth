@@ -69,7 +69,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def is_private(self) -> bool:
-        """Todo."""
+        """TODO"""
 
         return self['userinfo_token_decoded']['identity_type'] == 'private'
 
