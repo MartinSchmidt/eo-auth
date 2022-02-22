@@ -21,14 +21,13 @@ class GetTerms(Endpoint):
 
     @dataclass
     class Response:
+        """ Class to handle the response information. """
         headline: str
         terms: str
         version: str
 
     def handle_request(self, context: Context) -> Response:
-        """
-        Handle HTTP request.
-        """
+        """ Handle HTTP request. """
 
         try:
             with open(TERMS_MARKDOWN_PATH) as file:
@@ -54,6 +53,7 @@ class AcceptTerms(Endpoint):
 
     @dataclass
     class Request:
+        """ Class to handle the request information. """
         state: str
         accepted: bool
         version: str
