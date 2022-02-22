@@ -82,8 +82,8 @@ class DbLoginRecord(db.ModelBase):
     """
     Database login record.
 
-    A database login record model that shows who logged in a the current time.
-    The user is identified by the subject,
+    A database that store the users who logged in a the current time.
+    The user is identified by the subject.
     """
 
     __tablename__ = 'login_record'

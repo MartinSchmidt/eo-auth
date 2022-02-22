@@ -51,7 +51,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def provider(self) -> str:
-        """TODO."""
+        """TODO """
 
         return self['id_token_decoded']['idp']
 

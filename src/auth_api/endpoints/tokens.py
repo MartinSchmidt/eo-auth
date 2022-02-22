@@ -74,7 +74,7 @@ class ForwardAuth(Endpoint):
 
 class InspectToken(Endpoint):
     """
-    Return the the internalToken.
+    Return the InternalToken.
 
     Makes it possible to retieve the internal token from the request it self.
     This is mostly used for testing.
@@ -82,7 +82,7 @@ class InspectToken(Endpoint):
 
     @dataclass
     class Response:
-        """HTTP Response returning the internalToken."""
+        """HTTP Response returning the InternalToken."""
 
         token: InternalToken
 
