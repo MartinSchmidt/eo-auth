@@ -7,7 +7,7 @@ from .models import SignaturgruppenToken
 
 
 class SignaturgruppenBackend(OpenIDConnectBackend):
-    """TODO."""
+    """ TODO """
 
     def __init__(
             self,
@@ -16,7 +16,7 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             token_endpoint: str,
             **kwargs,
     ):
-        """TODO."""
+        """ TODO """
 
         self.authorization_endpoint = authorization_endpoint
         self.token_endpoint = token_endpoint
@@ -72,7 +72,7 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             state: str,
             redirect_uri: str,
     ) -> SignaturgruppenToken:
-        """TODO."""
+        """ TODO """
 
         raw_token = self.session.fetch_token(
             url=self.token_endpoint,

@@ -26,7 +26,7 @@ class DbUser(db.ModelBase):
 
     created = sa.Column(sa.DateTime(timezone=True),
                         nullable=False, server_default=sa.func.now())
-    """Time the user were created."""
+    """Time the user was created."""
 
     ssn = sa.Column(sa.String(), index=True)
     """Social security number, encrypted."""
@@ -82,7 +82,7 @@ class DbLoginRecord(db.ModelBase):
     """
     Database login record.
 
-    A database LoginRecord model that shows who logged in a the current time.
+    A database login record model that shows who logged in a the current time.
     The user is identified by the subject,
     """
 

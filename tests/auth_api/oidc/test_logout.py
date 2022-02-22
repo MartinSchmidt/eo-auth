@@ -52,7 +52,7 @@ def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
 
 @pytest.fixture(scope='function')
 def id_token() -> str:
-    """Return the a dummy identity provider id_token."""
+    """Return a dummy identity provider id_token."""
 
     return 'id-token'
 
@@ -72,7 +72,7 @@ def actor() -> str:
 
 @pytest.fixture(scope='function')
 def opaque_token() -> str:
-    """Return a opaque token, which are the token used by the frontend."""
+    """Return a opaque token, which are used by the frontend."""
 
     return str(uuid4())
 

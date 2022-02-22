@@ -233,7 +233,7 @@ class OpenIdLogout(Endpoint):
     """
     OpenID Logout endpoint which logs the user out.
 
-    Logs out the user from both the own system as well as the used
+    Logs out the user from both our system as well as the used
     OpenId Connect Identity Provider. This is done by calling the OIDC
     logout endpoint as well as deleting the OIDC login session.
     """
