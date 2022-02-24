@@ -12,12 +12,14 @@ from auth_api.oidc import OIDC_ERROR_CODES
 @dataclass
 class AuthState:
     """
+    AuthState is an intermediate token.
     AuthState is an intermediate token generated when the user requests
     an authorization URL. It encodes to a [JWT] string.
     The token is included in the authorization URL, and is returned by the
     OIDC Identity Provider when the client is redirected back.
     It provides a way to keep this service stateless.
     """
+
     fe_url: str
     return_url: str
     terms_accepted: Optional[bool] = field(default=False)
@@ -33,7 +35,8 @@ def build_failure_url(
     error_code: str,
 ) -> str:
     """
-    Builds the URL used for redirecting
+    Redirecting URL.
+    Builds the URL used for redirecting.
     """
     query = {
         'success': '0',
@@ -54,8 +57,10 @@ def redirect_to_failure(
     error_code: str,
 ) -> TemporaryRedirect:
     """
-    Creates a 307-redirect to the return_url defined in the state
-    with query parameters appended appropriately according to the error.
+    Redirect with code 307.
+
+    Creates a 307-redirect to the return_url defined in the state with query
+    parameters appended appropriately according to the error.
 
     :param state: State object
     :param error_code: Internal error code

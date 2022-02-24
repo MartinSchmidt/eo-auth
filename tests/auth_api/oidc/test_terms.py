@@ -16,9 +16,7 @@ from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
 
 
 class TestTermsAccept:
-    """
-    Tests cases where the user accepts the terms and conditions
-    """
+    """Tests cases where the user accepts the terms and conditions."""
 
     def test__user_accepts_terms__should_redirect_to_success(
         self,
@@ -34,6 +32,7 @@ class TestTermsAccept:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Tests if the user accepts terms and gets redirected with success."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -89,6 +88,7 @@ class TestTermsAccept:
         ip_token: Dict[str, Any],
         token_tin: str,
     ):
+        """Tests if the users accepts terms and gets an invalid state."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -133,6 +133,7 @@ class TestTermsAccept:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Tests if the users accepts terms and gets a HttpOnly cookie."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -173,9 +174,7 @@ class TestTermsAccept:
 
 
 class TestTermsDecline:
-    """
-    Tests cases where the user declines the terms and conditions.
-    """
+    """Tests cases where the user declines the terms and conditions."""
 
     @pytest.mark.integrationtest
     def test__user_declines_terms__should_redirect_with_success_0(
@@ -192,6 +191,7 @@ class TestTermsDecline:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Test if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -238,14 +238,14 @@ class TestTermsDecline:
 
 
 class TestTermsGet:
-    """
-    Tests whether terms get returns latest terms and success
-    """
+    """Tests whether terms get returns latest terms and success."""
 
     def test__user_gets_terms__should_return_latest_terms(
         self,
         client: FlaskClient,
     ):
+        """Tests whether terms get returns latest terms and success."""
+
         expectedHeadline = 'Privacy Policy'
         expectedContent = '<h1>Test file 2</h1>\n'
         expectedVersion = 'v2'

@@ -124,6 +124,7 @@ class DatabaseController(object):
             external_subject: str,
     ):
         """
+        External user creation.
         Inserts an external user if one doesn't already exist with matching
         subject and identity_provider
 

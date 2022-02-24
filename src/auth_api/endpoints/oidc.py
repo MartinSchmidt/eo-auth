@@ -171,8 +171,8 @@ class OpenIDCallbackEndpoint(Endpoint):
         state.identity_provider = oidc_token.provider
         state.external_subject = oidc_token.subject
         state.id_token = aes256_encrypt(
-           data=oidc_token.id_token,
-           key=STATE_ENCRYPTION_SECRET,
+            data=oidc_token.id_token,
+            key=STATE_ENCRYPTION_SECRET,
         )
 
         # User is unknown when logging in for the first time and may be None

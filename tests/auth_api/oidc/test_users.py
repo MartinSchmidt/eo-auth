@@ -19,28 +19,24 @@ from auth_api.user import create_or_get_user
 class TestCreateUser:
 
     # -- Fixtures -------------------------------------------------------------
-    """
-    Tests cases when a new user is created
-    """
+    """Tests cases when a new user is created."""
+
     @pytest.fixture(scope='function')
     def internal_subject(self) -> str:
-        """
-        Our internal subject
-        """
+        """Our internal subject."""
+
         return str(uuid4())
 
     @pytest.fixture(scope='function')
     def return_url(self) -> str:
-        """
-        Client's return_url
-        """
+        """Client's return_url."""
+
         return 'https://redirect-here.com/foobar?foo=bar'
 
     @pytest.fixture(scope='function')
     def fe_url(self) -> str:
-        """
-        Client's fe_url
-        """
+        """Client's fe_url."""
+
         return 'https://foobar.com/'
 
     @pytest.fixture(scope='function')
@@ -56,10 +52,7 @@ class TestCreateUser:
             token_tin: str,
             internal_subject: str,
     ) -> db.Session:
-        """
-        Inserts a mock-user into the database.
-        """
-
+        """Test to insert a mock-user into the database."""
         # -- OAuth2Session object methods ------------------------------------
 
         mock_get_jwk.return_value = jwk_public
@@ -92,8 +85,9 @@ class TestCreateUser:
         token_subject: str,
         id_token_encrypted: str,
     ):
-        # -- Arrange ----------------------------------------------------------
+        """Tests if a user exists and creates the user if not."""
 
+        # -- Arrange ----------------------------------------------------------
         state = AuthState(
             fe_url='https://foobar.com',
             return_url='https://redirect-here.com/foobar',
@@ -127,9 +121,11 @@ class TestCreateUser:
         token_subject: str,
         id_token_encrypted: str,
     ):
-        # Attempts to add a user with the same tin as an existing user
-        # It should not add another user
-        
+        """
+        Attempts to add a user with the same tin as an existing user.
+        It should not add another user
+        """
+
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -143,18 +139,18 @@ class TestCreateUser:
             external_subject=token_subject,
         )
 
-        #Assert we already have a user in the db
+        # Assert we already have a user in the db
         assert UserQuery(seeded_session) \
             .has_tin(token_tin) \
             .count() == 1
 
-        #Attempt to create a user
+        # Attempt to create a user
         create_or_get_user(
             session=seeded_session,
             state=state,
         )
 
-        #Assert we have not added an additional user
+        # Assert we have not added an additional user
         assert UserQuery(seeded_session) \
             .has_tin(token_tin) \
             .count() == 1
@@ -169,7 +165,7 @@ class TestCreateUser:
         id_token_encrypted: str,
     ):
         """
-        When terms have not been accepted, we cannot create a user 
+        When terms have not been accepted, we cannot create a user.
         This checks if a user is created when terms have been declined
         """
 
@@ -186,17 +182,17 @@ class TestCreateUser:
 
         expected_message = 'User has not accepted terms'
 
-        #We expect an error to return here, as the user has not accepted terms
+        # We expect an error to return here, as the user has not accepted terms
         try:
             create_or_get_user(
                 session=mock_session,
                 state=state,
             )
         except Exception as exception:
-            #Checking we get the right error message returned
+            # Checking we get the right error message returned
             assert expected_message == exception.args[0]
 
-        #Querying the db to make sure a user has not been created
+        # Querying the db to make sure a user has not been created
         assert UserQuery(mock_session) \
             .has_tin(token_tin) \
             .count() == 0

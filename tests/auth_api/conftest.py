@@ -123,25 +123,19 @@ def token_ssn() -> str:
 
 @pytest.fixture(scope='function')
 def token_tin() -> str:
-    """
-    Identity Provider's tin number (used in mocked tokens).
-    """
+    """Identity Provider's tin number (used in mocked tokens)."""
     return '39315041'
 
 
 @pytest.fixture(scope='function')
 def token_aud() -> str:
-    """
-    Identity Provider's aud (used in mocked tokens).
-    """
+    """Identity Provider's aud (used in mocked tokens)."""
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def token_transaction_id() -> str:
-    """
-    Identity Provider's transaction id (used in mocked tokens).
-    """
+    """Identity Provider's transaction id (used in mocked tokens)."""
     return str(uuid4())
 
 
@@ -233,9 +227,8 @@ def id_token_encoded(
 def id_token_encrypted(
         id_token_encoded: str,
 ) -> str:
-    """
-    Mocked ID-token from Identity Provider (encoded).
-    """
+    """Make a mocked ID-token from Identity Provider (encoded)."""
+
     return aes256_encrypt(
         id_token_encoded,
         STATE_ENCRYPTION_SECRET,

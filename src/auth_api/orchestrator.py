@@ -35,7 +35,8 @@ from auth_api.state import AuthState
 
 @dataclass
 class LoginResponse:
-    """ Class to handle the login response. """
+    """Class to handle the login response."""
+
     next_url: str
     state: Optional[AuthState] = field(default=None)
 
@@ -43,9 +44,11 @@ class LoginResponse:
 @dataclass
 class NextStep:
     """
-    Class used internally to return the next step before being wrapped in 
+    Internally class for the next step.
+    Class used internally to return the next step before being wrapped in
     either a TemporaryRedirect or 200 response.
     """
+
     next_url: str
     cookie: Optional[Cookie] = field(default=None)
 
@@ -57,7 +60,8 @@ state_encoder = TokenEncoder(
 
 
 class LoginOrchestrator:
-    """ Orchestrator to handle the login flow. """
+    """Orchestrator to handle the login flow."""
+
     def __init__(
         self,
         state: AuthState,
@@ -72,10 +76,11 @@ class LoginOrchestrator:
         self
     ) -> TemporaryRedirect:
         """
+        Next step for the redirect.
         Redirects the user based on where _get_next_step decides the user is
-        in the flow
-        This is used when the backend has full control of where the user 
-        is going
+        in the flow.
+        This is used when the backend has full control of where the user is
+        going.
         """
         next_step = self._get_next_step()
 
@@ -93,10 +98,11 @@ class LoginOrchestrator:
         self
     ) -> HttpResponse:
         """
+        Return an httpresponse.
         Returns an httpresponse based on where _get_next_step decides the user
-        is in the flow
+        is in the flow.
         This is used in cases where the frontend can't or doesn't accept a
-        redirect, e.g. an ajax request
+        redirect, e.g. an ajax request.
         """
         next_step = self._get_next_step()
 
@@ -111,7 +117,7 @@ class LoginOrchestrator:
                 model=response,
                 cookies=(next_step.cookie,)
             )
-        
+
         return HttpResponse(
             status=200,
             model=response,
@@ -121,7 +127,7 @@ class LoginOrchestrator:
         self
     ) -> NextStep:
         """
-        Controls the flow of the onboarding
+        Flow control of the onboarding.
         Based on which values are set we can extrapolate the users
         current position in the onboarding setup
         """
@@ -152,6 +158,7 @@ class LoginOrchestrator:
         self
     ) -> NextStep:
         """
+        Return URL with opaque token.
         After a successful action, redirect to return url with an opaque token
         and success = 1
         """
@@ -173,8 +180,9 @@ class LoginOrchestrator:
         self
     ) -> Cookie:
         """
-        Register user login after completed registration and create 
-        httponly cookie
+        Register user login and creates cookie.
+        Register user login after completed registration and create httponly
+        cookie.
         """
         db_controller.register_user_login(
             session=self.session,
