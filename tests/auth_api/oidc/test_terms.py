@@ -12,7 +12,7 @@ from origin.api.testing import (
 
 from auth_api.db import db
 from auth_api.state import AuthState
-from auth_api.config import TERMS_ACCEPT_PATH
+from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
 
 
 class TestTermsAccept:
@@ -235,3 +235,29 @@ class TestTermsDecline:
             name='success',
             value='0',
         )
+
+
+class TestTermsGet:
+    """
+    Tests whether terms get returns latest terms and success
+    """
+
+    def test__user_gets_terms__should_return_latest_terms(
+        self,
+        client: FlaskClient,
+    ):
+        expectedHeadline = 'Privacy Policy'
+        expectedContent = '<h1>Test file 2</h1>\n'
+        expectedVersion = 'v2'
+
+        res = client.get(
+            path=TERMS_PATH
+        )
+
+        assert res.status_code == 200
+
+        assert res.json['headline'] == expectedHeadline
+
+        assert res.json['terms'] == expectedContent
+
+        assert res.json['version'] == expectedVersion
