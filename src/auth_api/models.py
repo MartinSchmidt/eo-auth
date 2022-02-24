@@ -1,6 +1,8 @@
+# Third party
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
+# Local
 from .db import db
 
 
@@ -10,6 +12,7 @@ class DbUser(db.ModelBase):
 
     Users are uniquely identified by their subject.
     """
+
     __tablename__ = 'user'
     __table_args__ = (
         sa.PrimaryKeyConstraint('subject'),
@@ -19,14 +22,17 @@ class DbUser(db.ModelBase):
     )
 
     subject = sa.Column(sa.String(), index=True, nullable=False)
+    """The user subject used to identify users."""
+
     created = sa.Column(sa.DateTime(timezone=True),
                         nullable=False, server_default=sa.func.now())
+    """Time the user was created."""
 
-    # Social security number, encrypted
     ssn = sa.Column(sa.String(), index=True)
+    """Social security number, encrypted."""
 
-    # Social security number, encrypted
     cvr = sa.Column(sa.String(), index=True)  # TODO Rename to 'tin'
+    """Social security number, encrypted."""
 
 
 class DbExternalUser(db.ModelBase):
@@ -38,6 +44,7 @@ class DbExternalUser(db.ModelBase):
     via the same Identity Provider (for instance, logging in via MitID or
     NemID results in different user IDs even if its the same person).
     """
+
     __tablename__ = 'user_external'
     __table_args__ = (
         sa.PrimaryKeyConstraint('id'),
@@ -45,16 +52,26 @@ class DbExternalUser(db.ModelBase):
     )
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    """Unique id for the Database record."""
+
     created = sa.Column(sa.DateTime(timezone=True),
                         nullable=False, server_default=sa.func.now())
+    """Time when the user signed up using identity provider."""
+
     subject = sa.Column(sa.String(), sa.ForeignKey(
         'user.subject'), index=True, nullable=False)
 
-    # ID/name of Identity Provider
     identity_provider = sa.Column(sa.String(), index=True, nullable=False)
+    """ID/name of Identity Provider."""
 
-    # Identity Provider's ID of the user
     external_subject = sa.Column(sa.String(), index=True, nullable=False)
+    """
+    Identity Provider's unique ID of the user.
+
+    The identity provider will most likely have their own unique ID of their
+    users. This will not be the same as ours therefor we'll save this in order
+    to link other users with the external identity provider.
+    """
 
     # Relationships
     user = relationship('DbUser', foreign_keys=[subject], uselist=False)
@@ -62,23 +79,38 @@ class DbExternalUser(db.ModelBase):
 
 class DbLoginRecord(db.ModelBase):
     """
-    TODO
+    Database login record.
+
+    A database that store the users who logged in a the current time.
+    The user is identified by the subject.
     """
+
     __tablename__ = 'login_record'
     __table_args__ = (
         sa.PrimaryKeyConstraint('id'),
     )
 
     id = sa.Column(sa.Integer(), index=True)
+    """Unique id for the Database record."""
+
     subject = sa.Column(sa.String(), index=True, nullable=False)
+    """The user subject used to identify users."""
+
     created = sa.Column(sa.DateTime(timezone=True),
                         nullable=False, server_default=sa.func.now())
+    """Time when the user logged in."""
 
 
 class DbToken(db.ModelBase):
     """
-    TODO
+    Contains the user sessions.
+
+    Each session contains two tokens, internal_token for internal use and
+    id_token used to make requests to the used
+    identity provider(MitID, Nemid, etc). The tokens are assigned to a specific
+    user using the user "subject".
     """
+
     __tablename__ = 'token'
     __table_args__ = (
         sa.PrimaryKeyConstraint('opaque_token'),
@@ -87,8 +119,26 @@ class DbToken(db.ModelBase):
     )
 
     opaque_token = sa.Column(sa.String(), index=True, nullable=False)
+    """
+    Opaque token which is safe to pass to the frontend clients
+
+    This token is nothing but a unique id and contains no
+    information in itself. This is used to exchange it for a internal token,
+    which happens at the reverse proxy level in a middleware,
+    using the ForwardAuth endpoint.
+    """
+
     internal_token = sa.Column(sa.String(), nullable=False)
+    """Internal token used by our own system"""
+
     id_token = sa.Column(sa.String(), nullable=False)
+    """Token used by identity provider"""
+
     issued = sa.Column(sa.DateTime(timezone=True), nullable=False)
+    """Time when token were issued"""
+
     expires = sa.Column(sa.DateTime(timezone=True), nullable=False)
+    """Time when token expired"""
+
     subject = sa.Column(sa.String(), index=True, nullable=False)
+    """Unique subject which identifies the user"""
