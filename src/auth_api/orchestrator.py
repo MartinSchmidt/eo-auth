@@ -128,6 +128,7 @@ class LoginOrchestrator:
     ) -> NextStep:
         """
         Flow control of the onboarding.
+
         Based on which values are set we can extrapolate the users
         current position in the onboarding setup
         """
@@ -181,6 +182,7 @@ class LoginOrchestrator:
     ) -> Cookie:
         """
         Register user login and creates cookie.
+
         Register user login after completed registration and create httponly
         cookie.
         """

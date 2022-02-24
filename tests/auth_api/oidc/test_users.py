@@ -124,6 +124,7 @@ class TestCreateUser:
         """
         Attempts to add a user with the same tin as an existing user.
         It should not add another user
+
         """
 
         # -- Arrange ----------------------------------------------------------
@@ -166,6 +167,7 @@ class TestCreateUser:
     ):
         """
         When terms have not been accepted, we cannot create a user.
+
         This checks if a user is created when terms have been declined
         """
 
