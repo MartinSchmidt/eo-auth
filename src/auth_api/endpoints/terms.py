@@ -40,7 +40,6 @@ class GetTerms(Endpoint):
         """
         Handle HTTP request.
         """
-        var = os.getcwd()
 
         file_list = os.listdir(TERMS_MARKDOWN_FOLDER)
 
