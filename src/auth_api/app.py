@@ -1,5 +1,7 @@
+# First party
 from origin.api import Application, TokenGuard
 
+# Local
 from .config import (
     INTERNAL_TOKEN_SECRET,
     OIDC_LOGIN_CALLBACK_PATH,
@@ -27,9 +29,13 @@ from .endpoints import (
 
 def create_app() -> Application:
     """
-    Creates a new instance of the application.
-    """
+    Create a new instance of the application.
 
+    Create a new instance of the application and adds all the endpoints to it.
+
+    :return: The Application instance.
+    :rtype: Application
+    """
     app = Application.create(
         name='Auth API',
         secret=INTERNAL_TOKEN_SECRET,
