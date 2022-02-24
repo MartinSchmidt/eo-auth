@@ -51,7 +51,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def provider(self) -> str:
-        """TODO """
+        """Name of identity provider (ie. 'mitid' or 'nemid' etc)."""
 
         return self['id_token_decoded']['idp']
 
@@ -69,7 +69,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def is_private(self) -> bool:
-        """TODO"""
+        """Whether or not this is a privat person."""
 
         return self['userinfo_token_decoded']['identity_type'] == 'private'
 

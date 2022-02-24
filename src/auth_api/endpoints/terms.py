@@ -32,13 +32,22 @@ class GetTerms(Endpoint):
 
     @dataclass
     class Response:
-        """ Class to handle the response information. """
         headline: str
         terms: str
         version: str
 
     def handle_request(self, context: Context) -> Response:
-        """ Handle HTTP request. """
+        """
+        Handle HTTP request.
+        """
+        var = os.getcwd()
+
+        file_list = os.listdir(TERMS_MARKDOWN_FOLDER)
+
+        newest_file = Tcl().call('lsort', '-decreasing', file_list)[0]
+
+        filepath = f'{TERMS_MARKDOWN_FOLDER}/{newest_file}'
+        version = newest_file.split('.')[0]
 
         try:
             with open(filepath) as file:
@@ -64,7 +73,6 @@ class AcceptTerms(Endpoint):
 
     @dataclass
     class Request:
-        """ Class to handle the request information. """
         state: str
         accepted: bool
         version: str
