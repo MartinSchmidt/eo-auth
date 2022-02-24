@@ -1,6 +1,4 @@
-"""
-Tests specifically for OIDC login endpoint.
-"""
+"""Tests specifically for OIDC login endpoint."""
 from datetime import datetime, timezone, timedelta
 
 import pytest
@@ -11,9 +9,7 @@ from origin.tokens import TokenEncoder
 
 
 class TestGetProfile:
-    """
-    TODO
-    """
+    """Test of the get profile endpoint."""
 
     @pytest.mark.unittest
     def test__should_return_auth_url_as_json_with_correct_state(
@@ -22,8 +18,9 @@ class TestGetProfile:
             token_encoder: TokenEncoder[InternalToken],
     ):
         """
-        Omitting the 'redirect' parameter should result in the endpoint
-        returning the auth URL as part of JSON body.
+        FIXME: Fix this test.
+
+        This test seems to be copied and does not match up with actual title.
         """
 
         # -- Act -------------------------------------------------------------
@@ -38,7 +35,7 @@ class TestGetProfile:
 
         token_encoded = token_encoder.encode(token)
 
-        r = client.get(
+        res = client.get(
             path='/profile',
             headers={
                 'Authorization': f'Bearer: {token_encoded}',
@@ -47,8 +44,8 @@ class TestGetProfile:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'success': True,
             'profile': {
                 'id': token.actor,

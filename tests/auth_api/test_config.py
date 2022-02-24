@@ -9,8 +9,9 @@ from auth_api.config import (
 @pytest.mark.unittest
 def test__token_cookie_samesite__value_omitted__should_return_default_true():
     """
-    Omitting the 'TOKEN_COOKIE_SAMESITE' option should make
-    it default to True.
+    Test that omitting the 'TOKEN_COOKIE_SAMESITE' default correct.
+
+    Should default to True.
     """
     assert TOKEN_COOKIE_SAMESITE is True
 
@@ -18,7 +19,8 @@ def test__token_cookie_samesite__value_omitted__should_return_default_true():
 @pytest.mark.unittest
 def test__token_cookie_http_only__value_omitted__should_return_default_true():
     """
-    Omitting the 'TOKEN_COOKIE_HTTP_ONLY' option should make
-    it default to True.
+    Test that omitting the 'TOKEN_COOKIE_HTTP_ONLY' default correct.
+
+    Should default to True.
     """
     assert TOKEN_COOKIE_HTTP_ONLY is True
