@@ -31,7 +31,6 @@ class DbUser(db.ModelBase):
     ssn = sa.Column(sa.String(), index=True)
     """Social security number, encrypted."""
 
-    # Social security number, encrypted
     cvr = sa.Column(sa.String(), index=True)  # TODO Rename to 'tin'
     """Social security number, encrypted."""
 

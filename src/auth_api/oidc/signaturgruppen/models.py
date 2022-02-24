@@ -38,7 +38,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def expires(self) -> datetime:
-        """Time when token wil expire."""
+        """Time when token will expire."""
 
         return datetime.fromtimestamp(
             self['id_token_decoded']['exp'], tz=timezone.utc)
