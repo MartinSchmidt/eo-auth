@@ -70,52 +70,52 @@ USER_LOGIN_RECORD = [
 
 class TestQueryBase:
     """
+    Base class for all test queries.
+
     Base class for all queries that tests behavior, where
     the the user's token in known by the system.
     This setup's all the required users before each test.
     """
+
     @pytest.fixture(scope='function')
     def id_token(self) -> str:
-        """
-        Returns a dummy idtoken used for the OpenID Connect
-        identity provider.
-        """
+        """Return dummy token used for the OpenID Connect identity provider."""
+
         return 'id-token'
 
     @pytest.fixture(scope='function')
     def subject(self) -> str:
-        """
-        Returns the subject.
-        """
+        """Return the subject."""
+
         return 'subject'
 
     @pytest.fixture(scope='function')
     def actor(self) -> str:
-        """
-        Returns an actor name.
-        """
+        """Return an actor name."""
+
         return 'actor'
 
     @pytest.fixture(scope='function')
     def opaque_token(self) -> str:
         """
-        Returns a opaque token, which are the token
+        Return Opaque token.
+
+        Return a opaque token, which are the token
         that are actual visible to the frontend.
         """
+
         return str(uuid4())
 
     @pytest.fixture(scope='function')
     def issued_datetime(self) -> datetime:
-        """
-        A datetime that indicates when a token has been issued
-        """
+        """Datetime that indicates when a token has been issued."""
+
         return datetime.now(tz=timezone.utc)
 
     @pytest.fixture(scope='function')
     def expires_datetime(self) -> datetime:
-        """
-        A datetime that indicates when a token will expire
-        """
+        """Datetime that indicates when a token will expire."""
+
         return datetime.now(tz=timezone.utc) + timedelta(days=1)
 
     @pytest.fixture(scope='function')
@@ -126,9 +126,8 @@ class TestQueryBase:
         issued_datetime: datetime,
         actor: str,
     ) -> InternalToken:
-        """
-        Returns the internal token used within the system itself.
-        """
+        """Return the internal token used within the system itself."""
+
         return InternalToken(
             issued=issued_datetime,
             expires=expires_datetime,
@@ -143,9 +142,8 @@ class TestQueryBase:
         internal_token: InternalToken,
         internal_token_encoder: TokenEncoder[InternalToken],
     ) -> str:
-        """
-        Returns the internal token in encoded string format.
-        """
+        """Return the internal token in encoded string format."""
+
         return internal_token_encoder \
             .encode(internal_token)
 
@@ -161,9 +159,7 @@ class TestQueryBase:
         opaque_token: str,
         internal_token: InternalToken,
     ) -> db.Session:
-        """
-        Inserts a list of mock-users and mock-external-users into the database.
-        """
+        """Mock database with a list of mock-users and mock-external-users."""
 
         # -- Insert user into database ---------------------------------------
 

@@ -40,6 +40,7 @@ class GetTerms(Endpoint):
         """
         Handle HTTP request.
         """
+
         file_list = os.listdir(TERMS_MARKDOWN_FOLDER)
 
         newest_file = Tcl().call('lsort', '-decreasing', file_list)[0]

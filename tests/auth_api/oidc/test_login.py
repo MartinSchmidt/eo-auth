@@ -1,15 +1,16 @@
-"""
-Tests specifically for OIDC login endpoint.
-"""
-import pytest
-
-from flask.testing import FlaskClient
+"""Tests specifically for OIDC login endpoint."""
+# Standard Library
 from urllib.parse import parse_qs, urlsplit
 
+# Third party
+import pytest
+from flask.testing import FlaskClient
+
+# First party
 from origin.tokens import TokenEncoder
 
+# Local
 from auth_api.endpoints import AuthState
-
 
 # -- Helpers -----------------------------------------------------------------
 
@@ -19,6 +20,8 @@ def get_auth_state_from_redirect_url(
         state_encoder: TokenEncoder[AuthState],
 ) -> AuthState:
     """
+    Get auth state from redirect url.
+
     Provided a HTTP redirect Location from a OIDC login endpoint, this
     method extract the 'state' query-parameter and decodes it for easy
     assertion.
@@ -37,9 +40,7 @@ def get_auth_state_from_redirect_url(
 
 
 class TestOidcLogin:
-    """
-    Tests specifically for OIDC login endpoint.
-    """
+    """Tests specifically for OIDC login endpoint."""
 
     @pytest.mark.unittest
     def test__should_return_auth_url_as_json_with_correct_state(
@@ -48,13 +49,15 @@ class TestOidcLogin:
             state_encoder: TokenEncoder[AuthState],
     ):
         """
+        Should return auth_url as json with correct state.
+
         Omitting the 'redirect' parameter should result in the endpoint
         returning the auth URL as part of JSON body.
         """
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path='/oidc/login',
             query_string={
                 'fe_url': 'https://spam.com/',
@@ -65,11 +68,11 @@ class TestOidcLogin:
         # -- Assert ----------------------------------------------------------
 
         actual_state = get_auth_state_from_redirect_url(
-            auth_url=r.json['next_url'],
+            auth_url=res.json['next_url'],
             state_encoder=state_encoder,
         )
 
-        assert r.status_code == 200
+        assert res.status_code == 200
         assert actual_state.return_url == 'https://foobar.com/'
         assert actual_state.fe_url == 'https://spam.com/'
 
@@ -79,13 +82,14 @@ class TestOidcLogin:
             client: FlaskClient,
     ):
         """
-        Omitting the 'return_url' parameter should result in the endpoint
-        returning HTTP status 400 Bad Request.
+        Omitting the 'return_url' parameter should result in the endpoint.
+
+        Returning HTTP status 400 Bad Request.
         """
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path='/oidc/login',
             query_string={
                 # Missing parameter "return_url"
@@ -95,7 +99,7 @@ class TestOidcLogin:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400
 
     @pytest.mark.unittest
     def test__omit_parameter_fe_url__should_return_status_400(
@@ -109,7 +113,7 @@ class TestOidcLogin:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.get(
+        res = client.get(
             path='/oidc/login',
             query_string={
                 # Missing parameter "fe_url"
@@ -119,4 +123,4 @@ class TestOidcLogin:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400

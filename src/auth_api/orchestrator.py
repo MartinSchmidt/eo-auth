@@ -35,6 +35,7 @@ from auth_api.state import AuthState
 
 @dataclass
 class LoginResponse:
+    """ Class to handle the login response. """
     next_url: str
     state: Optional[AuthState] = field(default=None)
 
@@ -56,6 +57,7 @@ state_encoder = TokenEncoder(
 
 
 class LoginOrchestrator:
+    """ Orchestrator to handle the login flow. """
     def __init__(
         self,
         state: AuthState,
