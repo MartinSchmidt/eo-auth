@@ -76,7 +76,7 @@ class InspectToken(Endpoint):
     """
     Return the InternalToken.
 
-    Makes it possible to retieve the internal token from the request it self.
+    Makes it possible to retrieve the internal token from the request itself.
     This is mostly used for testing.
     """
 

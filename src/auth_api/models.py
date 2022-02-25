@@ -68,7 +68,7 @@ class DbExternalUser(db.ModelBase):
     """
     Identity Provider's unique ID of the user.
 
-    The identity provider will most likely have their own unique ID of their
+    The identity provider must have their own unique ID of their
     users. This will not be the same as ours therefor we'll save this in order
     to link other users with the external identity provider.
     """
