@@ -11,6 +11,7 @@ def create_or_get_user(
 ) -> DbUser:
     """
     Create or get a user and an external user if they don't exist.
+
     This only happens if they have accepted terms
 
     :param session: The db session

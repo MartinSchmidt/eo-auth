@@ -108,6 +108,7 @@ class TestOidcLogin:
     ):
         """
         Omitting the 'fe_url' parameter should result in the endpoint.
+
         returning HTTP status 400 Bad Request.
         """
 

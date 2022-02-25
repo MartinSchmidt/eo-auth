@@ -38,7 +38,6 @@ class JsonFormatter(logging.Formatter):
         """
         Return a dict of the relevant LogRecord attribute instead of a string.
 
-        _extended_summary_
 
         TODO
         :param record:
