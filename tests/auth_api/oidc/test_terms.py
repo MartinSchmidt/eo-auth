@@ -249,7 +249,6 @@ class TestTermsGet:
         client: FlaskClient,
     ):
         """Tests whether terms get returns latest terms and success."""
-
         expected_head_line = 'Privacy Policy'
         expected_content = '<h1>Test file 2</h1>\n'
         expected_version = 'v2'

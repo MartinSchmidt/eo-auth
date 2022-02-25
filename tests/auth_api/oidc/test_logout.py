@@ -21,6 +21,7 @@ from auth_api.config import (
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_PATH,
     INVALIDATE_PENDING_LOGIN_URL,
+    OIDC_API_LOGOUT_URL,
 )
 from auth_api.db import db
 from auth_api.models import DbToken
@@ -34,6 +35,7 @@ from auth_api.state import AuthState
 def an_url() -> str:
     """Returns a dummy url."""
     return 'https://example.com'
+
 
 @pytest.fixture(scope='function')
 def request_mocker() -> requests_mock:
@@ -57,6 +59,7 @@ def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
         status_code=200
     )
     return adapter
+
 
 @pytest.fixture(scope='function')
 def id_token() -> str:
