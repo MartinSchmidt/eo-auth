@@ -4,6 +4,7 @@ conftest.py according to pytest docs.
 https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
 import pytest
+import requests_mock
 from uuid import uuid4
 from typing import Dict, Any
 from unittest.mock import patch
@@ -21,6 +22,7 @@ from auth_api.app import create_app
 from auth_api.state import AuthState
 from auth_api.db import db as _db
 from auth_api.config import (
+    OIDC_API_LOGOUT_URL,
     INTERNAL_TOKEN_SECRET,
     TOKEN_EXPIRY_DELTA,
     STATE_ENCRYPTION_SECRET,
@@ -314,3 +316,30 @@ def mock_session(db: SqlEngine) -> SqlEngine.Session:
 
     with db.make_session() as session:
         yield session
+
+
+# # -- Requests ---------------------------------------------------------------
+
+
+@pytest.fixture(scope='function')
+def request_mocker() -> requests_mock:
+    """
+    A request mock which can be used to mock requests responses
+    made to eg. OpenID Connect api endpoints.
+    """
+
+    with requests_mock.Mocker() as m:
+        yield m
+
+
+@pytest.fixture(scope='function')
+def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
+    """
+    Mock the oidc endpoint response to return status code 200.
+    """
+    adapter = request_mocker.post(
+        OIDC_API_LOGOUT_URL,
+        text='',
+        status_code=200
+    )
+    return adapter

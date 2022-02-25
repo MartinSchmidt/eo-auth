@@ -10,6 +10,7 @@ from .oidc import (
     AuthState,
     OpenIdLogin,
     OpenIDCallbackEndpoint,
+    OpenIdInvalidateLogin,
     OpenIdLogout,
 )
 

@@ -1,4 +1,5 @@
 """Tests specifically for OIDC logout endpoint."""
+
 # Standard Library
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
@@ -16,16 +17,26 @@ from origin.tokens import TokenEncoder
 
 # Local
 from auth_api.config import (
-    OIDC_API_LOGOUT_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
+    TOKEN_COOKIE_PATH,
+    INVALIDATE_PENDING_LOGIN_URL,
+    OIDC_API_LOGOUT_URL,
 )
 from auth_api.db import db
 from auth_api.models import DbToken
 from auth_api.queries import TokenQuery
+from auth_api.state import AuthState
 
 
 # -- Fixtures ----------------------------------------------------------------
+
+@pytest.fixture(scope='function')
+def an_url() -> str:
+    """Returns a dummy url."""
+    return 'https://example.com'
+
+
 @pytest.fixture(scope='function')
 def request_mocker() -> requests_mock:
     """
@@ -306,7 +317,7 @@ class TestDatabaseTokens:
             internal_token='internal_token_encoded',
             issued=datetime.now(),
             expires=datetime.now() + timedelta(days=1),
-            id_token='id_token',
+            id_token=id_token,
         ))
 
         seeded_session.commit()
@@ -378,7 +389,7 @@ class TestHTTPResponse:
         auth_cookie = cookies.cookies[TOKEN_COOKIE_NAME]
 
         assert auth_cookie.value == ''
-        assert auth_cookie['path'] == '/'
+        assert auth_cookie['path'] == TOKEN_COOKIE_PATH
         assert auth_cookie['domain'] == TOKEN_COOKIE_DOMAIN
         assert auth_cookie['httponly'] == TOKEN_COOKIE_HTTP_ONLY
         assert auth_cookie['samesite'] == 'Strict'
@@ -424,3 +435,93 @@ class TestHTTPResponse:
         # -- Assert ----------------------------------------------------------
 
         assert response.json == {'success': True}
+
+    def test__invalidate_succeeds__returned_status_200(
+        self,
+        client: FlaskClient,
+        id_token: str,
+        an_url: str,
+        state_encoder: TokenEncoder[AuthState],
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """When invalidating a login, test that the response status is okay"""
+
+        state = AuthState(
+            fe_url=an_url,
+            return_url=an_url,
+            id_token=id_token,
+        )
+
+        state_encoded = state_encoder.encode(state)
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path=INVALIDATE_PENDING_LOGIN_URL,
+            json={
+                'state': state_encoded,
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 1
+
+        assert response.status_code == 200
+
+    def test__invalidate_fails_when_token_is_malformed__returned_error_status(
+        self,
+        client: FlaskClient,
+        an_url: str,
+        state_encoder: TokenEncoder[AuthState],
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """
+        When invalidate a malformed AuthState,
+        test that the response status indicates an error
+        """
+
+        state = AuthState(
+            fe_url=an_url,
+            return_url=an_url,
+        )
+
+        state_encoded = state_encoder.encode(state)
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path=INVALIDATE_PENDING_LOGIN_URL,
+            json={
+                'state': state_encoded,
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 0
+
+        assert response.status_code == 400
+
+    def test__invalidate_fails_when_token_is_missing__returned_error_status(
+        self,
+        client: FlaskClient,
+        oidc_adapter: requests_mock.Adapter,
+    ):
+        """
+        When invalidating with a malformed AuthState,
+        test that the response status indicates an error
+        """
+
+        # -- Act -------------------------------------------------------------
+
+        response = client.post(
+            path=INVALIDATE_PENDING_LOGIN_URL,
+            json={},
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert oidc_adapter.call_count == 0
+
+        assert response.status_code == 400
