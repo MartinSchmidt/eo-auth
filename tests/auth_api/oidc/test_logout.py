@@ -20,7 +20,7 @@ from auth_api.config import (
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_PATH,
-    INVALIDATE_PENDING_LOGIN_URL,
+    INVALIDATE_PENDING_LOGIN_PATH,
     OIDC_API_LOGOUT_URL,
 )
 from auth_api.db import db
@@ -445,7 +445,7 @@ class TestHTTPResponse:
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path=INVALIDATE_PENDING_LOGIN_URL,
+            path=INVALIDATE_PENDING_LOGIN_PATH,
             json={
                 'state': state_encoded,
             },
@@ -481,7 +481,7 @@ class TestHTTPResponse:
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path=INVALIDATE_PENDING_LOGIN_URL,
+            path=INVALIDATE_PENDING_LOGIN_PATH,
             json={
                 'state': state_encoded,
             },
@@ -508,7 +508,7 @@ class TestHTTPResponse:
         # -- Act -------------------------------------------------------------
 
         response = client.post(
-            path=INVALIDATE_PENDING_LOGIN_URL,
+            path=INVALIDATE_PENDING_LOGIN_PATH,
             json={},
         )
 

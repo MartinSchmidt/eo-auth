@@ -105,7 +105,7 @@ TERMS_ACCEPT_URL = \
     f'{SERVICE_URL}{TERMS_ACCEPT_PATH}'
 
 # Invalidate pending login URL
-INVALIDATE_PENDING_LOGIN_URL = '/invalidate'
+INVALIDATE_PENDING_LOGIN_PATH = '/invalidate'
 
 # -- OpenID Connect ----------------------------------------------------------
 

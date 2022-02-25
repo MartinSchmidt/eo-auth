@@ -8,7 +8,7 @@ from .config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_PATH,
     TERMS_ACCEPT_PATH,
-    INVALIDATE_PENDING_LOGIN_URL,
+    INVALIDATE_PENDING_LOGIN_PATH,
 )
 
 from .endpoints import (
@@ -61,7 +61,7 @@ def create_app() -> Application:
     # Invalidate login
     app.add_endpoint(
         method='POST',
-        path=INVALIDATE_PENDING_LOGIN_URL,
+        path=INVALIDATE_PENDING_LOGIN_PATH,
         endpoint=OpenIdInvalidateLogin(),
     )
 
