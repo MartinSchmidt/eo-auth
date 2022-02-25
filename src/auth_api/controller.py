@@ -37,7 +37,7 @@ internal_token_encoder = TokenEncoder(
 
 def encrypt_ssn(ssn: str) -> str:
     """
-    Encrypt social security number using encryption key from project config.
+    Encrypts social security number using encryption key from project config.
 
     :param ssn: Social security number to encrypt
     :returns: Encrypted social security number
@@ -52,7 +52,7 @@ def encrypt_ssn(ssn: str) -> str:
 
 
 class DatabaseController(object):
-    """Control business logic for SQL database."""
+    """SQL DB handler."""
 
     def get_user_by_external_subject(
             self,
@@ -61,7 +61,7 @@ class DatabaseController(object):
             external_subject: str,
     ) -> Optional[DbUser]:
         """
-        Look up an external subject in the database.
+        Identify an external subject.
 
         :param session: Database session
         :param identity_provider: ID/name of Identity Provider
@@ -84,7 +84,7 @@ class DatabaseController(object):
             tin: Optional[str] = None,
     ) -> DbUser:
         """
-        Look up a subject in the database.
+        Identify a subject.
 
         If the user does exist it returns, if not the user will be created.
 
@@ -181,7 +181,7 @@ class DatabaseController(object):
         Log a user's login.
 
         :param session: Database session
-        :param user: The user who logged in to the database.
+        :param user: User identified.
         """
         session.add(DbLoginRecord(
             subject=user.subject,

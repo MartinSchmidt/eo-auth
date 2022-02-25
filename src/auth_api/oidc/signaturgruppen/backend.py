@@ -30,7 +30,7 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             language: Optional[str],
     ) -> str:
         """
-        Create OpenID Connect Authorization url.
+        Establish a OpenID Connect Authorization url.
 
         Creates and returns an absolute URL to initiate an OpenID Connect
         authorization flow at the Identity Provider.

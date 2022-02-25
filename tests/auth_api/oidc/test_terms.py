@@ -191,7 +191,7 @@ class TestTermsDecline:
         token_subject: str,
         id_token_encrypted: str,
     ):
-        """Test if the user declines and redicect with success 0."""
+        """Tests if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(

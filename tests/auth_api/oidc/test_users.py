@@ -53,6 +53,7 @@ class TestCreateUser:
             internal_subject: str,
     ) -> db.Session:
         """Test to insert a mock-user into the database."""
+
         # -- OAuth2Session object methods ------------------------------------
 
         mock_get_jwk.return_value = jwk_public
@@ -139,7 +140,7 @@ class TestCreateUser:
             external_subject=token_subject,
         )
 
-        # Assert we already have a user in the db
+        # Assert that tests if we already have a user in the db
         assert UserQuery(seeded_session) \
             .has_tin(token_tin) \
             .count() == 1
