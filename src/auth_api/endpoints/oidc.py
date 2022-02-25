@@ -21,6 +21,7 @@ from auth_api.config import (
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_SAMESITE,
     TOKEN_COOKIE_HTTP_ONLY,
+    TOKEN_COOKIE_PATH,
     OIDC_LOGIN_CALLBACK_URL,
     STATE_ENCRYPTION_SECRET,
     OIDC_LANGUAGE,
@@ -270,7 +271,7 @@ class OpenIdLogout(Endpoint):
         cookie = Cookie(
             name=TOKEN_COOKIE_NAME,
             value='',
-            path='/',
+            path=TOKEN_COOKIE_PATH,
             domain=TOKEN_COOKIE_DOMAIN,
             http_only=TOKEN_COOKIE_HTTP_ONLY,
             same_site=TOKEN_COOKIE_SAMESITE,
@@ -281,5 +282,43 @@ class OpenIdLogout(Endpoint):
         return HttpResponse(
             status=200,
             cookies=(cookie,),
+            model=self.Response(success=True),
+        )
+
+
+class OpenIdInvalidateLogin(Endpoint):
+    """Returns a URL which invalidates a login."""
+
+    @dataclass
+    class Response:
+        """The HTTP response body."""
+        success: bool
+
+    @dataclass
+    class Request:
+        """The HTTP request body."""
+        state: str
+
+    def handle_request(
+            self,
+            request: Request,
+    ) -> HttpResponse:
+        """Handle HTTP request."""
+
+        try:
+            state = state_encoder.decode(request.state)
+        except state_encoder.DecodeError:
+            raise BadRequest()
+
+        orchestrator = LoginOrchestrator(
+            state=state,
+            session=None
+        )
+
+        if not orchestrator.invalidate_login():
+            raise BadRequest()
+
+        return HttpResponse(
+            status=200,
             model=self.Response(success=True),
         )
