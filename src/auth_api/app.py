@@ -8,12 +8,14 @@ from .config import (
     OIDC_LOGIN_CALLBACK_URL,
     TERMS_PATH,
     TERMS_ACCEPT_PATH,
+    INVALIDATE_PENDING_LOGIN_PATH,
 )
 
 from .endpoints import (
     # OpenID Connect:
     OpenIdLogin,
     OpenIDCallbackEndpoint,
+    OpenIdInvalidateLogin,
     OpenIdLogout,
     # Profiles:
     GetProfile,
@@ -40,7 +42,7 @@ def create_app() -> Application:
         health_check_path='/health',
     )
 
-    # -- OpenID Connect Login ------------------------------------------------
+    # -- OpenID Connect ------------------------------------------------------
 
     # Login
     app.add_endpoint(
@@ -56,8 +58,14 @@ def create_app() -> Application:
         endpoint=OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL),
     )
 
-    # -- OpenID Connect Logout -----------------------------------------------
+    # Invalidate login
+    app.add_endpoint(
+        method='POST',
+        path=INVALIDATE_PENDING_LOGIN_PATH,
+        endpoint=OpenIdInvalidateLogin(),
+    )
 
+    # Logout
     app.add_endpoint(
         method='POST',
         path='/logout',
