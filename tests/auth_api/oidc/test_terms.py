@@ -1,4 +1,5 @@
 import pytest
+import requests_mock
 
 from typing import Dict, Any
 from unittest.mock import MagicMock
@@ -190,6 +191,7 @@ class TestTermsDecline:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        oidc_adapter: requests_mock.Adapter,
     ):
         """Tests if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
@@ -222,6 +224,8 @@ class TestTermsDecline:
 
         # -- Assert -----------------------------------------------------------
 
+        assert oidc_adapter.call_count == 1
+
         assert res.status_code == 200
 
         assert_base_url(
@@ -245,7 +249,6 @@ class TestTermsGet:
         client: FlaskClient,
     ):
         """Tests whether terms get returns latest terms and success."""
-
         expected_head_line = 'Privacy Policy'
         expected_content = '<h1>Test file 2</h1>\n'
         expected_version = 'v2'
