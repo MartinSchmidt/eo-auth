@@ -246,9 +246,9 @@ class TestTermsGet:
     ):
         """Tests whether terms get returns latest terms and success."""
 
-        expectedHeadline = 'Privacy Policy'
-        expectedContent = '<h1>Test file 2</h1>\n'
-        expectedVersion = 'v2'
+        expected_head_line = 'Privacy Policy'
+        expected_content = '<h1>Test file 2</h1>\n'
+        expected_version = 'v2'
 
         res = client.get(
             path=TERMS_PATH
@@ -256,8 +256,8 @@ class TestTermsGet:
 
         assert res.status_code == 200
 
-        assert res.json['headline'] == expectedHeadline
+        assert res.json['headline'] == expected_head_line
 
-        assert res.json['terms'] == expectedContent
+        assert res.json['terms'] == expected_content
 
-        assert res.json['version'] == expectedVersion
+        assert res.json['version'] == expected_version

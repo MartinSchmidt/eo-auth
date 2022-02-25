@@ -52,7 +52,7 @@ class TestExternalUserQueries(TestQueryBase):
         'identity_provider',
         ['midid', 'nemid', 'invalid_nemid']
     )
-    def test__has_identity_provider__identity_provider__exists__return_correct_external_user(   # noqa: E501
+    def test__has_identity_provider__identity_provider_exists__return_correct_external_user(   # noqa: E501
             self,
             seeded_session: db.Session,
             identity_provider: str,

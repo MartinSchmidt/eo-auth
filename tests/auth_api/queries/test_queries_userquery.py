@@ -8,28 +8,6 @@ from tests.auth_api.queries.query_base import TestQueryBase, USER_LIST
 class TestUserQueries(TestQueryBase):
     """Test user queries."""
 
-    @pytest.mark.parametrize('ssn', ['SSN_1', 'SSN_2', 'SSN_3'])
-    def test__correct_number_of_ssns__return_correct_number_of_users(
-        self,
-        seeded_session: db.Session,
-        ssn: str,
-    ):
-        """
-        FIXME: This tests seems to be wrong and tests nothing.
-
-        No query is used and only tests the test data.
-        """
-
-        # -- Act -------------------------------------------------------------
-
-        seeded_users = [user for user in USER_LIST if user['ssn'] == ssn]
-
-        print(seeded_users)
-        # -- Assert ----------------------------------------------------------
-
-        assert len(seeded_users) > 0
-        assert len(seeded_users) == 1
-
     @pytest.mark.parametrize('user', USER_LIST)
     def test__has_ssn__ssn_exists__return_correct_user(
         self,
@@ -37,7 +15,7 @@ class TestUserQueries(TestQueryBase):
         user: dict,
     ):
         """
-        If user with ssn exists return correct user.
+        If user with SSN exists return correct user.
 
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
@@ -81,7 +59,8 @@ class TestUserQueries(TestQueryBase):
         user: dict,
     ):
         """
-        When tin exists and searching for tin, return correct user.
+        When Tax Identification Number exists and searching for tin, return
+        correct user.
 
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
