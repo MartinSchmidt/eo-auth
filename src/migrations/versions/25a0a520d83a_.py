@@ -43,13 +43,13 @@ def upgrade():
     sa.Column('subject', sa.String(), nullable=False),
     sa.Column('created', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('ssn', sa.String(), nullable=True),
-    sa.Column('cvr', sa.String(), nullable=True),
-    sa.CheckConstraint('ssn != NULL OR cvr != null'),
+    sa.Column('tin', sa.String(), nullable=True),
+    sa.CheckConstraint('ssn != NULL OR tin != null'),
     sa.PrimaryKeyConstraint('subject'),
     sa.UniqueConstraint('ssn'),
     sa.UniqueConstraint('subject')
     )
-    op.create_index(op.f('ix_user_cvr'), 'user', ['cvr'], unique=False)
+    op.create_index(op.f('ix_user_tin'), 'user', ['tin'], unique=False)
     op.create_index(op.f('ix_user_ssn'), 'user', ['ssn'], unique=False)
     op.create_index(op.f('ix_user_subject'), 'user', ['subject'], unique=False)
     op.create_table('user_external',
@@ -78,7 +78,7 @@ def downgrade():
     op.drop_table('user_external')
     op.drop_index(op.f('ix_user_subject'), table_name='user')
     op.drop_index(op.f('ix_user_ssn'), table_name='user')
-    op.drop_index(op.f('ix_user_cvr'), table_name='user')
+    op.drop_index(op.f('ix_user_tin'), table_name='user')
     op.drop_table('user')
     op.drop_index(op.f('ix_token_subject'), table_name='token')
     op.drop_index(op.f('ix_token_opaque_token'), table_name='token')
