@@ -26,4 +26,3 @@ OIDC_ERROR_CODES = {
 }
 
 # /callback?error_code=E501&error=Internal Serviver
- 
