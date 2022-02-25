@@ -1,5 +1,6 @@
 """
-conftest.py according to pytest docs:
+conftest.py according to pytest docs.
+
 https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
 import pytest
@@ -34,9 +35,8 @@ from .keys import PRIVATE_KEY, PUBLIC_KEY
 
 @pytest.fixture(scope='function')
 def client() -> FlaskClient:
-    """
-    Returns API test client.
-    """
+    """Return API test client."""
+
     return create_app().test_client
 
 
@@ -45,27 +45,24 @@ def client() -> FlaskClient:
 
 @pytest.fixture(scope='function')
 def mock_get_jwk():
-    """
-    Returns a mock of OAuth2Session.get_jwk() method.
-    """
+    """Return a mock of OAuth2Session.get_jwk() method."""
+
     with patch('auth_api.oidc.session.get_jwk') as get_jwk:
         yield get_jwk
 
 
 @pytest.fixture(scope='function')
 def mock_fetch_token():
-    """
-    Returns a mock of OAuth2Session.fetch_token() method.
-    """
+    """Return a mock of OAuth2Session.fetch_token() method."""
+
     with patch('auth_api.oidc.session.fetch_token') as fetch_token:
         yield fetch_token
 
 
 @pytest.fixture(scope='function')
 def state_encoder() -> TokenEncoder[AuthState]:
-    """
-    Returns AuthState encoder with correct secret embedded.
-    """
+    """Return AuthState encoder with correct secret embedded."""
+
     return TokenEncoder(
         schema=AuthState,
         secret=INTERNAL_TOKEN_SECRET,
@@ -74,9 +71,8 @@ def state_encoder() -> TokenEncoder[AuthState]:
 
 @pytest.fixture(scope='function')
 def internal_token_encoder() -> TokenEncoder[InternalToken]:
-    """
-    Returns InternalToken encoder with correct secret embedded.
-    """
+    """Return InternalToken encoder with correct secret embedded."""
+
     return TokenEncoder(
         schema=InternalToken,
         secret=INTERNAL_TOKEN_SECRET,
@@ -88,17 +84,14 @@ def internal_token_encoder() -> TokenEncoder[InternalToken]:
 
 @pytest.fixture(scope='function')
 def jwk_public() -> str:
-    """
-    Mocked public key from Identity Provider.
-    """
+    """Mock public key from Identity Provider."""
+
     return jwk.dumps(PUBLIC_KEY, kty='RSA')
 
 
 @pytest.fixture(scope='function')
 def jwk_private() -> str:
-    """
-    Mocked private key from Identity Provider.
-    """
+    """Mock private key from Identity Provider."""
     return jwk.dumps(PRIVATE_KEY, kty='RSA')
 
 
@@ -107,66 +100,58 @@ def jwk_private() -> str:
 
 @pytest.fixture(scope='function')
 def token_subject() -> str:
-    """
-    Identity Provider's subject (used in mocked tokens).
-    """
+    """Identity Provider's subject (used in Mock tokens)."""
+
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def token_idp() -> str:
     """
-    Identity Provider's name (used in mocked tokens).
+    Identity Provider's name (used in Mock tokens).
+
     Could be, for instance, 'mitid' or 'nemid'.
     """
+
     return 'mitid'
 
 
 @pytest.fixture(scope='function')
 def token_ssn() -> str:
-    """
-    Identity Provider's social security number (used in mocked tokens).
-    """
+    """Identity Provider's social security number (used in Mock tokens)."""
+
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def token_tin() -> str:
-    """
-    Identity Provider's tin number (used in mocked tokens).
-    """
+    """Identity Provider's tin number (used in mocked tokens)."""
     return '39315041'
 
 
 @pytest.fixture(scope='function')
 def token_aud() -> str:
-    """
-    Identity Provider's aud (used in mocked tokens).
-    """
+    """Identity Provider's aud (used in mocked tokens)."""
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def token_transaction_id() -> str:
-    """
-    Identity Provider's transaction id (used in mocked tokens).
-    """
+    """Identity Provider's transaction id (used in mocked tokens)."""
     return str(uuid4())
 
 
 @pytest.fixture(scope='function')
 def token_issued() -> datetime:
-    """
-    Time of issue Identity Provider's token.
-    """
+    """Time of issue Identity Provider's token."""
+
     return datetime.now(tz=timezone.utc).replace(microsecond=0)
 
 
 @pytest.fixture(scope='function')
 def token_expires(token_issued: datetime) -> datetime:
-    """
-    Time of expire Identity Provider's token.
-    """
+    """Time of expire Identity Provider's token."""
+
     return (token_issued + TOKEN_EXPIRY_DELTA).replace(microsecond=0)
 
 
@@ -176,9 +161,8 @@ def ip_token(
     userinfo_token_encoded: str,
     token_expires: datetime,
 ) -> Dict[str, Any]:
-    """
-    Mocked token from Identity Provider (unencoded).
-    """
+    """Mock token from Identity Provider (unencoded)."""
+
     return {
         'id_token': id_token_encoded,
         'access_token': '',
@@ -200,9 +184,8 @@ def id_token(
         token_aud: str,
         token_transaction_id: str,
 ) -> Dict[str, Any]:
-    """
-    Mocked ID-token from Identity Provider (unencoded).
-    """
+    """Mock ID-token from Identity Provider (unencoded)."""
+
     return {
         "iss": "https://pp.netseidbroker.dk/op",
         "nbf": 1643290895,
@@ -231,9 +214,8 @@ def id_token_encoded(
         jwk_private: str,
         id_token: Dict[str, Any],
 ) -> str:
-    """
-    Mocked ID-token from Identity Provider (encoded).
-    """
+    """Mock ID-token from Identity Provider (encoded)."""
+
     token = jwt.encode(
         header={'alg': 'RS256'},
         payload=id_token,
@@ -247,9 +229,8 @@ def id_token_encoded(
 def id_token_encrypted(
         id_token_encoded: str,
 ) -> str:
-    """
-    Mocked ID-token from Identity Provider (encoded).
-    """
+    """Make a mocked ID-token from Identity Provider (encoded)."""
+
     return aes256_encrypt(
         id_token_encoded,
         STATE_ENCRYPTION_SECRET,
@@ -261,14 +242,12 @@ def userinfo_token(
         token_subject: str,
         token_idp: str,
         token_issued: datetime,
-        token_expires: datetime,
         token_tin: str,
         token_aud: str,
         token_transaction_id: str,
 ) -> Dict[str, Any]:
-    """
-    Mocked userinfo-token from Identity Provider (unencoded).
-    """
+    """Mock userinfo-token from Identity Provider (unencoded)."""
+
     return {
         "iss": "https://pp.netseidbroker.dk/op",
         "nbf": 1643290895,
@@ -297,9 +276,8 @@ def userinfo_token_encoded(
         jwk_private: str,
         userinfo_token: Dict[str, Any],
 ) -> str:
-    """
-    Mocked userinfo-token from Identity Provider (encoded).
-    """
+    """Mock userinfo-token from Identity Provider (encoded)."""
+
     token = jwt.encode(
         header={'alg': 'RS256'},
         payload=userinfo_token,
@@ -314,9 +292,8 @@ def userinfo_token_encoded(
 
 @pytest.fixture(scope='function')
 def psql_uri():
-    """
-    TODO
-    """
+    """Yield postgress uri."""
+
     image = f'postgres:{POSTGRES_VERSION}'
 
     with PostgresContainer(image) as psql:
@@ -325,18 +302,16 @@ def psql_uri():
 
 @pytest.fixture(scope='function')
 def db(psql_uri: str) -> SqlEngine:
-    """
-    TODO
-    """
+    """Yield postgress engine instance."""
+
     with patch('auth_api.db.db.uri', new=psql_uri):
         yield _db
 
 
 @pytest.fixture(scope='function')
 def mock_session(db: SqlEngine) -> SqlEngine.Session:
-    """
-    TODO
-    """
+    """Yield Mock postgress session."""
+
     db.apply_schema()
 
     with db.make_session() as session:

@@ -16,6 +16,23 @@
             "command": "pipenv update --dev"
         },
         {
+            "label": "Lint All",
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+            },
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "pylint: whole project",
+                "flake8-whole-project",
+                "pycodestyle-whole-project",
+            ]
+        },
+        {
             "label": "pylint: whole project",
             "type": "shell",
             "command": "pipenv run pylint --msg-template \"{path}:{line}:{column}: {msg_id} {msg}\" ./tests/ ./src",
@@ -38,7 +55,7 @@
                     "code": 4,
                     "severity": 5,
                     "message": 6
-                  }
+                }
             }
         },
         {
@@ -46,27 +63,60 @@
             "type": "shell",
             "command": "flake8 .",
             "presentation": {
-              "echo": true,
-              "reveal": "never",
-              "focus": false,
-              "panel": "shared",
-              "showReuseMessage": false,
-              "clear": true,
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
             },
             "problemMatcher": {
-              "owner": "flake8",
-              "source": "flake8-whole-project",
-              "fileLocation": ["relative", "${workspaceFolder}"],
-              "pattern": {
-                "regexp": "^(.+):(\\d+):(\\d+): ((\\w)\\d+) (.+)$",
-                "file": 1,
-                "line": 2,
-                "column": 3,
-                "code": 4,
-                "severity": 5,
-                "message": 6
-              }
+                "owner": "flake8",
+                "source": "flake8-whole-project",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.+):(\\d+):(\\d+): ((\\w)\\d+) (.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "code": 4,
+                    "severity": 5,
+                    "message": 6
+                }
             }
-          }
+        },
+        {
+            "label": "pycodestyle-whole-project",
+            "type": "shell",
+            "command": "pycodestyle --format='%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+            },
+            "problemMatcher": {
+                "owner": "pycodestyle",
+                "source": "pycodestyle-whole-project",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.+):(\\d+):(\\d+): ((\\w)\\d+) (.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "code": 4,
+                    "severity": 5,
+                    "message": 6
+                }
+            }
+        }
     ]
 }
