@@ -5,11 +5,14 @@ from .models import OpenIDConnectToken
 
 
 class OpenIDConnectBackend(object):
+    """
+    Initiate an OpenID Connect at the Identity Provider.
+
+    :param session: The OAuth2Sessions
+    :type session: OAuth2Session
+    """
 
     def __init__(self, session: OAuth2Session):
-        """
-        TODO
-        """
         self.session = session
 
     @abstractmethod
@@ -20,6 +23,8 @@ class OpenIDConnectBackend(object):
             validate_ssn: bool,
     ) -> str:
         """
+        Create OpenID Connect Authorization url.
+
         Creates and returns an absolute URL to initiate an OpenID Connect
         authorization flow at the Identity Provider.
 
@@ -39,13 +44,14 @@ class OpenIDConnectBackend(object):
             state: str,
             redirect_uri: str,
     ) -> OpenIDConnectToken:
-        """
-        TODO
-        """
+        """TODO."""
+
         raise NotImplementedError
 
     def logout(self, id_token: str):
         """
+        Call OpenID Connect Identity provider logout endpoint.
+
         Provided an ID-token, this method invokes the back-channel logout
         endpoint on the Identity Provider, which logs the user out on
         their side, forcing the user to login again next time he is
