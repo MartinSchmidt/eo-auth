@@ -29,8 +29,6 @@ from .endpoints import (
 
 def create_app() -> Application:
     """
-    Create a new instance of the application.
-
     Create a new instance of the application and adds all the endpoints to it.
 
     :return: The Application instance.

@@ -17,7 +17,7 @@ class UserProfile:
 
 
 class GetProfile(Endpoint):
-    """Returns the user's (actor's) profile."""
+    """Endpoint to get the user's (actor's) profile."""
 
     @dataclass
     class Response:
@@ -34,6 +34,7 @@ class GetProfile(Endpoint):
         Handle HTTP request.
 
         :param context: Context for a single HTTP request.
+        :return: The response with the user profile
         """
         return self.Response(
             success=True,
