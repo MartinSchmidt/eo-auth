@@ -292,11 +292,13 @@ class OpenIdInvalidateLogin(Endpoint):
     @dataclass
     class Response:
         """The HTTP response body."""
+
         success: bool
 
     @dataclass
     class Request:
         """The HTTP request body."""
+
         state: str
 
     def handle_request(
