@@ -65,7 +65,7 @@ class TestCreateUser:
 
         mock_session.add(DbUser(
             subject=internal_subject,
-            cvr=token_tin,
+            tin=token_tin,
         ))
 
         mock_session.add(DbExternalUser(

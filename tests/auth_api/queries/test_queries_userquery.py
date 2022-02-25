@@ -70,13 +70,13 @@ class TestUserQueries(TestQueryBase):
         # -- Act -------------------------------------------------------------
 
         query = UserQuery(seeded_session) \
-            .has_tin(user['cvr']) \
+            .has_tin(user['tin']) \
             .one_or_none()
 
         # -- Assert ----------------------------------------------------------
 
         assert query is not None
-        assert query.cvr == user['cvr']
+        assert query.tin == user['tin']
 
     def test__has_tin__tin_does_not_exists__return_none(
         self,
