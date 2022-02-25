@@ -32,7 +32,7 @@ class DbUser(db.ModelBase):
     """Social security number, encrypted."""
 
     tin = sa.Column(sa.String(), index=True)
-    """Social security number, encrypted."""
+    """Tax identification number."""
 
 
 class DbExternalUser(db.ModelBase):
