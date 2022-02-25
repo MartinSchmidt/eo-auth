@@ -1,18 +1,21 @@
+# Standard Library
 from dataclasses import dataclass
 
-from origin.tokens import TokenEncoder
-from origin.auth import TOKEN_HEADER_NAME
-from origin.models.auth import InternalToken
+# First party
 from origin.api import (
-    Endpoint,
     Context,
+    Endpoint,
     HttpResponse,
     Unauthorized,
 )
+from origin.auth import TOKEN_HEADER_NAME
+from origin.models.auth import InternalToken
+from origin.tokens import TokenEncoder
 
+# Local
+from auth_api.config import INTERNAL_TOKEN_SECRET
 from auth_api.db import db
 from auth_api.queries import TokenQuery
-from auth_api.config import INTERNAL_TOKEN_SECRET
 
 
 class ForwardAuth(Endpoint):
@@ -22,9 +25,14 @@ class ForwardAuth(Endpoint):
     https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
     """
 
-    def handle_request(self, context: Context) -> HttpResponse:
+    def handle_request(
+            self,
+            context: Context
+    ) -> HttpResponse:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
         """
         if not context.opaque_token:
             raise Unauthorized()
@@ -48,10 +56,12 @@ class ForwardAuth(Endpoint):
             session: db.Session,
     ) -> str:
         """
-        TODO
+        Return internal token.
 
-        :param opaque_token:
-        :param session:
+        Only if the correct opaque_token is found in the database.
+
+        :param opaque_token: Primary Key Constraint
+        :param session: Database session
         """
         token = TokenQuery(session) \
             .has_opaque_token(opaque_token) \
@@ -64,16 +74,26 @@ class ForwardAuth(Endpoint):
 
 class InspectToken(Endpoint):
     """
-    TODO
+    Return the InternalToken.
+
+    Makes it possible to retieve the internal token from the request it self.
+    This is mostly used for testing.
     """
 
     @dataclass
     class Response:
+        """HTTP Response returning the InternalToken."""
+
         token: InternalToken
 
-    def handle_request(self, context: Context) -> Response:
+    def handle_request(
+            self,
+            context: Context
+    ) -> Response:
         """
         Handle HTTP request.
+
+        :param context: Context for a single HTTP request.
         """
         return self.Response(
             token=context.token,
@@ -81,21 +101,30 @@ class InspectToken(Endpoint):
 
 
 class CreateTestToken(Endpoint):
-    """
-    Creates a new token (for testing purposes).
-    """
+    """Creates a new token (for testing purposes)."""
 
     @dataclass
     class Request:
+        """HTTP request retuning the InternalToken."""
+
         token: InternalToken
 
     @dataclass
     class Response:
+        """HTTP response retuning the InternalToken."""
+
         token: str
 
-    def handle_request(self, request: Request, context: Context) -> Response:
+    def handle_request(
+            self,
+            request: Request,
+            context: Context
+    ) -> Response:
         """
         Handle HTTP request.
+
+        :param request: The internal token for the request.
+        :param context: Context for a single HTTP request.
         """
         encoder = TokenEncoder(
             schema=InternalToken,

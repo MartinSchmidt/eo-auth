@@ -12,6 +12,8 @@ from auth_api.models import DbUser, DbExternalUser
 
 class OidcCallbackEndpointsSubjectKnownBase:
     """
+    Base class for all OIDC callback endpoints that tests behavior.
+
     Base class for all OIDC callback endpoints that tests behavior, where
     the Identity Provider's subject is known to the system. A setup-method
     creates the user before each test.
@@ -19,23 +21,20 @@ class OidcCallbackEndpointsSubjectKnownBase:
 
     @pytest.fixture(scope='function')
     def internal_subject(self) -> str:
-        """
-        Our internal subject
-        """
+        """Our internal subject used to identity our own users."""
+
         return str(uuid4())
 
     @pytest.fixture(scope='function')
     def return_url(self) -> str:
-        """
-        Client's return_url
-        """
+        """Client's return_url."""
+
         return 'https://redirect-here.com/foobar?foo=bar'
 
     @pytest.fixture(scope='function')
     def fe_url(self) -> str:
-        """
-        Client's fe_url
-        """
+        """Client's fe_url(Frontend URL)."""
+
         return 'https://foobar.com/'
 
     @pytest.fixture(scope='function')
@@ -45,9 +44,8 @@ class OidcCallbackEndpointsSubjectKnownBase:
             return_url: str,
             fe_url: str
     ) -> str:
-        """
-        AuthState, encoded
-        """
+        """AuthState, encoded."""
+
         state = AuthState(
             fe_url=fe_url,
             return_url=return_url,
@@ -68,9 +66,7 @@ class OidcCallbackEndpointsSubjectKnownBase:
             token_ssn: str,
             internal_subject: str,
     ) -> db.Session:
-        """
-        Inserts a mock-user into the database.
-        """
+        """Insert a mock-user into the database."""
 
         # -- OAuth2Session object methods ------------------------------------
 
