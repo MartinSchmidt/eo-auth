@@ -28,7 +28,7 @@ class UserQuery(SqlQuery):
 
         :param tin: Tax Identification Number
         """
-        return self.filter(DbUser.cvr == tin)
+        return self.filter(DbUser.tin == tin)
 
 
 class ExternalUserQuery(SqlQuery):

@@ -13,19 +13,19 @@ from datetime import datetime, timezone, timedelta
 DB_USER_1 = {
     "subject": 'SUBJECT_1',
     "ssn": "SSN_1",
-    "cvr": 'CVR_1'
+    "tin": 'TIN_1'
 }
 
 DB_USER_2 = {
     "subject": 'SUBJECT_2',
     "ssn": "SSN_2",
-    "cvr": 'CVR_2'
+    "tin": 'TIN_2'
 }
 
 DB_USER_3 = {
     "subject": 'SUBJECT_3',
     "ssn": "SSN_3",
-    "cvr": 'CVR_3'
+    "tin": 'TIN_3'
 }
 
 EXTERNAL_USER_4 = {
@@ -169,7 +169,7 @@ class TestQueryBase:
             mock_session.add(DbUser(
                 subject=user['subject'],
                 ssn=user['ssn'],
-                cvr=user['cvr'],
+                tin=user['tin'],
             ))
 
         for user in USER_EXTERNAL_LIST:
