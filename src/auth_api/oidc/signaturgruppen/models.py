@@ -75,8 +75,7 @@ class SignaturgruppenToken(OpenIDConnectToken, Dict[str, Any]):
 
     @property
     def is_company(self) -> bool:
-        """Indicate Whether or not if token belongs to a private user or a
-         company."""
+        """Whether or not if token belongs to a private user or a company."""
 
         return self['userinfo_token_decoded']['identity_type'] == 'professional'  # noqa: E501
 

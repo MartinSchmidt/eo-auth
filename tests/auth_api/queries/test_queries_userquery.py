@@ -59,8 +59,9 @@ class TestUserQueries(TestQueryBase):
         user: dict,
     ):
         """
-        When Tax Identification Number exists and searching for tin, return
-        correct user.
+        Tests if Tax Identification Number exists.
+
+        Searches for tin and return correct user.
 
         :param seeded_session: Mocked database session
         :param user: Current user inserted into the test
