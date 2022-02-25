@@ -18,7 +18,7 @@ class DbUser(db.ModelBase):
         sa.PrimaryKeyConstraint('subject'),
         sa.UniqueConstraint('subject'),
         sa.UniqueConstraint('ssn'),
-        sa.CheckConstraint('ssn != NULL OR cvr != null'),
+        sa.CheckConstraint('ssn != NULL OR tin != null'),
     )
 
     subject = sa.Column(sa.String(), index=True, nullable=False)
@@ -31,8 +31,8 @@ class DbUser(db.ModelBase):
     ssn = sa.Column(sa.String(), index=True)
     """Social security number, encrypted."""
 
-    cvr = sa.Column(sa.String(), index=True)  # TODO Rename to 'tin'
-    """Social security number, encrypted."""
+    tin = sa.Column(sa.String(), index=True)
+    """Tax identification number."""
 
 
 class DbExternalUser(db.ModelBase):

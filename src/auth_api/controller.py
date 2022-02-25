@@ -109,7 +109,7 @@ class DatabaseController(object):
             user = DbUser(
                 subject=str(uuid4()),
                 ssn=ssn_encrypted,
-                cvr=tin,
+                tin=tin,
             )
 
             session.add(user)
