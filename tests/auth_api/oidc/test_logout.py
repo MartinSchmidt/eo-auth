@@ -33,20 +33,8 @@ from auth_api.state import AuthState
 
 @pytest.fixture(scope='function')
 def an_url() -> str:
-    """Returns a dummy url."""
+    """Return a dummy url."""
     return 'https://example.com'
-
-
-@pytest.fixture(scope='function')
-def request_mocker() -> requests_mock:
-    """
-    Request mock which can be used to mock requests responses.
-
-    Specifically meant for OpenID Connect api endpoints.
-    """
-
-    with requests_mock.Mocker() as mock:
-        yield mock
 
 
 @pytest.fixture(scope='function')
@@ -444,7 +432,7 @@ class TestHTTPResponse:
         state_encoder: TokenEncoder[AuthState],
         oidc_adapter: requests_mock.Adapter,
     ):
-        """When invalidating a login, test that the response status is okay"""
+        """When invalidating a login, test that the response status is okay."""
 
         state = AuthState(
             fe_url=an_url,
@@ -478,7 +466,7 @@ class TestHTTPResponse:
     ):
         """
         When invalidate a malformed AuthState,
-        test that the response status indicates an error
+        test that the response status indicates an error.
         """
 
         state = AuthState(
@@ -510,7 +498,7 @@ class TestHTTPResponse:
     ):
         """
         When invalidating with a malformed AuthState,
-        test that the response status indicates an error
+        test that the response status indicates an error.
         """
 
         # -- Act -------------------------------------------------------------

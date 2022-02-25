@@ -324,19 +324,19 @@ def mock_session(db: SqlEngine) -> SqlEngine.Session:
 @pytest.fixture(scope='function')
 def request_mocker() -> requests_mock:
     """
-    A request mock which can be used to mock requests responses
-    made to eg. OpenID Connect api endpoints.
+    Provide a request mocker.
+
+    Can be used to mock requests responses made to eg. 
+    OpenID Connect api endpoints.
     """
 
-    with requests_mock.Mocker() as m:
-        yield m
+    with requests_mock.Mocker() as mock:
+        yield mock
 
 
 @pytest.fixture(scope='function')
 def oidc_adapter(request_mocker: requests_mock) -> requests_mock.Adapter:
-    """
-    Mock the oidc endpoint response to return status code 200.
-    """
+    """Mock the oidc endpoint response to return status code 200."""
     adapter = request_mocker.post(
         OIDC_API_LOGOUT_URL,
         text='',

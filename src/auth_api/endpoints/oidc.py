@@ -287,17 +287,16 @@ class OpenIdLogout(Endpoint):
 
 
 class OpenIdInvalidateLogin(Endpoint):
-    """
-    Returns a URL which invalidates a login @ the
-    OpenID Connect Identity Provider.
-    """
+    """Returns a URL which invalidates a login."""
 
     @dataclass
     class Response:
+        """The HTTP response body."""
         success: bool
 
     @dataclass
     class Request:
+        """The HTTP request body."""
         state: str
 
     def handle_request(
