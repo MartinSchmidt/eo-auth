@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+from xmlrpc.client import Boolean
 
 # First party
 from origin.api import (
@@ -23,6 +24,7 @@ from auth_api.config import (
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_SAMESITE,
+    TOKEN_COOKIE_PATH,
     TOKEN_DEFAULT_SCOPES,
     TOKEN_EXPIRY_DELTA,
 )
@@ -31,6 +33,10 @@ from auth_api.db import db
 from auth_api.models import DbUser
 from auth_api.user import create_or_get_user
 from auth_api.state import AuthState
+
+from auth_api.oidc import (
+    oidc_backend,
+)
 
 
 @dataclass
@@ -213,8 +219,16 @@ class LoginOrchestrator:
             name=TOKEN_COOKIE_NAME,
             value=opaque_token,
             domain=TOKEN_COOKIE_DOMAIN,
-            path='/',
+            path=TOKEN_COOKIE_PATH,
             http_only=TOKEN_COOKIE_HTTP_ONLY,
             same_site=TOKEN_COOKIE_SAMESITE,
             secure=True,
         )
+
+    def invalidate_login(self) -> Boolean:
+        """Invalidate an initiated login that is persistented only in state."""
+        if self.state is not None and self.state.id_token is not None:
+            oidc_backend.logout(self.state.id_token)
+            return True
+
+        return False
