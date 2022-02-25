@@ -26,20 +26,19 @@ from auth_api.state import build_failure_url
 
 
 class GetTerms(Endpoint):
-    """
-    An endpoint which returns the terms and conditions.
-    """
+    """An endpoint which returns the terms and conditions."""
 
     @dataclass
     class Response:
+        """Class to store the parameters for the response."""
+
         headline: str
         terms: str
         version: str
 
     def handle_request(self, context: Context) -> Response:
-        """
-        Handle HTTP request.
-        """
+        """Handle HTTP request."""
+
         file_list = os.listdir(TERMS_MARKDOWN_FOLDER)
 
         newest_file = Tcl().call('lsort', '-decreasing', file_list)[0]
@@ -65,12 +64,12 @@ class GetTerms(Endpoint):
 
 
 class AcceptTerms(Endpoint):
-    """
-    An endpoint which marks a user as having accepted terms and conditions.
-    """
+    """An endpoint to marks a user as having accepted terms and conditions."""
 
     @dataclass
     class Request:
+        """Class to store the parameters for the request."""
+
         state: str
         accepted: bool
         version: str
@@ -82,9 +81,7 @@ class AcceptTerms(Endpoint):
         context: Context,
         session: db.Session,
     ) -> HttpResponse:
-        """
-        Handle HTTP request.
-        """
+        """Handle HTTP request."""
         # Decode state
         try:
             state = state_encoder.decode(request.state)
