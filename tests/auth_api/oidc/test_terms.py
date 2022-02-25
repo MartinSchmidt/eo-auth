@@ -16,9 +16,7 @@ from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
 
 
 class TestTermsAccept:
-    """
-    Tests cases where the user accepts the terms and conditions
-    """
+    """Tests cases where the user accepts the terms and conditions."""
 
     def test__user_accepts_terms__should_redirect_to_success(
         self,
@@ -34,6 +32,7 @@ class TestTermsAccept:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Tests if the user accepts terms and gets redirected with success."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -53,7 +52,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -64,16 +63,16 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
         assert_base_url(
-            url=r.json['next_url'],
+            url=res.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.json['next_url'],
+            url=res.json['next_url'],
             name='success',
             value='1',
         )
@@ -89,6 +88,7 @@ class TestTermsAccept:
         ip_token: Dict[str, Any],
         token_tin: str,
     ):
+        """Tests if the users accepts terms and gets an invalid state."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -106,7 +106,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -117,7 +117,7 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 500
+        assert res.status_code == 500
 
     def test__user_accepts_terms__should_redirect_with_httponly_cookie(
         self,
@@ -133,6 +133,7 @@ class TestTermsAccept:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Tests if the users accepts terms and gets a HttpOnly cookie."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -152,7 +153,7 @@ class TestTermsAccept:
 
         # -- Act --------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -163,9 +164,9 @@ class TestTermsAccept:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
-        cookie = r.headers['Set-Cookie']
+        cookie = res.headers['Set-Cookie']
 
         assert cookie is not None
 
@@ -173,9 +174,7 @@ class TestTermsAccept:
 
 
 class TestTermsDecline:
-    """
-    Tests cases where the user declines the terms and conditions.
-    """
+    """Tests cases where the user declines the terms and conditions."""
 
     @pytest.mark.integrationtest
     def test__user_declines_terms__should_redirect_with_success_0(
@@ -192,6 +191,7 @@ class TestTermsDecline:
         token_subject: str,
         id_token_encrypted: str,
     ):
+        """Tests if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -211,7 +211,7 @@ class TestTermsDecline:
 
         # -- Act --------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path=TERMS_ACCEPT_PATH,
             json={
                 'state': state_encoded,
@@ -222,42 +222,42 @@ class TestTermsDecline:
 
         # -- Assert -----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
         assert_base_url(
-            url=r.json['next_url'],
+            url=res.json['next_url'],
             expected_base_url=state.return_url,
             check_path=True,
         )
 
         assert_query_parameter(
-            url=r.json['next_url'],
+            url=res.json['next_url'],
             name='success',
             value='0',
         )
 
 
 class TestTermsGet:
-    """
-    Tests whether terms get returns latest terms and success
-    """
+    """Tests whether terms get returns latest terms and success."""
 
     def test__user_gets_terms__should_return_latest_terms(
         self,
         client: FlaskClient,
     ):
-        expectedHeadline = 'Privacy Policy'
-        expectedContent = '<h1>Test file 2</h1>\n'
-        expectedVersion = 'v2'
+        """Tests whether terms get returns latest terms and success."""
 
-        r = client.get(
+        expected_head_line = 'Privacy Policy'
+        expected_content = '<h1>Test file 2</h1>\n'
+        expected_version = 'v2'
+
+        res = client.get(
             path=TERMS_PATH
         )
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
-        assert r.json['headline'] == expectedHeadline
+        assert res.json['headline'] == expected_head_line
 
-        assert r.json['terms'] == expectedContent
+        assert res.json['terms'] == expected_content
 
-        assert r.json['version'] == expectedVersion
+        assert res.json['version'] == expected_version

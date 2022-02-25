@@ -7,9 +7,8 @@ from .models import SignaturgruppenToken
 
 
 class SignaturgruppenBackend(OpenIDConnectBackend):
-    """
-    TODO
-    """
+    """TODO."""
+
     def __init__(
             self,
             *args,
@@ -17,9 +16,8 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             token_endpoint: str,
             **kwargs,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         self.authorization_endpoint = authorization_endpoint
         self.token_endpoint = token_endpoint
         super(SignaturgruppenBackend, self).__init__(*args, **kwargs)
@@ -32,6 +30,8 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             language: Optional[str],
     ) -> str:
         """
+        Establish a OpenID Connect Authorization url.
+
         Creates and returns an absolute URL to initiate an OpenID Connect
         authorization flow at the Identity Provider.
 
@@ -72,9 +72,8 @@ class SignaturgruppenBackend(OpenIDConnectBackend):
             state: str,
             redirect_uri: str,
     ) -> SignaturgruppenToken:
-        """
-        TODO
-        """
+        """TODO."""
+
         raw_token = self.session.fetch_token(
             url=self.token_endpoint,
             grant_type='authorization_code',
