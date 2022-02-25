@@ -326,7 +326,7 @@ def request_mocker() -> requests_mock:
     """
     Provide a request mocker.
 
-    Can be used to mock requests responses made to eg. 
+    Can be used to mock requests responses made to eg.
     OpenID Connect api endpoints.
     """
 

@@ -465,7 +465,9 @@ class TestHTTPResponse:
         oidc_adapter: requests_mock.Adapter,
     ):
         """
-        When invalidate a malformed AuthState,
+        Test with malformed AuthState.
+
+        When invalidating with a malformed AuthState,
         test that the response status indicates an error.
         """
 
@@ -497,6 +499,8 @@ class TestHTTPResponse:
         oidc_adapter: requests_mock.Adapter,
     ):
         """
+        Test with malformed AuthState.
+
         When invalidating with a malformed AuthState,
         test that the response status indicates an error.
         """
