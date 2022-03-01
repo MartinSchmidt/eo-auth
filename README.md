@@ -92,9 +92,9 @@ The necessary sub-paths to support the authorization flow are:
 
 - **/terms** allows the user to read and accept (or decline) Terms & Conditions
 
-  - Receives query parameters `state`, `terms_url`, and `terms_accept_url`
-  - Makes an HTTP GET request to `terms_url` to fetch the latest Terms & Conditions (headline, text, and version)
-  - Makes an HTTP POST request to `terms_accept_url` to confirm that the user either accepted or declined the Terms & Conditions along with the version
+  - Receives query parameters `state`.
+  - Makes an HTTP GET request to `/terms` to fetch the latest Terms & Conditions (headline, text, and version)
+  - Makes an HTTP POST request to `/terms/accept` to confirm that the user either accepted or declined the Terms & Conditions along with the version
   - After accepting or declining terms, the API returns a `next_url` where the client should be redirected to continue the authorization flow
 
 - **/onboard** allows the user to provide necessary/additional information, such as name, e-mail etc.
