@@ -19,8 +19,6 @@ from origin.tools import url_append
 from auth_api.config import (
     INTERNAL_TOKEN_SECRET,
     STATE_ENCRYPTION_SECRET,
-    TERMS_ACCEPT_URL,
-    TERMS_URL,
     TOKEN_COOKIE_DOMAIN,
     TOKEN_COOKIE_HTTP_ONLY,
     TOKEN_COOKIE_SAMESITE,
@@ -108,7 +106,7 @@ class LoginOrchestrator:
         """
         Return a http response.
 
-        Returns an http response based on where _get_next_step decides the user
+        Returns a http response based on where _get_next_step decides the user
         is in the flow.
         This is used in cases where the frontend can't or doesn't accept a
         redirect, e.g. an ajax request.
@@ -151,8 +149,6 @@ class LoginOrchestrator:
                     path_extra='/terms',
                     query_extra={
                         'state': state_encoder.encode(self.state),
-                        'terms_url': TERMS_URL,
-                        'terms_accept_url': TERMS_ACCEPT_URL,
                     }
                 )
             )
