@@ -13,7 +13,18 @@ from origin.api.testing import (
 
 from auth_api.db import db
 from auth_api.state import AuthState
-from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
+
+
+@pytest.fixture(scope='function')
+def terms_url() -> str:
+    """Path to terms."""
+    return '/terms'
+
+
+@pytest.fixture(scope='function')
+def terms_accept_url() -> str:
+    """Path to accepted terms."""
+    return '/terms/accept'
 
 
 class TestTermsAccept:
@@ -32,6 +43,7 @@ class TestTermsAccept:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        terms_accept_url: str,
     ):
         """Tests if the user accepts terms and gets redirected with success."""
         # -- Arrange ----------------------------------------------------------
@@ -54,7 +66,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -88,8 +100,10 @@ class TestTermsAccept:
         jwk_public: str,
         ip_token: Dict[str, Any],
         token_tin: str,
+        terms_accept_url: str,
     ):
         """Tests if the users accepts terms and gets an invalid state."""
+
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -108,7 +122,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -133,6 +147,7 @@ class TestTermsAccept:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        terms_accept_url: str,
     ):
         """Tests if the users accepts terms and gets a HttpOnly cookie."""
         # -- Arrange ----------------------------------------------------------
@@ -155,7 +170,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -192,6 +207,7 @@ class TestTermsDecline:
         token_subject: str,
         id_token_encrypted: str,
         oidc_adapter: requests_mock.Adapter,
+        terms_accept_url: str,
     ):
         """Tests if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
@@ -214,7 +230,7 @@ class TestTermsDecline:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -247,6 +263,7 @@ class TestTermsGet:
     def test__user_gets_terms__should_return_latest_terms(
         self,
         client: FlaskClient,
+        terms_url,
     ):
         """Tests whether terms get returns latest terms and success."""
         expected_head_line = 'Privacy Policy'
@@ -254,7 +271,7 @@ class TestTermsGet:
         expected_version = 'v2'
 
         res = client.get(
-            path=TERMS_PATH
+            path=terms_url
         )
 
         assert res.status_code == 200
