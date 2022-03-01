@@ -94,16 +94,6 @@ OIDC_SSN_VALIDATE_CALLBACK_PATH = '/oidc/login/callback/ssn'
 OIDC_SSN_VALIDATE_CALLBACK_URL = \
     f'{SERVICE_URL}{OIDC_SSN_VALIDATE_CALLBACK_PATH}'
 
-# Terms Get URL
-TERMS_PATH = '/terms'
-TERMS_URL = \
-    f'{SERVICE_URL}{TERMS_PATH}'
-
-# Terms accept URL
-TERMS_ACCEPT_PATH = '/terms/accept'
-TERMS_ACCEPT_URL = \
-    f'{SERVICE_URL}{TERMS_ACCEPT_PATH}'
-
 # Invalidate pending login URL
 INVALIDATE_PENDING_LOGIN_PATH = '/invalidate'
 

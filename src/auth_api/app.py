@@ -6,8 +6,6 @@ from .config import (
     INTERNAL_TOKEN_SECRET,
     OIDC_LOGIN_CALLBACK_PATH,
     OIDC_LOGIN_CALLBACK_URL,
-    TERMS_PATH,
-    TERMS_ACCEPT_PATH,
     INVALIDATE_PENDING_LOGIN_PATH,
 )
 
@@ -108,13 +106,13 @@ def create_app() -> Application:
 
     app.add_endpoint(
         method='GET',
-        path=TERMS_PATH,
+        path='/terms',
         endpoint=GetTerms(),
     )
 
     app.add_endpoint(
         method='POST',
-        path=TERMS_ACCEPT_PATH,
+        path='/terms/accept',
         endpoint=AcceptTerms(),
     )
 
