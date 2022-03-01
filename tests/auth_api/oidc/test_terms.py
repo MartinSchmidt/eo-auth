@@ -45,24 +45,7 @@ class TestTermsAccept:
         id_token_encrypted: str,
         terms_accept_url: str,
     ):
-        """
-        Tests if the user accepts terms and gets redirected with success.
-
-        :param client: API client
-        :param mock_session: Mocked database session
-        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
-        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
-               object
-        :param state_encoder: AuthState encoder
-        :param jwk_public: Mocked public key from Identity Provider
-        :param ip_token: Mocked token from Identity Provider (unencoded)
-        :param token_tin: Mocked tax identification number
-        :param token_idp: Provider type (nemid, mitid)
-        :param token_subject: Identity Provider's subject (used in Mock tokens)
-        :param id_token_encrypted: Mocked ID-token from Identity Provider
-            (encoded).
-        :param terms_accept_url: Path to accepted terms
-        """
+        """Tests if the user accepts terms and gets redirected with success."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -119,20 +102,7 @@ class TestTermsAccept:
         token_tin: str,
         terms_accept_url: str,
     ):
-        """
-        Tests if the users accepts terms and gets an invalid state.
-
-        :param client: API client
-        :param mock_session: Mocked database session
-        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
-        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
-               object
-        :param state_encoder: AuthState encoder
-        :param jwk_public: Mocked public key from Identity Provider
-        :param ip_token: Mocked token from Identity Provider (unencoded)
-        :param token_tin: Mocked tax identification number
-        :param terms_accept_url: Path to accepted terms
-        """
+        """Tests if the users accepts terms and gets an invalid state."""
 
         # -- Arrange ----------------------------------------------------------
 
@@ -179,24 +149,7 @@ class TestTermsAccept:
         id_token_encrypted: str,
         terms_accept_url: str,
     ):
-        """
-        Tests if the users accepts terms and gets a HttpOnly cookie.
-
-        :param client: API client
-        :param mock_session: Mocked database session
-        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
-        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
-               object
-        :param state_encoder: AuthState encoder
-        :param jwk_public: Mocked public key from Identity Provider
-        :param ip_token: Mocked token from Identity Provider (unencoded)
-        :param token_tin: Mocked tax identification number
-        :param token_idp: Provider type (nemid, mitid)
-        :param token_subject: Identity Provider's subject (used in Mock tokens)
-        :param id_token_encrypted: Mocked ID-token from Identity Provider
-            (encoded).
-        :param terms_accept_url: Path to accepted terms
-        """
+        """Tests if the users accepts terms and gets a HttpOnly cookie."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -256,25 +209,7 @@ class TestTermsDecline:
         oidc_adapter: requests_mock.Adapter,
         terms_accept_url: str,
     ):
-        """
-        Tests if the user declines and redicect with success 0.
-
-        :param client: API client
-        :param mock_session: Mocked database session
-        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
-        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
-               object
-        :param state_encoder: AuthState encoder
-        :param jwk_public: Mocked public key from Identity Provider
-        :param ip_token: Mocked token from Identity Provider (unencoded)
-        :param token_tin: Mocked tax identification number
-        :param token_idp: Provider type (nemid, mitid)
-        :param token_subject: Identity Provider's subject (used in Mock tokens)
-        :param id_token_encrypted: Mocked ID-token from Identity Provider
-            (encoded).
-        :param oidc_adapter: Oidc endpoint response to return a status
-        :param terms_accept_url: Path to accepted terms
-        """
+        """Tests if the user declines and redicect with success 0."""
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -330,12 +265,7 @@ class TestTermsGet:
         client: FlaskClient,
         terms_url,
     ):
-        """
-        Tests whether terms get returns latest terms and success.
-
-        :param client: API client
-        :param terms_url: Path to terms
-        """
+        """Tests whether terms get returns latest terms and success."""
         expected_head_line = 'Privacy Policy'
         expected_content = '<h1>Test file 2</h1>\n'
         expected_version = 'v2'

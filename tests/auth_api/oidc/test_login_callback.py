@@ -56,11 +56,6 @@ class TestOidcLoginCallbackSubjectUnknown:
         :param state_encoder: AuthState encoder
         :param jwk_public: Mocked public key from Identity Provider
         :param ip_token: Mocked token from Identity Provider (unencoded)
-        :param token_tin: Mocked tax identification number
-        :param token_idp: Provider type (nemid, mitid)
-        :param token_subject: Identity Provider's subject (used in Mock tokens)
-        :param id_token_encrypted: Mocked ID-token from Identity Provider
-            (encoded).
         """
 
         # -- Arrange ----------------------------------------------------------
