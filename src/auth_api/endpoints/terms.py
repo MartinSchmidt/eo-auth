@@ -86,7 +86,6 @@ class AcceptTerms(Endpoint):
         try:
             state = state_encoder.decode(request.state)
         except state_encoder.DecodeError:
-            # TODO Handle...
             raise BadRequest()
 
         # TODO Verify accepted version is valid?
