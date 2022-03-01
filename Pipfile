@@ -24,6 +24,7 @@ markdown2 = "*"
 pytz = "*"
 alembic = "*"
 fastapi = "0.74.1"
+uvicorn = "0.17.5"
 
 [scripts]
 lint-flake8 = "flake8"

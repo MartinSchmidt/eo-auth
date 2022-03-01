@@ -1,8 +1,8 @@
 # Local
-from auth_api.controller import db_controller
-from auth_api.db import db
-from auth_api.models import DbUser
-from auth_api.state import AuthState
+from controller import db_controller
+from db import db
+from models import DbUser
+from state import AuthState
 
 
 def create_or_get_user(

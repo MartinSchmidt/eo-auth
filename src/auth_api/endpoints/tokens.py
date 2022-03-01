@@ -13,9 +13,9 @@ from origin.models.auth import InternalToken
 from origin.tokens import TokenEncoder
 
 # Local
-from auth_api.config import INTERNAL_TOKEN_SECRET
-from auth_api.db import db
-from auth_api.queries import TokenQuery
+from config import INTERNAL_TOKEN_SECRET
+from db import db
+from queries import TokenQuery
 
 
 class ForwardAuth(Endpoint):

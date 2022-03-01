@@ -9,18 +9,18 @@ from origin.models.auth import InternalToken
 from origin.tokens import TokenEncoder
 
 # Local
-from .config import (
+from config import (
     INTERNAL_TOKEN_SECRET,
     STATE_ENCRYPTION_SECRET,
 )
-from .db import db
-from .models import (
+from db import db
+from models import (
     DbExternalUser,
     DbLoginRecord,
     DbToken,
     DbUser,
 )
-from .queries import (
+from queries import (
     ExternalUserQuery,
     TokenQuery,
     UserQuery,

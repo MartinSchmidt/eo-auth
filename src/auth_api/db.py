@@ -1,6 +1,6 @@
 from origin.sql import SqlEngine
 
-from .config import SQL_URI, SQL_POOL_SIZE
+from config import SQL_URI, SQL_POOL_SIZE
 
 db = SqlEngine(
     uri=SQL_URI,

@@ -6,7 +6,7 @@ from typing import Optional
 from origin.api import TemporaryRedirect
 from origin.tools import url_append
 
-from auth_api.oidc import OIDC_ERROR_CODES
+from oidc import OIDC_ERROR_CODES
 
 
 @dataclass

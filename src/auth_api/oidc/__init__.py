@@ -1,4 +1,4 @@
-from auth_api.config import (
+from config import (
     OIDC_CLIENT_ID,
     OIDC_CLIENT_SECRET,
     OIDC_LOGIN_URL,

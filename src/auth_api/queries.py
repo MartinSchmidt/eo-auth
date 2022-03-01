@@ -2,7 +2,7 @@ from sqlalchemy import orm, func, and_
 
 from origin.sql import SqlQuery
 
-from .models import DbUser, DbExternalUser, DbToken, DbLoginRecord
+from models import DbUser, DbExternalUser, DbToken, DbLoginRecord
 
 
 class UserQuery(SqlQuery):

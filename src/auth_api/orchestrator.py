@@ -16,7 +16,7 @@ from origin.tokens import TokenEncoder
 from origin.tools import url_append
 
 # Local
-from auth_api.config import (
+from config import (
     INTERNAL_TOKEN_SECRET,
     STATE_ENCRYPTION_SECRET,
     TOKEN_COOKIE_DOMAIN,
@@ -26,13 +26,13 @@ from auth_api.config import (
     TOKEN_DEFAULT_SCOPES,
     TOKEN_EXPIRY_DELTA,
 )
-from auth_api.controller import db_controller
-from auth_api.db import db
-from auth_api.models import DbUser
-from auth_api.user import create_or_get_user
-from auth_api.state import AuthState
+from controller import db_controller
+from db import db
+from models import DbUser
+from user import create_or_get_user
+from state import AuthState
 
-from auth_api.oidc import (
+from oidc import (
     oidc_backend,
 )
 

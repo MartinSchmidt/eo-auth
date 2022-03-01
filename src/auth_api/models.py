@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
 # Local
-from .db import db
+from db import db
 
 
 class DbUser(db.ModelBase):

@@ -15,14 +15,14 @@ from origin.api import (
 )
 
 # Local
-from auth_api.config import TERMS_MARKDOWN_FOLDER
-from auth_api.db import db
-from auth_api.orchestrator import (
+from config import TERMS_MARKDOWN_FOLDER
+from db import db
+from orchestrator import (
     LoginOrchestrator,
     LoginResponse,
     state_encoder,
 )
-from auth_api.state import build_failure_url
+from state import build_failure_url
 
 
 class GetTerms(Endpoint):
