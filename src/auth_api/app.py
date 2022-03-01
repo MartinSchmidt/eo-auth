@@ -1,5 +1,7 @@
 # First party
+import secrets
 from origin.api import Application, TokenGuard
+from fastapi import FastAPI
 
 # Local
 from .config import (
@@ -27,49 +29,46 @@ from .endpoints import (
 )
 
 
-def create_app() -> Application:
+def create_app() -> FastAPI:
     """
     Create a new instance of the application and adds all the endpoints to it.
 
     :return: The Application instance.
     :rtype: Application
     """
-    app = Application.create(
-        name='Auth API',
+
+    app = FastAPI(
+        title="Auth API",
         secret=INTERNAL_TOKEN_SECRET,
-        health_check_path='/health',
     )
+
+    # Health check
+    @app.get("/health")
+    async def health_check():
+        return {"message": "I'm alive"}
 
     # -- OpenID Connect ------------------------------------------------------
 
     # Login
-    app.add_endpoint(
-        method='GET',
-        path='/oidc/login',
-        endpoint=OpenIdLogin(),
-    )
+    @app.get("/oidc/login")
+    async def login():
+        return OpenIdLogin()
 
     # Callback, after logging in
-    app.add_endpoint(
-        method='GET',
-        path=OIDC_LOGIN_CALLBACK_PATH,
-        endpoint=OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL),
-    )
+    @app.get(OIDC_LOGIN_CALLBACK_PATH)
+    async def callback():
+        return OpenIDCallbackEndpoint(url=OIDC_LOGIN_CALLBACK_URL)
 
     # Invalidate login
-    app.add_endpoint(
-        method='POST',
-        path=INVALIDATE_PENDING_LOGIN_PATH,
-        endpoint=OpenIdInvalidateLogin(),
-    )
+    @app.post(INVALIDATE_PENDING_LOGIN_PATH)
+    async def invalidate_login():
+        return OpenIdInvalidateLogin()
 
     # Logout
-    app.add_endpoint(
-        method='POST',
-        path='/logout',
-        endpoint=OpenIdLogout(),
-        guards=[TokenGuard()],
-    )
+    @app.post("/logout")
+    async def logout():
+        TokenGuard()
+        return OpenIdLogout()
 
     # -- Profile(s) ----------------------------------------------------------
 
