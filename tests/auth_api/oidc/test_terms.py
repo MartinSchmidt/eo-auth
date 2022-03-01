@@ -13,7 +13,18 @@ from origin.api.testing import (
 
 from auth_api.db import db
 from auth_api.state import AuthState
-from auth_api.config import TERMS_ACCEPT_PATH, TERMS_PATH
+
+
+@pytest.fixture(scope='function')
+def terms_url() -> str:
+    """Path to terms."""
+    return '/terms'
+
+
+@pytest.fixture(scope='function')
+def terms_accept_url() -> str:
+    """Path to accepted terms."""
+    return '/terms/accept'
 
 
 class TestTermsAccept:
@@ -32,8 +43,26 @@ class TestTermsAccept:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        terms_accept_url: str,
     ):
-        """Tests if the user accepts terms and gets redirected with success."""
+        """
+        Tests if the user accepts terms and gets redirected with success.
+
+        :param client: API client
+        :param mock_session: Mocked database session
+        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
+        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
+               object
+        :param state_encoder: AuthState encoder
+        :param jwk_public: Mocked public key from Identity Provider
+        :param ip_token: Mocked token from Identity Provider (unencoded)
+        :param token_tin: Mocked tax identification number
+        :param token_idp: Provider type (nemid, mitid)
+        :param token_subject: Identity Provider's subject (used in Mock tokens)
+        :param id_token_encrypted: Mocked ID-token from Identity Provider
+            (encoded).
+        :param terms_accept_url: Path to accepted terms
+        """
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -54,7 +83,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -88,8 +117,23 @@ class TestTermsAccept:
         jwk_public: str,
         ip_token: Dict[str, Any],
         token_tin: str,
+        terms_accept_url: str,
     ):
-        """Tests if the users accepts terms and gets an invalid state."""
+        """
+        Tests if the users accepts terms and gets an invalid state.
+
+        :param client: API client
+        :param mock_session: Mocked database session
+        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
+        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
+               object
+        :param state_encoder: AuthState encoder
+        :param jwk_public: Mocked public key from Identity Provider
+        :param ip_token: Mocked token from Identity Provider (unencoded)
+        :param token_tin: Mocked tax identification number
+        :param terms_accept_url: Path to accepted terms
+        """
+
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -108,7 +152,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -133,8 +177,26 @@ class TestTermsAccept:
         token_idp: str,
         token_subject: str,
         id_token_encrypted: str,
+        terms_accept_url: str,
     ):
-        """Tests if the users accepts terms and gets a HttpOnly cookie."""
+        """
+        Tests if the users accepts terms and gets a HttpOnly cookie.
+
+        :param client: API client
+        :param mock_session: Mocked database session
+        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
+        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
+               object
+        :param state_encoder: AuthState encoder
+        :param jwk_public: Mocked public key from Identity Provider
+        :param ip_token: Mocked token from Identity Provider (unencoded)
+        :param token_tin: Mocked tax identification number
+        :param token_idp: Provider type (nemid, mitid)
+        :param token_subject: Identity Provider's subject (used in Mock tokens)
+        :param id_token_encrypted: Mocked ID-token from Identity Provider
+            (encoded).
+        :param terms_accept_url: Path to accepted terms
+        """
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -155,7 +217,7 @@ class TestTermsAccept:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -192,8 +254,27 @@ class TestTermsDecline:
         token_subject: str,
         id_token_encrypted: str,
         oidc_adapter: requests_mock.Adapter,
+        terms_accept_url: str,
     ):
-        """Tests if the user declines and redicect with success 0."""
+        """
+        Tests if the user declines and redicect with success 0.
+
+        :param client: API client
+        :param mock_session: Mocked database session
+        :param mock_get_jwk: Mocked get_jwk() method @ OAuth2Session object
+        :param mock_fetch_token: Mocked fetch_token() method @ OAuth2Session
+               object
+        :param state_encoder: AuthState encoder
+        :param jwk_public: Mocked public key from Identity Provider
+        :param ip_token: Mocked token from Identity Provider (unencoded)
+        :param token_tin: Mocked tax identification number
+        :param token_idp: Provider type (nemid, mitid)
+        :param token_subject: Identity Provider's subject (used in Mock tokens)
+        :param id_token_encrypted: Mocked ID-token from Identity Provider
+            (encoded).
+        :param oidc_adapter: Oidc endpoint response to return a status
+        :param terms_accept_url: Path to accepted terms
+        """
         # -- Arrange ----------------------------------------------------------
 
         state = AuthState(
@@ -214,7 +295,7 @@ class TestTermsDecline:
         # -- Act --------------------------------------------------------------
 
         res = client.post(
-            path=TERMS_ACCEPT_PATH,
+            path=terms_accept_url,
             json={
                 'state': state_encoded,
                 'version': '0.1',
@@ -247,14 +328,20 @@ class TestTermsGet:
     def test__user_gets_terms__should_return_latest_terms(
         self,
         client: FlaskClient,
+        terms_url,
     ):
-        """Tests whether terms get returns latest terms and success."""
+        """
+        Tests whether terms get returns latest terms and success.
+
+        :param client: API client
+        :param terms_url: Path to terms
+        """
         expected_head_line = 'Privacy Policy'
         expected_content = '<h1>Test file 2</h1>\n'
         expected_version = 'v2'
 
         res = client.get(
-            path=TERMS_PATH
+            path=terms_url
         )
 
         assert res.status_code == 200
