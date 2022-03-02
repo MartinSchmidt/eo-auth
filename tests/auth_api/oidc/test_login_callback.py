@@ -7,18 +7,13 @@ from urllib.parse import parse_qs, urlsplit
 
 from origin.encrypt import aes256_decrypt
 from origin.tokens import TokenEncoder
-from origin.api.testing import (
-    assert_base_url,
-    assert_query_parameter,
-)
+from origin.api.testing import assert_base_url
 
 from auth_api.db import db
 from auth_api.endpoints import AuthState
 from auth_api.config import (
     OIDC_LOGIN_CALLBACK_PATH,
     STATE_ENCRYPTION_SECRET,
-    TERMS_URL,
-    TERMS_ACCEPT_URL,
 )
 
 
@@ -101,20 +96,6 @@ class TestOidcLoginCallbackSubjectUnknown:
             url=redirect_location,
             expected_base_url='https://foobar.com/terms',
             check_path=True,
-        )
-
-        # Redirect to terms must have correct query params
-
-        assert_query_parameter(
-            url=redirect_location,
-            name='terms_url',
-            value=TERMS_URL,
-        )
-
-        assert_query_parameter(
-            url=redirect_location,
-            name='terms_accept_url',
-            value=TERMS_ACCEPT_URL,
         )
 
         url = urlsplit(redirect_location)
