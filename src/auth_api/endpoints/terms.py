@@ -1,7 +1,6 @@
 # Standard Library
 import os
 from dataclasses import dataclass
-from tkinter import Tcl
 
 # Third party
 import markdown2
@@ -41,7 +40,7 @@ class GetTerms(Endpoint):
 
         file_list = os.listdir(TERMS_MARKDOWN_FOLDER)
 
-        newest_file = Tcl().call('lsort', '-decreasing', file_list)[0]
+        newest_file = sorted(file_list, reverse=True)[0]
 
         filepath = f'{TERMS_MARKDOWN_FOLDER}/{newest_file}'
         version = newest_file.split('.')[0]
