@@ -1,6 +1,6 @@
 # First party
 from origin.api import TokenGuard
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 # Local
 from config import (
@@ -61,16 +61,16 @@ async def invalidate_login():
 
 # Logout
 @app.post("/logout")
-async def logout():
-    TokenGuard()
+async def logout(request: Request):
+    TokenGuard().validate(request.client.host)
     return OpenIdLogout()
 
 # -- Profile(s) ----------------------------------------------------------
 
 
 @app.get("/profile")
-async def profile():
-    TokenGuard
+async def profile(request: Request):
+    TokenGuard().validate(request.client.host)
     return GetProfile()
 
 # -- Træfik integration --------------------------------------------------
