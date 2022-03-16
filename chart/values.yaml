@@ -12,6 +12,7 @@ fullnameOverride: "eo-auth"
 eo-base-helm-chart:
   fullnameOverride: "eo-auth"
 
+
   env:
     TOKEN_COOKIE_SAMESITE: true
     PSQL_HOST: eo-auth-postgresql
